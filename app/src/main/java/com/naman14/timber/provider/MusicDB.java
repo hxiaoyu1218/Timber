@@ -38,7 +38,7 @@ public class MusicDB extends SQLiteOpenHelper {
         if (sInstance == null) {
             sInstance = new MusicDB(context.getApplicationContext());
         }
-        return sInstance;
+        return sInstance; 
     }
 
     @Override

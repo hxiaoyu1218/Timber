@@ -85,6 +85,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
     private DrawerLayout mDrawerLayout;
     private boolean isDarkTheme;
 
+    //音乐库
     private Runnable navigateLibrary = new Runnable() {
         public void run() {
             navigationView.getMenu().findItem(R.id.nav_library).setChecked(true);
@@ -95,6 +96,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
         }
     };
 
+    //播放列表
     private Runnable navigatePlaylist = new Runnable() {
         public void run() {
             navigationView.getMenu().findItem(R.id.nav_playlists).setChecked(true);
@@ -106,6 +108,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
         }
     };
 
+    //文件索引
     private Runnable navigateFolder = new Runnable() {
         public void run() {
             navigationView.getMenu().findItem(R.id.nav_folders).setChecked(true);
@@ -117,6 +120,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
         }
     };
 
+    //播放队列
     private Runnable navigateQueue = new Runnable() {
         public void run() {
             navigationView.getMenu().findItem(R.id.nav_queue).setChecked(true);
@@ -128,6 +132,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
         }
     };
 
+    //专辑
     private Runnable navigateAlbum = new Runnable() {
         public void run() {
             long albumID = getIntent().getExtras().getLong(Constants.ALBUM_ID);
@@ -138,6 +143,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
         }
     };
 
+    //艺术家
     private Runnable navigateArtist = new Runnable() {
         public void run() {
             long artistID = getIntent().getExtras().getLong(Constants.ARTIST_ID);
@@ -148,6 +154,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
         }
     };
 
+    //歌词
     private Runnable navigateLyrics = new Runnable() {
         public void run() {
             Fragment fragment = new LyricsFragment();
@@ -157,6 +164,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
         }
     };
 
+    //正在播放
     private Runnable navigateNowplaying = new Runnable() {
         public void run() {
             navigateLibrary.run();
