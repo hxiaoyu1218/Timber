@@ -8,6 +8,9 @@ import android.preference.PreferenceManager;
 import android.support.annotation.StyleRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.afollestad.appthemeengine.Config;
 import com.afollestad.appthemeengine.customizers.ATEActivityThemeCustomizer;
@@ -18,9 +21,13 @@ import com.naman14.timber.utils.Constants;
 import com.naman14.timber.utils.NavigationUtils;
 import com.naman14.timber.utils.PreferencesUtility;
 
+import static android.view.View.SYSTEM_UI_FLAG_FULLSCREEN;
+
 /**
- * Created by naman on 01/01/16.
- */
+ *   Created by huangxiaoyu
+ *   Time 2019/4/7
+ **/
+
 public class NowPlayingActivity extends BaseActivity implements ATEActivityThemeCustomizer, ATEToolbarCustomizer, ATEStatusBarCustomizer {
 
     @Override
@@ -41,7 +48,7 @@ public class NowPlayingActivity extends BaseActivity implements ATEActivityTheme
     @StyleRes
     @Override
     public int getActivityTheme() {
-        return PreferenceManager.getDefaultSharedPreferences(this).getBoolean("dark_theme", false) ? R.style.AppTheme_FullScreen_Dark : R.style.AppTheme_FullScreen_Light;
+        return PreferenceManager.getDefaultSharedPreferences(this).getBoolean("dark_theme", false) ? R.style.AppTheme_FullScreen_Dark : R.style.PlayerThemeFullScreen;
     }
 
     @Override

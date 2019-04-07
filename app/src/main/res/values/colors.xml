@@ -38,4 +38,33 @@
     <color name="colorPrimaryDarkDefault">#37474F</color>
     <color name="colorAccentDarkDefault">#2196F3</color>
 
+
+    <!-- venus style color -->
+    <color name="C0_test">#ffffff</color>
+    <color name="C1_test">#282a2e</color>
+    <color name="C2_test">#7c8287</color>
+    <color name="C3_test">#abafb4</color>
+    <color name="C4_test">#e0e3e7</color>
+    <color name="C5_test">#f5f6f9</color>
+    <color name="C6_test">#ffd900</color>
+    <color name="C7_test">#0098f7</color>
+    <color name="C8_test">#ff585b</color>
+    <color name="C9_test">#ff893b</color>
+    <color name="C10_test">#3ACE01</color>
+    <color name="C11_test">#FF753C</color>
+
+    <!-- state_pressed = true -->
+    <color name="C0_pre_test">#EBECEF</color>
+    <color name="C1_pre_test">#323438</color>
+    <color name="C4_pre_test">#D6D9DD</color>
+    <color name="C5_pre_test">#EBECEF</color>
+    <color name="C6_pre_test">#F2C100</color>
+    <color name="C7_pre_test">#0884D1</color>
+    <color name="C8_pre_test">#D74E51</color>
+    <color name="C9_pre_test">#B0101C</color>
+    <color name="C10_pre_test">#36AF08</color>
+    <color name="C11_pre_test">#DA5923</color>
+
+
+
 </resources>

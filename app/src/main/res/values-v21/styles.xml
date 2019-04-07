@@ -2,11 +2,13 @@
 <resources>
 
     <style name="AppTheme.FullScreen.Light" parent="ThemeBaseLight">
-
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">false</item>
+    </style>
 
+    <style name="PlayerThemeFullScreen" parent="AppTheme.FullScreen.Light">
+        <item name="android:windowFullscreen">true</item>
     </style>
 
     <style name="AppThemeLight" parent="ThemeBaseLight">

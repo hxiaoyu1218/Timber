@@ -62,6 +62,13 @@ import java.util.ArrayList;
 
 import static com.naman14.timber.MusicPlayer.mService;
 
+
+/**
+ *   Created by huangxiaoyu
+ *   Time 2019/4/7
+ **/
+
+
 public class BaseActivity extends ATEActivity implements ServiceConnection, MusicStateListener {
 
     private final ArrayList<MusicStateListener> mMusicStateListener = new ArrayList<>();
@@ -274,6 +281,7 @@ public class BaseActivity extends ATEActivity implements ServiceConnection, Musi
                     R.id.media_route_menu_item);
         }
 
+        //判断均衡器是否能在手机上正确定向
         if (!TimberUtils.hasEffectsPanel(BaseActivity.this)) {
             menu.removeItem(R.id.action_equalizer);
         }
@@ -303,7 +311,7 @@ public class BaseActivity extends ATEActivity implements ServiceConnection, Musi
             case R.id.action_search:
                 NavigationUtils.navigateToSearch(this);
                 return true;
-            case R.id.action_equalizer:
+            case R.id.action_equalizer: // 均衡器
                 NavigationUtils.navigateToEqualizer(this);
                 return true;
 

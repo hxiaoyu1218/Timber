@@ -14,6 +14,7 @@
 
 package com.naman14.timber.fragments;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
@@ -34,14 +35,22 @@ import com.naman14.timber.R;
 import com.naman14.timber.utils.ATEUtils;
 import com.naman14.timber.utils.Helpers;
 import com.naman14.timber.utils.PreferencesUtility;
+import com.naman14.timber.widgets.SingleTabLayout;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+/**
+ *   Created by huangxiaoyu
+ *   Time 2019/4/7
+ **/
 
 public class MainFragment extends Fragment {
 
     private PreferencesUtility mPreferences;
     private ViewPager viewPager;
+    private SingleTabLayout tabLayout;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -54,12 +63,12 @@ public class MainFragment extends Fragment {
         View rootView = inflater.inflate(
                 R.layout.fragment_main, container, false);
 
-        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-
-        final ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        ab.setHomeAsUpIndicator(R.drawable.ic_menu);
-        ab.setDisplayHomeAsUpEnabled(true);
+//        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+//        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+//
+//        final ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
+//        ab.setHomeAsUpIndicator(R.drawable.ic_menu);
+//        ab.setDisplayHomeAsUpEnabled(true);
 
 
         viewPager = (ViewPager) rootView.findViewById(R.id.viewpager);
@@ -68,8 +77,14 @@ public class MainFragment extends Fragment {
             viewPager.setOffscreenPageLimit(2);
         }
 
-        TabLayout tabLayout = (TabLayout) rootView.findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
+
+        Resources resources = getResources();
+        tabLayout = rootView.findViewById(R.id.tab_layout);
+        tabLayout.initTabs(Arrays.asList(resources.getString(R.string.songs), resources.getString(R.string.albums), resources.getString(R.string.artists)));
+        tabLayout.bindViewPager(viewPager);
+
+//        TabLayout tabLayout = (TabLayout) rootView.findViewById(R.id.tabs);
+//        tabLayout.setupWithViewPager(viewPager);
 
         return rootView;
 
@@ -80,10 +95,14 @@ public class MainFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("dark_theme", false)) {
             ATE.apply(this, "dark_theme");
+            tabLayout.setTheme(true);
         } else {
             ATE.apply(this, "light_theme");
+            tabLayout.setTheme(false);
         }
-        viewPager.setCurrentItem(mPreferences.getStartPageIndex());
+        //启动页默认page
+       // viewPager.setCurrentItem(mPreferences.getStartPageIndex());
+        viewPager.setCurrentItem(0);
     }
 
     private void setupViewPager(ViewPager viewPager) {

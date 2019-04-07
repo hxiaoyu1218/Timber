@@ -72,6 +72,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ *   Created by huangxiaoyu
+ *   Time 2019/4/7
+ **/
+
 public class MainActivity extends BaseActivity implements ATEActivityThemeCustomizer {
 
     private SlidingUpPanelLayout panelLayout;

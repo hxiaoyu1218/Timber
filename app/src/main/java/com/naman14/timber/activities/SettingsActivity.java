@@ -31,6 +31,12 @@ import com.naman14.timber.R;
 import com.naman14.timber.fragments.SettingsFragment;
 import com.naman14.timber.utils.PreferencesUtility;
 
+
+/**
+ *   Created by huangxiaoyu
+ *   Time 2019/4/7
+ **/
+
 public class SettingsActivity extends BaseThemedActivity implements ColorChooserDialog.ColorCallback, ATEActivityThemeCustomizer {
 
     @Override
