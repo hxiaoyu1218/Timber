@@ -20,8 +20,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.StyleRes;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
@@ -31,45 +29,32 @@ import com.afollestad.appthemeengine.customizers.ATEActivityThemeCustomizer;
 import com.afollestad.materialdialogs.color.ColorChooserDialog;
 import com.naman14.timber.R;
 import com.naman14.timber.fragments.SettingsFragment;
-import com.naman14.timber.subfragments.StyleSelectorFragment;
-import com.naman14.timber.utils.Constants;
 import com.naman14.timber.utils.PreferencesUtility;
 
 public class SettingsActivity extends BaseThemedActivity implements ColorChooserDialog.ColorCallback, ATEActivityThemeCustomizer {
 
-    private String action;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
-        if (PreferencesUtility.getInstance(this).getTheme().equals("dark"))
-            setTheme(R.style.AppThemeNormalDark);
-        else if (PreferencesUtility.getInstance(this).getTheme().equals("black"))
-            setTheme(R.style.AppThemeNormalBlack);
         super.onCreate(savedInstanceState);
+        if (PreferencesUtility.getInstance(this).getTheme().equals("dark")){
+            setTheme(R.style.AppThemeNormalDark);
+        } else if (PreferencesUtility.getInstance(this).getTheme().equals("black")){
+            setTheme(R.style.AppThemeNormalBlack);
+        }
         setContentView(R.layout.activity_settings);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        action = getIntent().getAction();
-
-        if (action.equals(Constants.SETTINGS_STYLE_SELECTOR)) {
-            getSupportActionBar().setTitle(R.string.now_playing);
-            String what = getIntent().getExtras().getString(Constants.SETTINGS_STYLE_SELECTOR_WHAT);
-            Fragment fragment = StyleSelectorFragment.newInstance(what);
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .add(R.id.fragment_container, fragment).commit();
-        } else {
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(R.string.settings);
-            PreferenceFragment fragment = new SettingsFragment();
-            android.app.FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, fragment).commit();
         }
+
+        PreferenceFragment fragment = new SettingsFragment();
+        android.app.FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment).commit();
 
     }
 

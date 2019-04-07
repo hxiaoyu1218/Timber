@@ -81,7 +81,6 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
     private String action;
     private Map<String, Runnable> navigationMap = new HashMap<String, Runnable>();
     private Handler navDrawerRunnable = new Handler();
-    private Runnable runnable;
     private DrawerLayout mDrawerLayout;
     private boolean isDarkTheme;
 
@@ -213,6 +212,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
         songtitle = (TextView) header.findViewById(R.id.song_title);
         songartist = (TextView) header.findViewById(R.id.song_artist);
 
+        //底部音乐播放上划卡片
         setPanelSlideListeners(panelLayout);
 
         navDrawerRunnable.postDelayed(new Runnable() {
@@ -226,7 +226,6 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
 
         if (TimberUtils.isMarshmallow()) {
             checkPermissionAndThenLoad();
-            //checkWritePermissions();
         } else {
             loadEverything();
         }
@@ -383,22 +382,20 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
     }
 
     private void updatePosition(final MenuItem menuItem) {
-        runnable = null;
+        final Runnable runnable;
 
         switch (menuItem.getItemId()) {
             case R.id.nav_library:
                 runnable = navigateLibrary;
-
                 break;
             case R.id.nav_playlists:
                 runnable = navigatePlaylist;
-
                 break;
             case R.id.nav_folders:
                 runnable = navigateFolder;
-
                 break;
             case R.id.nav_nowplaying:
+                runnable = null;
                 if (getCastSession() != null) {
                     startActivity(new Intent(MainActivity.this, ExpandedControlsActivity.class));
                 } else {
@@ -407,12 +404,13 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
                 break;
             case R.id.nav_queue:
                 runnable = navigateQueue;
-
                 break;
             case R.id.nav_settings:
+                runnable = null;
                 NavigationUtils.navigateToSettings(MainActivity.this);
                 break;
             case R.id.nav_about:
+                runnable = null;
                 mDrawerLayout.closeDrawers();
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
@@ -421,10 +419,13 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
                         Helpers.showAbout(MainActivity.this);
                     }
                 }, 350);
-
                 break;
             case R.id.nav_donate:
+                runnable = null;
                 startActivity(new Intent(MainActivity.this, DonateActivity.class));
+                break;
+            default:
+                runnable = null;
                 break;
         }
 
