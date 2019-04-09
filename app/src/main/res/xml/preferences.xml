@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.naman14.timber.widgets.ThemedPreferenceCategory android:title="@string/personalisation">
+    <com.naman14.amber.widgets.ThemedPreferenceCategory android:title="@string/personalisation">
 
         <com.afollestad.appthemeengine.prefs.ATECheckBoxPreference
             android:defaultValue="false"
@@ -43,9 +43,9 @@
             android:title="@string/colored_nav_bar"
             app:ateKey_pref_checkBox="?ate_key" />
 
-    </com.naman14.timber.widgets.ThemedPreferenceCategory>
+    </com.naman14.amber.widgets.ThemedPreferenceCategory>
 
-    <com.naman14.timber.widgets.ThemedPreferenceCategory android:title="@string/other">
+    <com.naman14.amber.widgets.ThemedPreferenceCategory android:title="@string/other">
 
         <com.afollestad.appthemeengine.prefs.ATEListPreference
             android:defaultValue="last_opened"
@@ -77,6 +77,6 @@
             android:title="@string/albumart_lockscreen"
             app:ateKey_pref_checkBox="?ate_key" />
 
-    </com.naman14.timber.widgets.ThemedPreferenceCategory>
+    </com.naman14.amber.widgets.ThemedPreferenceCategory>
 
 </PreferenceScreen>

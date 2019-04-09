@@ -6,7 +6,7 @@
     android:id="@+id/content_root"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.naman14.timber.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <com.naman14.amber.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:sothree="http://schemas.android.com/apk/res-auto"
         android:id="@+id/sliding_layout"
@@ -29,7 +29,7 @@
 
         </FrameLayout>
 
-    </com.naman14.timber.slidinguppanel.SlidingUpPanelLayout>
+    </com.naman14.amber.slidinguppanel.SlidingUpPanelLayout>
 
 
 </FrameLayout>

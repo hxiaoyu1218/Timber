@@ -6,7 +6,7 @@
 
     <transitionSet   >
         <transition
-            class="com.naman14.timber.transition.PlayTransition"/>
+            class="com.naman14.amber.transition.PlayTransition"/>
         <!--<targets>-->
             <!--<target android:excludeId="@id/icon" /> />-->
         <!--</targets>-->

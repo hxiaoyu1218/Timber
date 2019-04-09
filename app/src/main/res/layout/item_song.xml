@@ -54,7 +54,7 @@
 
         </LinearLayout>
 
-        <com.naman14.timber.widgets.MusicVisualizer
+        <com.naman14.amber.widgets.MusicVisualizer
             android:id="@+id/visualizer"
             android:layout_width="30dp"
             android:layout_height="40dp"
@@ -65,7 +65,7 @@
             android:visibility="gone" />
 
 
-        <com.naman14.timber.widgets.PopupImageView
+        <com.naman14.amber.widgets.PopupImageView
             android:id="@+id/popup_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

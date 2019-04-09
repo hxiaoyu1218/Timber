@@ -12,7 +12,7 @@
         android:layout_height="48dp"
         layout="@layout/fragment_main_title_bar_layout" />
 
-   <com.naman14.timber.widgets.SingleTabLayout
+   <com.naman14.amber.widgets.SingleTabLayout
        android:id="@+id/tab_layout"
        android:layout_width="match_parent"
        android:paddingStart="16dp"
