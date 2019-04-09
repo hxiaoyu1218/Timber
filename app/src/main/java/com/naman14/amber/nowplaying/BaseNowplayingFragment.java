@@ -16,6 +16,7 @@ package com.naman14.amber.nowplaying;
 
 import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -75,7 +76,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
     private MaterialIconView previous, next;
     private PlayPauseButton mPlayPause;
     private PlayPauseDrawable playPauseDrawable = new PlayPauseDrawable();
-    private FloatingActionButton playPauseFloating;
+    private ImageView playPauseFloating;
     private View playPauseWrapper;
 
     private String ateKey;
@@ -97,6 +98,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
     public ImageView albumart, shuffle, repeat;
     public int accentColor;
     public RecyclerView recyclerView;
+    private boolean isDarkTheme = false;
 
     //seekbar
     public Runnable mUpdateProgress = new Runnable() {
@@ -285,8 +287,13 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         repeat = (ImageView) view.findViewById(R.id.repeat);
         next = (MaterialIconView) view.findViewById(R.id.next);
         previous = (MaterialIconView) view.findViewById(R.id.previous);
+
+        //not used
         mPlayPause = (PlayPauseButton) view.findViewById(R.id.playpause);
-        playPauseFloating = (FloatingActionButton) view.findViewById(R.id.playpausefloating);
+
+        playPauseFloating = (ImageView) view.findViewById(R.id.playpausefloating);
+
+        //not used
         playPauseWrapper = view.findViewById(R.id.playpausewrapper);
 
         songtitle = (TextView) view.findViewById(R.id.song_title);
@@ -295,6 +302,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         songduration = (TextView) view.findViewById(R.id.song_duration);
         elapsedtime = (TextView) view.findViewById(R.id.song_elapsed_time);
 
+        //not used
         timelyView11 = (TimelyView) view.findViewById(R.id.timelyView11);
         timelyView12 = (TimelyView) view.findViewById(R.id.timelyView12);
         timelyView13 = (TimelyView) view.findViewById(R.id.timelyView13);
@@ -303,8 +311,11 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         hourColon = (TextView) view.findViewById(R.id.hour_colon);
 
         mProgress = (SeekBar) view.findViewById(R.id.song_progress);
+
+        //not used
         mCircularProgress = (CircularSeekBar) view.findViewById(R.id.song_progress_circular);
 
+        //not used
         recyclerView = (RecyclerView) view.findViewById(R.id.queue_recyclerview);
 
 
@@ -373,9 +384,26 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         super.onViewCreated(view, savedInstanceState);
         if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("dark_theme", false)) {
             ATE.apply(this, "dark_theme");
+            isDarkTheme = true;
         } else {
             ATE.apply(this, "light_theme");
+            isDarkTheme = false;
         }
+        updateUITheme();
+    }
+
+    private void updateUITheme() {
+//        if(isDarkTheme){
+//
+//        }else {
+//
+//        }
+        songtitle.setTextColor(Color.WHITE);
+        songartist.setTextColor(Color.WHITE);
+        next.setColor(Color.WHITE);
+        previous.setColor(Color.WHITE);
+        elapsedtime.setTextColor(Color.WHITE);
+        songduration.setTextColor(Color.WHITE);
     }
 
     private void setSongDetails() {
@@ -438,7 +466,8 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
 
             if (getActivity() != null) {
                 if (MusicPlayer.getShuffleMode() == 0) {
-                    builder.setColor(Config.textColorPrimary(getActivity(), ateKey));
+                    builder.setColor(Color.WHITE);
+                    //builder.setColor(Config.textColorPrimary(getActivity(), ateKey));
                 } else builder.setColor(Config.accentColor(getActivity(), ateKey));
             }
 
@@ -461,7 +490,8 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
 
                 if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_NONE) {
                     builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT);
-                    builder.setColor(Config.textColorPrimary(getActivity(), ateKey));
+                    builder.setColor(Color.WHITE);
+                   // builder.setColor(Config.textColorPrimary(getActivity(), ateKey));
                 } else if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_CURRENT) {
                     builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT_ONCE);
                     builder.setColor(Config.accentColor(getActivity(), ateKey));

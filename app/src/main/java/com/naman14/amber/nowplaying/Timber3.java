@@ -14,14 +14,21 @@
 
 package com.naman14.amber.nowplaying;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.naman14.amber.R;
+import com.naman14.amber.utils.ImageUtils;
 
 public class Timber3 extends BaseNowplayingFragment {
+
+    View mBlurredArt;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -30,10 +37,52 @@ public class Timber3 extends BaseNowplayingFragment {
 
         setMusicStateListener();
         setSongDetails(rootView);
-
+        mBlurredArt = (View) rootView.findViewById(R.id.player_root);
         initGestures(rootView.findViewById(R.id.album_art));
 
         return rootView;
+    }
+
+    @Override
+    public void doAlbumArtStuff(Bitmap loadedImage) {
+        BlurredAlbumArt blurredAlbumArt = new BlurredAlbumArt();
+        blurredAlbumArt.execute(loadedImage);
+    }
+
+    private class BlurredAlbumArt extends AsyncTask<Bitmap, Void, Drawable> {
+
+        @Override
+        protected Drawable doInBackground(Bitmap... loadedImage) {
+            Drawable drawable = null;
+            try {
+                drawable = ImageUtils.createBlurredImageFromBitmap(loadedImage[0], getActivity(), 12);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return drawable;
+        }
+
+        @Override
+        protected void onPostExecute(Drawable result) {
+            if (result != null) {
+                if (mBlurredArt.getBackground() != null) {
+                    final TransitionDrawable td =
+                            new TransitionDrawable(new Drawable[]{
+                                    mBlurredArt.getBackground(),
+                                    result
+                            });
+                    mBlurredArt.setBackground(td);
+                    td.startTransition(200);
+
+                } else {
+                    mBlurredArt.setBackground(result);
+                }
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
     }
 
 }
