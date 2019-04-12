@@ -23,7 +23,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -56,7 +55,7 @@ import com.naman14.amber.utils.Helpers;
 import com.naman14.amber.utils.NavigationUtils;
 import com.naman14.amber.utils.PreferencesUtility;
 import com.naman14.amber.utils.SlideTrackSwitcher;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 import com.naman14.amber.widgets.CircularSeekBar;
 import com.naman14.amber.widgets.DividerItemDecoration;
 import com.naman14.amber.widgets.PlayPauseButton;
@@ -110,7 +109,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             if (mProgress != null) {
                 mProgress.setProgress((int) position);
                 if (elapsedtime != null && getActivity() != null)
-                    elapsedtime.setText(TimberUtils.makeShortTimeString(getActivity(), position / 1000));
+                    elapsedtime.setText(AmberUtils.makeShortTimeString(getActivity(), position / 1000));
             }
             overflowcounter--;
             int delay = 250; //not sure why this delay was so high before
@@ -130,7 +129,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             if (mCircularProgress != null) {
                 mCircularProgress.setProgress((int) position);
                 if (elapsedtime != null && getActivity() != null)
-                    elapsedtime.setText(TimberUtils.makeShortTimeString(getActivity(), position / 1000));
+                    elapsedtime.setText(AmberUtils.makeShortTimeString(getActivity(), position / 1000));
 
             }
             overflowcounter--;
@@ -149,7 +148,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         @Override
         public void run() {
             if (getActivity() != null) {
-                String time = TimberUtils.makeShortTimeString(getActivity(), MusicPlayer.position() / 1000);
+                String time = AmberUtils.makeShortTimeString(getActivity(), MusicPlayer.position() / 1000);
                 if (time.length() < 5) {
                     timelyView11.setVisibility(View.GONE);
                     timelyView12.setVisibility(View.GONE);
@@ -334,7 +333,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         }
 
         if (playPauseFloating != null) {
-            playPauseDrawable.setColorFilter(TimberUtils.getBlackWhiteColor(accentColor), PorterDuff.Mode.MULTIPLY);
+            playPauseDrawable.setColorFilter(AmberUtils.getBlackWhiteColor(accentColor), PorterDuff.Mode.MULTIPLY);
             playPauseFloating.setImageDrawable(playPauseDrawable);
             if (MusicPlayer.isPlaying())
                 playPauseDrawable.transformToPause(false);
@@ -348,7 +347,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         }
 
         if (timelyView11 != null) {
-            String time = TimberUtils.makeShortTimeString(getActivity(), MusicPlayer.position() / 1000);
+            String time = AmberUtils.makeShortTimeString(getActivity(), MusicPlayer.position() / 1000);
             if (time.length() < 5) {
                 timelyView11.setVisibility(View.GONE);
                 timelyView12.setVisibility(View.GONE);
@@ -557,7 +556,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         //do not reload image if it was a play/pause change
         if (!duetoplaypause) {
             if (albumart != null) {
-                ImageLoader.getInstance().displayImage(TimberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), albumart,
+                ImageLoader.getInstance().displayImage(AmberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), albumart,
                         new DisplayImageOptions.Builder().cacheInMemory(true)
                                 .showImageOnFail(R.drawable.ic_empty_music2)
                                 .build(), new SimpleImageLoadingListener() {
@@ -610,7 +609,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             updatePlayPauseFloatingButton();
 
         if (songduration != null && getActivity() != null)
-            songduration.setText(TimberUtils.makeShortTimeString(getActivity(), MusicPlayer.duration() / 1000));
+            songduration.setText(AmberUtils.makeShortTimeString(getActivity(), MusicPlayer.duration() / 1000));
 
         if (mProgress != null) {
             mProgress.setMax((int) MusicPlayer.duration());

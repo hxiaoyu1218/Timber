@@ -68,7 +68,7 @@ public class ImageUtils {
     private static void loadAlbumArtFromDiskWithLastfmFallback(final long albumId, ImageView view,
                                                                final ImageLoadingListener listener) {
         ImageLoader.getInstance()
-                .displayImage(TimberUtils.getAlbumArtUri(albumId).toString(),
+                .displayImage(AmberUtils.getAlbumArtUri(albumId).toString(),
                               view,
                               diskDisplayImageOptions,
                               new SimpleImageLoadingListener() {
@@ -116,6 +116,7 @@ public class ImageUtils {
                               });
     }
 
+    //毛玻璃效果
     public static Drawable createBlurredImageFromBitmap(Bitmap bitmap, Context context, int inSampleSize) {
 
         RenderScript rs = RenderScript.create(context);

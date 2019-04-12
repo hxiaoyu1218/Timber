@@ -23,7 +23,7 @@ import android.view.ViewGroup;
 import com.naman14.amber.MusicPlayer;
 import com.naman14.amber.MusicService;
 import com.naman14.amber.R;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
@@ -48,7 +48,7 @@ public class Timber1 extends BaseNowplayingFragment {
                     .setIcon(MaterialDrawableBuilder.IconValue.SHUFFLE)
                     .setSizeDp(30);
 
-            builder.setColor(TimberUtils.getBlackWhiteColor(accentColor));
+            builder.setColor(AmberUtils.getBlackWhiteColor(accentColor));
 
             shuffle.setImageDrawable(builder.build());
             shuffle.setOnClickListener(new View.OnClickListener() {

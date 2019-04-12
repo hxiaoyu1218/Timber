@@ -58,7 +58,7 @@ public class SimilarArtistFragment extends Fragment {
 
         LastFmClient.getInstance(getActivity()).getArtistInfo(new ArtistQuery(artist.name), new ArtistInfoListener() {
             @Override
-            public void artistInfoSucess(LastfmArtist artist) {
+            public void artistInfoSuccess(LastfmArtist artist) {
 
             }
 

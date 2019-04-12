@@ -22,7 +22,7 @@ import com.naman14.amber.utils.Constants;
 import com.naman14.amber.utils.Helpers;
 import com.naman14.amber.utils.NavigationUtils;
 import com.naman14.amber.utils.PreferencesUtility;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -93,7 +93,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ItemHo
                                     if (swatch != null) {
                                         int color = swatch.getRgb();
                                         itemHolder.footer.setBackgroundColor(color);
-                                        int textColor = TimberUtils.getBlackWhiteColor(swatch.getTitleTextColor());
+                                        int textColor = AmberUtils.getBlackWhiteColor(swatch.getTitleTextColor());
                                         itemHolder.title.setTextColor(textColor);
                                         itemHolder.artist.setTextColor(textColor);
                                     } else {
@@ -101,7 +101,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ItemHo
                                         if (mutedSwatch != null) {
                                             int color = mutedSwatch.getRgb();
                                             itemHolder.footer.setBackgroundColor(color);
-                                            int textColor = TimberUtils.getBlackWhiteColor(mutedSwatch.getTitleTextColor());
+                                            int textColor = AmberUtils.getBlackWhiteColor(mutedSwatch.getTitleTextColor());
                                             itemHolder.title.setTextColor(textColor);
                                             itemHolder.artist.setTextColor(textColor);
                                         }
@@ -126,9 +126,9 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ItemHo
                         }
                     }
                 });
-        itemHolder.artist.setText(" " + String.valueOf(songCountInt) + " " + mContext.getString(R.string.songs) + " - " + TimberUtils.makeShortTimeString(mContext,totalRuntime));
+        itemHolder.artist.setText(" " + String.valueOf(songCountInt) + " " + mContext.getString(R.string.songs) + " - " + AmberUtils.makeShortTimeString(mContext,totalRuntime));
 
-        if (TimberUtils.isLollipop())
+        if (AmberUtils.isLollipop())
             itemHolder.albumArt.setTransitionName("transition_album_art" + i);
 
     }
@@ -148,7 +148,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ItemHo
 
                         if (songCountInt != 0) {
                             firstAlbumID = lastAddedSongs.get(0).albumId;
-                            return TimberUtils.getAlbumArtUri(firstAlbumID).toString();
+                            return AmberUtils.getAlbumArtUri(firstAlbumID).toString();
                         } else return "nosongs";
                     case 1:
                         TopTracksLoader recentloader = new TopTracksLoader(mContext, TopTracksLoader.QueryType.RecentSongs);
@@ -161,7 +161,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ItemHo
 
                         if (songCountInt != 0) {
                             firstAlbumID = recentsongs.get(0).albumId;
-                            return TimberUtils.getAlbumArtUri(firstAlbumID).toString();
+                            return AmberUtils.getAlbumArtUri(firstAlbumID).toString();
                         } else return "nosongs";
                     case 2:
                         TopTracksLoader topTracksLoader = new TopTracksLoader(mContext, TopTracksLoader.QueryType.TopTracks);
@@ -174,7 +174,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ItemHo
 
                         if (songCountInt != 0) {
                             firstAlbumID = topsongs.get(0).albumId;
-                            return TimberUtils.getAlbumArtUri(firstAlbumID).toString();
+                            return AmberUtils.getAlbumArtUri(firstAlbumID).toString();
                         } else return "nosongs";
                     default:
                         List<Song> playlistsongs = PlaylistSongLoader.getSongsInPlaylist(mContext, id);
@@ -186,7 +186,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ItemHo
 
                         if (songCountInt != 0) {
                             firstAlbumID = playlistsongs.get(0).albumId;
-                            return TimberUtils.getAlbumArtUri(firstAlbumID).toString();
+                            return AmberUtils.getAlbumArtUri(firstAlbumID).toString();
                         } else return "nosongs";
 
                 }
@@ -200,7 +200,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ItemHo
 
                 if (songCountInt != 0) {
                     firstAlbumID = playlistsongs.get(0).albumId;
-                    return TimberUtils.getAlbumArtUri(firstAlbumID).toString();
+                    return AmberUtils.getAlbumArtUri(firstAlbumID).toString();
                 } else return "nosongs";
             }
         }

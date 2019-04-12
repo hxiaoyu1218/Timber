@@ -41,7 +41,7 @@ import com.naman14.amber.utils.ImageUtils;
 import com.naman14.amber.utils.NavigationUtils;
 import com.naman14.amber.utils.PreferencesUtility;
 import com.naman14.amber.utils.SlideTrackSwitcher;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 import com.naman14.amber.widgets.PlayPauseButton;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -237,9 +237,9 @@ public class QuickControlsFragment extends Fragment implements MusicStateListene
         mTitleExpanded.setText(MusicPlayer.getTrackName());
         mArtistExpanded.setText(MusicPlayer.getArtistName());
         if (!duetoplaypause) {
-            ImageLoader.getInstance().displayImage(TimberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), mAlbumArt,
+            ImageLoader.getInstance().displayImage(AmberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), mAlbumArt,
                     new DisplayImageOptions.Builder().cacheInMemory(true)
-                            .showImageOnFail(R.drawable.ic_empty_music2)
+                            .showImageOnFail(R.drawable.holder)
                             .resetViewBeforeLoading(true)
                             .build(), new ImageLoadingListener() {
                         @Override
@@ -249,7 +249,7 @@ public class QuickControlsFragment extends Fragment implements MusicStateListene
 
                         @Override
                         public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                            Bitmap failedBitmap = ImageLoader.getInstance().loadImageSync("drawable://" + R.drawable.ic_empty_music2);
+                            Bitmap failedBitmap = ImageLoader.getInstance().loadImageSync("drawable://" + R.drawable.holder);
                             if (getActivity() != null)
                                 new setBlurredAlbumArt().execute(failedBitmap);
                         }

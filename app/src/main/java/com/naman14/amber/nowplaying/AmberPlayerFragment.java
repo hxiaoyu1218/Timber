@@ -26,7 +26,7 @@ import android.view.ViewGroup;
 import com.naman14.amber.R;
 import com.naman14.amber.utils.ImageUtils;
 
-public class Timber3 extends BaseNowplayingFragment {
+public class AmberPlayerFragment extends BaseNowplayingFragment {
 
     View mBlurredArt;
 

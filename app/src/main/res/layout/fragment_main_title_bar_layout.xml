@@ -12,13 +12,14 @@
         android:src="@drawable/ic_menu_dark" />
 
     <RelativeLayout
+        android:id="@+id/title_search_bar"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:layout_toEndOf="@+id/title_left_menu"
         android:layout_toStartOf="@id/title_right_setting"
         android:background="@drawable/search_bar_bg" >
@@ -26,8 +27,8 @@
         <ImageView
             android:src="@drawable/ic_search"
             android:layout_centerVertical="true"
-            android:layout_marginStart="16dp"
-            android:layout_width="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_width="16dp"
             android:layout_height="wrap_content" />
 
 
@@ -37,6 +38,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
             android:layout_centerInParent="true"
+            android:textSize="14sp"
             android:text="@string/search"
             />
 

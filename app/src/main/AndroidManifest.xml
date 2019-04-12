@@ -27,6 +27,7 @@
         <activity
             android:name="com.naman14.amber.activities.MainActivity"
             android:label="Amber${appNameSuffix}"
+            android:theme="@style/AppThemeSplash"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -69,6 +70,14 @@
                 <data android:mimeType="application/itunes" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.naman14.amber.activities.AlbumDetailActivity"
+            android:theme="@style/PlayerThemeFullScreen" />
+
+        <activity
+            android:name="com.naman14.amber.activities.ArtistDetailActivity"
+            android:theme="@style/PlayerThemeFullScreen" />
 
         <activity
             android:name="com.naman14.amber.activities.SettingsActivity"

@@ -34,7 +34,7 @@ import android.widget.Toast;
 
 import com.naman14.amber.dataloaders.SongLoader;
 import com.naman14.amber.helpers.MusicPlaybackTrack;
-import com.naman14.amber.utils.TimberUtils.IdType;
+import com.naman14.amber.utils.AmberUtils.IdType;
 
 import java.util.Arrays;
 import java.util.WeakHashMap;

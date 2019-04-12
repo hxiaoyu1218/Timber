@@ -15,7 +15,7 @@ import com.naman14.amber.MusicService;
 import com.naman14.amber.R;
 import com.naman14.amber.dataloaders.SongLoader;
 import com.naman14.amber.models.Song;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 import com.naman14.amber.widgets.CircleImageView;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
@@ -118,7 +118,7 @@ public class Timber6 extends BaseNowplayingFragment {
             long nextId = MusicPlayer.getNextAudioId();
             Song next = SongLoader.getSongForID(getActivity(), nextId);
             nextSong.setText(next.title);
-            nextArt.setImageURI(TimberUtils.getAlbumArtUri(next.albumId));
+            nextArt.setImageURI(AmberUtils.getAlbumArtUri(next.albumId));
         }
     }
 }

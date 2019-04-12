@@ -41,8 +41,6 @@ import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.Session;
 import com.google.android.gms.cast.framework.SessionManager;
 import com.google.android.gms.cast.framework.SessionManagerListener;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.naman14.amber.ITimberService;
 import com.naman14.amber.MusicPlayer;
 import com.naman14.amber.MusicService;
@@ -54,7 +52,7 @@ import com.naman14.amber.slidinguppanel.SlidingUpPanelLayout;
 import com.naman14.amber.subfragments.QuickControlsFragment;
 import com.naman14.amber.utils.Helpers;
 import com.naman14.amber.utils.NavigationUtils;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -282,7 +280,7 @@ public class BaseActivity extends ATEActivity implements ServiceConnection, Musi
         }
 
         //判断均衡器是否能在手机上正确定向
-        if (!TimberUtils.hasEffectsPanel(BaseActivity.this)) {
+        if (!AmberUtils.hasEffectsPanel(BaseActivity.this)) {
             menu.removeItem(R.id.action_equalizer);
         }
         ATE.applyMenu(this, getATEKey(), menu);

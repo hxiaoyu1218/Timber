@@ -52,7 +52,7 @@ import com.naman14.amber.dataloaders.TopTracksLoader;
 import com.naman14.amber.listeners.SimplelTransitionListener;
 import com.naman14.amber.models.Song;
 import com.naman14.amber.utils.Constants;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 import com.naman14.amber.widgets.DividerItemDecoration;
 import com.naman14.amber.widgets.DragSortRecycler;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -97,7 +97,6 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
         @Override
         public void run() {
             new loadUserCreatedPlaylist().execute("");
-
         }
     };
 
@@ -131,7 +130,7 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
         setAlbumart();
 
         animate = getIntent().getBooleanExtra(Constants.ACTIVITY_TRANSITION, false);
-        if (animate && TimberUtils.isLollipop()) {
+        if (animate && AmberUtils.isLollipop()) {
             getWindow().getEnterTransition().addListener(new EnterTransitionListener());
         } else {
             setUpSongs();
@@ -142,7 +141,7 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
     private void setAlbumart() {
         playlistname.setText(getIntent().getExtras().getString(Constants.PLAYLIST_NAME));
         foreground.setBackgroundColor(getIntent().getExtras().getInt(Constants.PLAYLIST_FOREGROUND_COLOR));
-        loadBitmap(TimberUtils.getAlbumArtUri(getIntent().getExtras().getLong(Constants.ALBUM_ID)).toString());
+        loadBitmap(AmberUtils.getAlbumArtUri(getIntent().getExtras().getLong(Constants.ALBUM_ID)).toString());
     }
 
     private void setUpSongs() {
@@ -185,7 +184,7 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
 
     private void setRecyclerViewAapter() {
         recyclerView.setAdapter(mAdapter);
-        if (animate && TimberUtils.isLollipop()) {
+        if (animate && AmberUtils.isLollipop()) {
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -365,13 +364,13 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
     private void clearAutoPlaylists() {
         switch (action) {
             case Constants.NAVIGATE_PLAYLIST_LASTADDED:
-                TimberUtils.clearLastAdded(this);
+                AmberUtils.clearLastAdded(this);
                 break;
             case Constants.NAVIGATE_PLAYLIST_RECENT:
-                TimberUtils.clearRecent(this);
+                AmberUtils.clearRecent(this);
                 break;
             case Constants.NAVIGATE_PLAYLIST_TOPTRACKS:
-                TimberUtils.clearTopTracks(this);
+                AmberUtils.clearTopTracks(this);
                 break;
         }
         Intent returnIntent = new Intent();

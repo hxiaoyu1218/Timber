@@ -19,7 +19,7 @@ package com.naman14.amber.helpers;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 
 /**
  * This is used by the music playback service to track the music tracks it is playing
@@ -41,10 +41,10 @@ public class MusicPlaybackTrack implements Parcelable {
     };
     public long mId;
     public long mSourceId;
-    public TimberUtils.IdType mSourceType;
+    public AmberUtils.IdType mSourceType;
     public int mSourcePosition;
 
-    public MusicPlaybackTrack(long id, long sourceId, TimberUtils.IdType type, int sourcePosition) {
+    public MusicPlaybackTrack(long id, long sourceId, AmberUtils.IdType type, int sourcePosition) {
         mId = id;
         mSourceId = sourceId;
         mSourceType = type;
@@ -54,7 +54,7 @@ public class MusicPlaybackTrack implements Parcelable {
     public MusicPlaybackTrack(Parcel in) {
         mId = in.readLong();
         mSourceId = in.readLong();
-        mSourceType = TimberUtils.IdType.getTypeById(in.readInt());
+        mSourceType = AmberUtils.IdType.getTypeById(in.readInt());
         mSourcePosition = in.readInt();
     }
 

@@ -77,8 +77,8 @@ import com.naman14.amber.provider.RecentStore;
 import com.naman14.amber.provider.SongPlayCount;
 import com.naman14.amber.utils.NavigationUtils;
 import com.naman14.amber.utils.PreferencesUtility;
-import com.naman14.amber.utils.TimberUtils;
-import com.naman14.amber.utils.TimberUtils.IdType;
+import com.naman14.amber.utils.AmberUtils;
+import com.naman14.amber.utils.AmberUtils.IdType;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.io.IOException;
@@ -452,7 +452,7 @@ public class MusicService extends Service {
 
         mPlayerHandler.removeCallbacksAndMessages(null);
 
-        if (TimberUtils.isJellyBeanMR2())
+        if (AmberUtils.isJellyBeanMR2())
             mHandlerThread.quitSafely();
         else mHandlerThread.quit();
 
@@ -604,7 +604,7 @@ public class MusicService extends Service {
         int notificationId = hashCode();
         if (mNotifyMode != newNotifyMode) {
             if (mNotifyMode == NOTIFY_MODE_FOREGROUND) {
-                if (TimberUtils.isLollipop())
+                if (AmberUtils.isLollipop())
                     stopForeground(newNotifyMode == NOTIFY_MODE_NONE);
                 else
                     stopForeground(newNotifyMode == NOTIFY_MODE_NONE || newNotifyMode == NOTIFY_MODE_BACKGROUND);
@@ -631,7 +631,7 @@ public class MusicService extends Service {
     }
 
     private int getCardId() {
-        if (TimberUtils.isMarshmallow()) {
+        if (AmberUtils.isMarshmallow()) {
             if (Nammu.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
                 return getmCardId();
             } else return 0;
@@ -720,7 +720,7 @@ public class MusicService extends Service {
         if (goToIdle) {
             setIsSupposedToBePlaying(false, false);
         } else {
-            if (TimberUtils.isLollipop())
+            if (AmberUtils.isLollipop())
                 stopForeground(false);
             else stopForeground(true);
         }
@@ -789,7 +789,7 @@ public class MusicService extends Service {
         }
     }
 
-    private void addToPlayList(final long[] list, int position, long sourceId, TimberUtils.IdType sourceType) {
+    private void addToPlayList(final long[] list, int position, long sourceId, AmberUtils.IdType sourceType) {
         final int addlen = list.length;
         if (position < 0) {
             mPlaylist.clear();
@@ -1074,7 +1074,7 @@ public class MusicService extends Service {
             if (mHistory.size() > MAX_HISTORY_SIZE) {
                 mHistory.remove(0);
             }
-            mPlaylist.add(new MusicPlaybackTrack(mAutoShuffleList[idx], -1, TimberUtils.IdType.NA, -1));
+            mPlaylist.add(new MusicPlaybackTrack(mAutoShuffleList[idx], -1, AmberUtils.IdType.NA, -1));
             notify = true;
         }
         if (notify) {
@@ -1164,7 +1164,7 @@ public class MusicService extends Service {
             if (what.equals(META_CHANGED) || what.equals(QUEUE_CHANGED)) {
                 Bitmap albumArt = null;
                 if (mShowAlbumArtOnLockscreen) {
-                    albumArt = ImageLoader.getInstance().loadImageSync(TimberUtils.getAlbumArtUri(getAlbumId()).toString());
+                    albumArt = ImageLoader.getInstance().loadImageSync(AmberUtils.getAlbumArtUri(getAlbumId()).toString());
                     if (albumArt != null) {
 
                         Bitmap.Config config = albumArt.getConfig();
@@ -1205,7 +1205,7 @@ public class MusicService extends Service {
         } else if (what.equals(META_CHANGED) || what.equals(QUEUE_CHANGED)) {
             Bitmap albumArt = null;
             if (mShowAlbumArtOnLockscreen) {
-                albumArt = ImageLoader.getInstance().loadImageSync(TimberUtils.getAlbumArtUri(getAlbumId()).toString());
+                albumArt = ImageLoader.getInstance().loadImageSync(AmberUtils.getAlbumArtUri(getAlbumId()).toString());
                 if (albumArt != null) {
 
                     Bitmap.Config config = albumArt.getConfig();
@@ -1238,7 +1238,7 @@ public class MusicService extends Service {
     }
 
     private void createNotificationChannel() {
-        if (TimberUtils.isOreo()) {
+        if (AmberUtils.isOreo()) {
             CharSequence name = "Timber";
             int importance = NotificationManager.IMPORTANCE_LOW;
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -1260,7 +1260,7 @@ public class MusicService extends Service {
         Intent nowPlayingIntent = NavigationUtils.getNowPlayingIntent(this);
         PendingIntent clickIntent = PendingIntent.getActivity(this, 0, nowPlayingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         Bitmap artwork;
-        artwork = ImageLoader.getInstance().loadImageSync(TimberUtils.getAlbumArtUri(getAlbumId()).toString());
+        artwork = ImageLoader.getInstance().loadImageSync(AmberUtils.getAlbumArtUri(getAlbumId()).toString());
 
         if (artwork == null) {
             artwork = ImageLoader.getInstance().loadImageSync("drawable://" + R.drawable.ic_empty_music2);
@@ -1286,22 +1286,22 @@ public class MusicService extends Service {
                         "",
                         retrievePlaybackAction(NEXT_ACTION));
 
-        if (TimberUtils.isJellyBeanMR1()) {
+        if (AmberUtils.isJellyBeanMR1()) {
             builder.setShowWhen(false);
         }
 
-        if (TimberUtils.isLollipop()) {
+        if (AmberUtils.isLollipop()) {
             builder.setVisibility(Notification.VISIBILITY_PUBLIC);
             android.support.v4.media.app.NotificationCompat.MediaStyle style = new android.support.v4.media.app.NotificationCompat.MediaStyle()
                     .setMediaSession(mSession.getSessionToken())
                     .setShowActionsInCompactView(0, 1, 2, 3);
             builder.setStyle(style);
         }
-        if (artwork != null && TimberUtils.isLollipop()) {
+        if (artwork != null && AmberUtils.isLollipop()) {
             builder.setColor(Palette.from(artwork).generate().getVibrantColor(Color.parseColor("#403f4d")));
         }
 
-        if (TimberUtils.isOreo()) {
+        if (AmberUtils.isOreo()) {
             builder.setColorized(true);
         }
 
@@ -1329,10 +1329,10 @@ public class MusicService extends Service {
                 ArrayList<Bundle> list = new ArrayList<>();
                 do {
                     TrackItem t = new TrackItem()
-                            .setArt(TimberUtils.getAlbumArtUri(c.getLong(c.getColumnIndexOrThrow(AudioColumns.ALBUM_ID))))
+                            .setArt(AmberUtils.getAlbumArtUri(c.getLong(c.getColumnIndexOrThrow(AudioColumns.ALBUM_ID))))
                             .setTitle(c.getString(c.getColumnIndexOrThrow(AudioColumns.TITLE)))
                             .setArtist(c.getString(c.getColumnIndexOrThrow(AudioColumns.ARTIST)))
-                            .setDuration(TimberUtils.makeShortTimeString(this, c.getInt(c.getColumnIndexOrThrow(AudioColumns.DURATION)) / 1000));
+                            .setDuration(AmberUtils.makeShortTimeString(this, c.getInt(c.getColumnIndexOrThrow(AudioColumns.DURATION)) / 1000));
                     list.add(t.get());
                 } while (c.moveToNext());
                 try {
@@ -1374,7 +1374,7 @@ public class MusicService extends Service {
     }
 
     private void reloadQueueAfterPermissionCheck() {
-        if (TimberUtils.isMarshmallow()) {
+        if (AmberUtils.isMarshmallow()) {
             if (Nammu.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
                 reloadQueue();
             }
@@ -1494,7 +1494,7 @@ public class MusicService extends Service {
                     if (mCursor != null && shouldAddToPlaylist) {
                         mPlaylist.clear();
                         mPlaylist.add(new MusicPlaybackTrack(
-                                mCursor.getLong(IDCOLIDX), -1, TimberUtils.IdType.NA, -1));
+                                mCursor.getLong(IDCOLIDX), -1, AmberUtils.IdType.NA, -1));
                         notifyChange(QUEUE_CHANGED);
                         mPlayPos = 0;
                         mHistory.clear();
@@ -1926,7 +1926,7 @@ public class MusicService extends Service {
         return isPlaying() || System.currentTimeMillis() - mLastPlayedTime < IDLE_DELAY;
     }
 
-    public void open(final long[] list, final int position, long sourceId, TimberUtils.IdType sourceType) {
+    public void open(final long[] list, final int position, long sourceId, AmberUtils.IdType sourceType) {
         synchronized (this) {
             if (mShuffleMode == SHUFFLE_AUTO) {
                 mShuffleMode = SHUFFLE_NORMAL;

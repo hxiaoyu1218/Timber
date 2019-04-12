@@ -16,6 +16,7 @@ package com.naman14.amber.activities;
 
 import android.Manifest;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -31,11 +32,14 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.afollestad.appthemeengine.Config;
 import com.afollestad.appthemeengine.customizers.ATEActivityThemeCustomizer;
+import com.afollestad.appthemeengine.customizers.ATEStatusBarCustomizer;
 import com.anjlab.android.iab.v3.BillingProcessor;
 import com.google.android.gms.cast.framework.media.widget.ExpandedControllerActivity;
 import com.naman14.amber.MusicPlayer;
@@ -54,7 +58,7 @@ import com.naman14.amber.subfragments.LyricsFragment;
 import com.naman14.amber.utils.Constants;
 import com.naman14.amber.utils.Helpers;
 import com.naman14.amber.utils.NavigationUtils;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -66,7 +70,7 @@ import java.util.Map;
  *   Time 2019/4/7
  **/
 
-public class MainActivity extends BaseActivity implements ATEActivityThemeCustomizer {
+public class MainActivity extends BaseActivity implements ATEActivityThemeCustomizer, ATEStatusBarCustomizer {
 
     private SlidingUpPanelLayout panelLayout;
     private NavigationView navigationView;
@@ -84,7 +88,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
             navigationView.getMenu().findItem(R.id.nav_library).setChecked(true);
             Fragment fragment = new MainFragment();
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container, fragment).commitAllowingStateLoss();
+            transaction.replace(R.id.fragment_container, fragment).addToBackStack(null).commitAllowingStateLoss();
 
         }
     };
@@ -129,10 +133,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
     private Runnable navigateAlbum = new Runnable() {
         public void run() {
             long albumID = getIntent().getExtras().getLong(Constants.ALBUM_ID);
-            Fragment fragment = AlbumDetailFragment.newInstance(albumID, false, null);
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, fragment).commit();
+            NavigationUtils.goToAlbum(MainActivity.this, albumID);
         }
     };
 
@@ -183,10 +184,14 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
 
         action = getIntent().getAction();
 
+//        getWindow().setBackgroundDrawableResource(R.color.window_background);
         isDarkTheme = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("dark_theme", false);
 
         super.onCreate(savedInstanceState);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         setContentView(R.layout.activity_main);
+
 
         navigationMap.put(Constants.NAVIGATE_LIBRARY, navigateLibrary);
         navigationMap.put(Constants.NAVIGATE_PLAYLIST, navigatePlaylist);
@@ -218,7 +223,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
         }, 700);
 
 
-        if (TimberUtils.isMarshmallow()) {
+        if (AmberUtils.isMarshmallow()) {
             checkPermissionAndThenLoad();
         } else {
             loadEverything();
@@ -427,12 +432,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
             menuItem.setChecked(true);
             mDrawerLayout.closeDrawers();
             Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    runnable.run();
-                }
-            }, 350);
+            handler.postDelayed(runnable, 350);
         }
     }
 
@@ -444,7 +444,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
             songtitle.setText(name);
             songartist.setText(artist);
         }
-        ImageLoader.getInstance().displayImage(TimberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), albumart,
+        ImageLoader.getInstance().displayImage(AmberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), albumart,
                 new DisplayImageOptions.Builder().cacheInMemory(true)
                         .showImageOnFail(R.drawable.ic_empty_music2)
                         .resetViewBeforeLoading(true)
@@ -485,7 +485,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
 
     @Override
     public int getActivityTheme() {
-        return isDarkTheme ? R.style.AppThemeNormalDark : R.style.AppThemeNormalLight;
+        return isDarkTheme ? R.style.AppThemeNormalDark : R.style.AppThemeMain;
     }
 
     @Override
@@ -509,6 +509,20 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
         findViewById(R.id.quickcontrols_container).setVisibility(View.VISIBLE);
 
         panelLayout.showPanel();
+    }
+
+    public void openDrawer() {
+        mDrawerLayout.openDrawer(Gravity.START);
+    }
+
+    @Override
+    public int getStatusBarColor() {
+        return Color.TRANSPARENT;
+    }
+
+    @Override
+    public int getLightStatusBarMode() {
+        return isDarkTheme? Config.LIGHT_STATUS_BAR_OFF : Config.LIGHT_STATUS_BAR_ON;
     }
 }
 

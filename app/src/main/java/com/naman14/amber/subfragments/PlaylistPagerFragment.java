@@ -38,7 +38,7 @@ import com.naman14.amber.models.Song;
 import com.naman14.amber.utils.Constants;
 import com.naman14.amber.utils.NavigationUtils;
 import com.naman14.amber.utils.PreferencesUtility;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
@@ -167,7 +167,7 @@ public class PlaylistPagerFragment extends Fragment {
                             }
                             if (songCountInt != 0) {
                                 firstAlbumID = lastAddedSongs.get(0).albumId;
-                                return TimberUtils.getAlbumArtUri(firstAlbumID).toString();
+                                return AmberUtils.getAlbumArtUri(firstAlbumID).toString();
                             } else return "nosongs";
                         case 1:
                             TopTracksLoader recentloader = new TopTracksLoader(getActivity(), TopTracksLoader.QueryType.RecentSongs);
@@ -179,7 +179,7 @@ public class PlaylistPagerFragment extends Fragment {
 
                             if (songCountInt != 0) {
                                 firstAlbumID = recentsongs.get(0).albumId;
-                                return TimberUtils.getAlbumArtUri(firstAlbumID).toString();
+                                return AmberUtils.getAlbumArtUri(firstAlbumID).toString();
                             } else return "nosongs";
                         case 2:
                             TopTracksLoader topTracksLoader = new TopTracksLoader(getActivity(), TopTracksLoader.QueryType.TopTracks);
@@ -190,7 +190,7 @@ public class PlaylistPagerFragment extends Fragment {
                             }
                             if (songCountInt != 0) {
                                 firstAlbumID = topsongs.get(0).albumId;
-                                return TimberUtils.getAlbumArtUri(firstAlbumID).toString();
+                                return AmberUtils.getAlbumArtUri(firstAlbumID).toString();
                             } else return "nosongs";
                         default:
                             List<Song> playlistsongs = PlaylistSongLoader.getSongsInPlaylist(getActivity(), playlist.id);
@@ -200,7 +200,7 @@ public class PlaylistPagerFragment extends Fragment {
                             }
                             if (songCountInt != 0) {
                                 firstAlbumID = playlistsongs.get(0).albumId;
-                                return TimberUtils.getAlbumArtUri(firstAlbumID).toString();
+                                return AmberUtils.getAlbumArtUri(firstAlbumID).toString();
                             } else return "nosongs";
 
                     }
@@ -212,7 +212,7 @@ public class PlaylistPagerFragment extends Fragment {
                     }
                     if (songCountInt != 0) {
                         firstAlbumID = playlistsongs.get(0).albumId;
-                        return TimberUtils.getAlbumArtUri(firstAlbumID).toString();
+                        return AmberUtils.getAlbumArtUri(firstAlbumID).toString();
                     } else return "nosongs";
                 }
             } else return "context is null";
@@ -231,7 +231,7 @@ public class PlaylistPagerFragment extends Fragment {
                         }
                     });
             songcount.setText(" " + String.valueOf(songCountInt) + " " + mContext.getString(R.string.songs));
-            runtime.setText(" " + TimberUtils.makeShortTimeString(mContext, totalRuntime));
+            runtime.setText(" " + AmberUtils.makeShortTimeString(mContext, totalRuntime));
         }
 
         @Override

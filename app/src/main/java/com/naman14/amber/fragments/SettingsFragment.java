@@ -98,7 +98,8 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        invalidateSettings();
+      //  invalidateSettings();
+        mAteKey = ((SettingsActivity) getActivity()).getATEKey();
         ATE.apply(view, mAteKey);
     }
 

@@ -9,7 +9,7 @@ import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.android.gms.common.images.WebImage;
 import com.naman14.amber.models.Song;
 import com.naman14.amber.utils.Constants;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -22,7 +22,7 @@ public class TimberCastHelper  {
 
     public static void startCasting(CastSession castSession, Song song) {
 
-        String ipAddress = TimberUtils.getIPAddress(true);
+        String ipAddress = AmberUtils.getIPAddress(true);
         URL baseUrl;
         try {
             baseUrl = new URL("http", ipAddress, Constants.CAST_SERVER_PORT, "" );

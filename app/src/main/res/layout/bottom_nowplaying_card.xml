@@ -13,7 +13,7 @@
         android:layout_height="55dp"
         android:layout_alignParentLeft="true"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_empty_music2" />
+        android:src="@drawable/holder" />
 
     <LinearLayout
         android:id="@+id/content"

@@ -27,7 +27,7 @@ import android.widget.ImageView;
 import com.naman14.amber.MusicPlayer;
 import com.naman14.amber.R;
 import com.naman14.amber.models.Song;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -59,7 +59,7 @@ public class SlidingQueueAdapter extends RecyclerView.Adapter<SlidingQueueAdapte
 //        setAnimation(itemHolder.itemView, i);
         Song localItem = arraylist.get(i);
 
-        ImageLoader.getInstance().displayImage(TimberUtils.getAlbumArtUri(localItem.albumId).toString(),
+        ImageLoader.getInstance().displayImage(AmberUtils.getAlbumArtUri(localItem.albumId).toString(),
                 itemHolder.albumArt, new DisplayImageOptions.Builder().cacheInMemory(true)
                         .showImageOnLoading(R.drawable.ic_empty_music2).resetViewBeforeLoading(true).build());
 

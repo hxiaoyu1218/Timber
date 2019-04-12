@@ -34,7 +34,7 @@ import com.naman14.amber.dialogs.AddPlaylistDialog;
 import com.naman14.amber.models.Song;
 import com.naman14.amber.utils.Helpers;
 import com.naman14.amber.utils.NavigationUtils;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 import com.naman14.amber.widgets.MusicVisualizer;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -82,7 +82,7 @@ public class PlayingQueueAdapter extends RecyclerView.Adapter<PlayingQueueAdapte
             itemHolder.title.setTextColor(Config.textColorPrimary(mContext, ateKey));
             itemHolder.visualizer.setVisibility(View.GONE);
         }
-        ImageLoader.getInstance().displayImage(TimberUtils.getAlbumArtUri(localItem.albumId).toString(),
+        ImageLoader.getInstance().displayImage(AmberUtils.getAlbumArtUri(localItem.albumId).toString(),
                 itemHolder.albumArt, new DisplayImageOptions.Builder().cacheInMemory(true)
                         .showImageOnLoading(R.drawable.ic_empty_music2).resetViewBeforeLoading(true).build());
         setOnPopupMenuListener(itemHolder, i);
@@ -106,7 +106,7 @@ public class PlayingQueueAdapter extends RecyclerView.Adapter<PlayingQueueAdapte
                                 notifyItemRemoved(position);
                                 break;
                             case R.id.popup_song_play:
-                                MusicPlayer.playAll(mContext, getSongIds(), position, -1, TimberUtils.IdType.NA, false);
+                                MusicPlayer.playAll(mContext, getSongIds(), position, -1, AmberUtils.IdType.NA, false);
                                 break;
                             case R.id.popup_song_goto_album:
                                 NavigationUtils.goToAlbum(mContext, arraylist.get(position).albumId);

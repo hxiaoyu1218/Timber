@@ -37,6 +37,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -59,7 +60,7 @@ import com.naman14.amber.utils.ImageUtils;
 import com.naman14.amber.utils.NavigationUtils;
 import com.naman14.amber.utils.PreferencesUtility;
 import com.naman14.amber.utils.SortOrder;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 import com.naman14.amber.widgets.DividerItemDecoration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
@@ -118,156 +119,107 @@ public class AlbumDetailFragment extends Fragment {
     @TargetApi(21)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(
-                R.layout.fragment_album_detail, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_album_detail, container, false);
 
         albumArt = (ImageView) rootView.findViewById(R.id.album_art);
-        artistArt = (ImageView) rootView.findViewById(R.id.artist_art);
-        albumTitle = (TextView) rootView.findViewById(R.id.album_title);
-        albumDetails = (TextView) rootView.findViewById(R.id.album_details);
-
+        albumTitle = (TextView) rootView.findViewById(R.id.album_detail_name);
         toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-
-        fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
-
-        if (getArguments().getBoolean("transition")) {
-            albumArt.setTransitionName(getArguments().getString("transition_name"));
-        }
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
-        collapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
-        appBarLayout = (AppBarLayout) rootView.findViewById(R.id.app_bar);
         recyclerView.setEnabled(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         album = AlbumLoader.getAlbum(getActivity(), albumID);
 
         setAlbumart();
-
         setUpEverything();
-
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        AlbumSongsAdapter adapter = (AlbumSongsAdapter) recyclerView.getAdapter();
-                        MusicPlayer.playAll(getActivity(), adapter.getSongIds(), 0, albumID, TimberUtils.IdType.Album, true);
-                        NavigationUtils.navigateToNowplaying(getActivity(), false);
-                    }
-                }, 150);
-            }
-        });
 
         return rootView;
     }
 
     private void setupToolbar() {
-
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         final ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
-        collapsingToolbarLayout.setTitle(album.title);
-
-    }
+        String songCount = AmberUtils.makeLabel(getActivity(), R.plurals.Nsongs, album.songCount);
+        ab.setTitle(songCount);
+}
 
     private void setAlbumart() {
         ImageUtils.loadAlbumArtIntoView(album.id, albumArt, new ImageLoadingListener() {
-                    @Override
-                    public void onLoadingStarted(String imageUri, View view) {
-                    }
+            @Override
+            public void onLoadingStarted(String imageUri, View view) {
+            }
 
-                    @Override
-                    public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                        loadFailed = true;
-                        MaterialDrawableBuilder builder = MaterialDrawableBuilder.with(context)
-                                .setIcon(MaterialDrawableBuilder.IconValue.SHUFFLE)
-                                .setColor(TimberUtils.getBlackWhiteColor(Config.accentColor(context, Helpers.getATEKey(context))));
-                        ATEUtils.setFabBackgroundTint(fab, Config.accentColor(context, Helpers.getATEKey(context)));
-                        fab.setImageDrawable(builder.build());
-                    }
+            @Override
+            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                loadFailed = true;
+//                MaterialDrawableBuilder builder = MaterialDrawableBuilder.with(context)
+//                        .setIcon(MaterialDrawableBuilder.IconValue.SHUFFLE)
+//                        .setColor(AmberUtils.getBlackWhiteColor(Config.accentColor(context, Helpers.getATEKey(context))));
+//                ATEUtils.setFabBackgroundTint(fab, Config.accentColor(context, Helpers.getATEKey(context)));
+//                fab.setImageDrawable(builder.build());
+            }
 
-                    @Override
-                    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                        try {
-                            new Palette.Builder(loadedImage).generate(new Palette.PaletteAsyncListener() {
-                                                                          @Override
-                                                                          public void onGenerated(Palette palette) {
-                                                                              Palette.Swatch swatch = palette.getVibrantSwatch();
-                                                                              if (swatch != null) {
-                                                                                  primaryColor = swatch.getRgb();
-                                                                                  collapsingToolbarLayout.setContentScrimColor(primaryColor);
-                                                                                  if (getActivity() != null)
-                                                                                      ATEUtils.setStatusBarColor(getActivity(), Helpers.getATEKey(getActivity()), primaryColor);
-                                                                              } else {
-                                                                                  Palette.Swatch swatchMuted = palette.getMutedSwatch();
-                                                                                  if (swatchMuted != null) {
-                                                                                      primaryColor = swatchMuted.getRgb();
-                                                                                      collapsingToolbarLayout.setContentScrimColor(primaryColor);
-                                                                                      if (getActivity() != null)
-                                                                                          ATEUtils.setStatusBarColor(getActivity(), Helpers.getATEKey(getActivity()), primaryColor);
-                                                                                  }
-                                                                              }
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                albumArt.setImageBitmap(loadedImage);
+//                try {
+//                    new Palette.Builder(loadedImage).generate(new Palette.PaletteAsyncListener() {
+//                        @Override
+//                        public void onGenerated(Palette palette) {
+//                            Palette.Swatch swatch = palette.getVibrantSwatch();
+//                            if (swatch != null) {
+//                                primaryColor = swatch.getRgb();
+//                                collapsingToolbarLayout.setContentScrimColor(primaryColor);
+//                                if (getActivity() != null)
+//                                    //ATEUtils.setStatusBarColor(getActivity(), Helpers.getATEKey(getActivity()), primaryColor);
+//                            } else {
+//                                Palette.Swatch swatchMuted = palette.getMutedSwatch();
+//                                if (swatchMuted != null) {
+//                                    primaryColor = swatchMuted.getRgb();
+//                                    collapsingToolbarLayout.setContentScrimColor(primaryColor);
+//                                    if (getActivity() != null)
+//                                        ATEUtils.setStatusBarColor(getActivity(), Helpers.getATEKey(getActivity()), primaryColor);
+//                                }
+//                            }
+//
+//                            if (getActivity() != null) {
+//                                MaterialDrawableBuilder builder = MaterialDrawableBuilder.with(getActivity())
+//                                        .setIcon(MaterialDrawableBuilder.IconValue.SHUFFLE)
+//                                        .setSizeDp(30);
+//                                if (primaryColor != -1) {
+//                                    builder.setColor(AmberUtils.getBlackWhiteColor(primaryColor));
+//                                    ATEUtils.setFabBackgroundTint(fab, primaryColor);
+//                                    fab.setImageDrawable(builder.build());
+//                                } else {
+//                                    if (context != null) {
+//                                        ATEUtils.setFabBackgroundTint(fab, Config.accentColor(context, Helpers.getATEKey(context)));
+//                                        builder.setColor(AmberUtils.getBlackWhiteColor(Config.accentColor(context, Helpers.getATEKey(context))));
+//                                        fab.setImageDrawable(builder.build());
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    });
+//                } catch (Exception ignored) { }
+            }
 
-                                                                              if (getActivity() != null) {
-                                                                                  MaterialDrawableBuilder builder = MaterialDrawableBuilder.with(getActivity())
-                                                                                          .setIcon(MaterialDrawableBuilder.IconValue.SHUFFLE)
-                                                                                          .setSizeDp(30);
-                                                                                  if (primaryColor != -1) {
-                                                                                      builder.setColor(TimberUtils.getBlackWhiteColor(primaryColor));
-                                                                                      ATEUtils.setFabBackgroundTint(fab, primaryColor);
-                                                                                      fab.setImageDrawable(builder.build());
-                                                                                  } else {
-                                                                                      if (context != null) {
-                                                                                          ATEUtils.setFabBackgroundTint(fab, Config.accentColor(context, Helpers.getATEKey(context)));
-                                                                                          builder.setColor(TimberUtils.getBlackWhiteColor(Config.accentColor(context, Helpers.getATEKey(context))));
-                                                                                          fab.setImageDrawable(builder.build());
-                                                                                      }
-                                                                                  }
-                                                                              }
-                                                                          }
-                                                                      }
-
-                            );
-                        } catch (
-                                Exception ignored
-                                )
-
-                        {
-
-                        }
-                    }
-
-                    @Override
-                    public void onLoadingCancelled(String imageUri, View view) {
-                    }
-
-                }
-
-        );
+            @Override
+            public void onLoadingCancelled(String imageUri, View view) {
+            }
+        });
     }
 
     private void setAlbumDetails() {
-
-        String songCount = TimberUtils.makeLabel(getActivity(), R.plurals.Nsongs, album.songCount);
-
-        String year = (album.year != 0) ? (" - " + String.valueOf(album.year)) : "";
-
+       // String year = (album.year != 0) ? (" - " + String.valueOf(album.year)) : "";\
         albumTitle.setText(album.title);
-        albumDetails.setText(album.artistName + " - " + songCount + year);
-
-
     }
 
     private void setUpAlbumSongs() {
-
         List<Song> songList = AlbumSongLoader.getSongsForAlbum(getActivity(), albumID);
         mAdapter = new AlbumSongsAdapter(getActivity(), songList, albumID);
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
         recyclerView.setAdapter(mAdapter);
-
     }
 
     private void setUpEverything() {
@@ -296,14 +248,13 @@ public class AlbumDetailFragment extends Fragment {
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
+
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.album_detail, menu);
-        if (getActivity() != null)
-            ATE.applyMenu(getActivity(), "dark_theme", menu);
     }
 
     @Override
@@ -313,7 +264,7 @@ public class AlbumDetailFragment extends Fragment {
                 NavigationUtils.goToArtist(getContext(), album.artistId);
                 break;
             case R.id.popup_song_addto_queue:
-                MusicPlayer.addToQueue(context, mAdapter.getSongIds(), -1, TimberUtils.IdType.NA);
+                MusicPlayer.addToQueue(context, mAdapter.getSongIds(), -1, AmberUtils.IdType.NA);
                 break;
             case R.id.popup_song_addto_playlist:
                 AddPlaylistDialog.newInstance(mAdapter.getSongIds()).show(mContext.getSupportFragmentManager(), "ADD_PLAYLIST");
@@ -342,19 +293,6 @@ public class AlbumDetailFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        String ateKey = Helpers.getATEKey(getActivity());
-        toolbar.setBackgroundColor(Color.TRANSPARENT);
-        if (primaryColor != -1 && getActivity() != null) {
-            collapsingToolbarLayout.setContentScrimColor(primaryColor);
-            ATEUtils.setFabBackgroundTint(fab, primaryColor);
-            ATEUtils.setStatusBarColor(getActivity(), ateKey, primaryColor);
-        }
-
-    }
-
     private class EnterTransitionListener extends SimplelTransitionListener {
 
         @TargetApi(21)
@@ -366,5 +304,10 @@ public class AlbumDetailFragment extends Fragment {
             FabAnimationUtils.scaleOut(fab, 0, null);
         }
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 }

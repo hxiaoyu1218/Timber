@@ -37,7 +37,7 @@ import com.naman14.amber.models.Artist;
 import com.naman14.amber.utils.Helpers;
 import com.naman14.amber.utils.NavigationUtils;
 import com.naman14.amber.utils.PreferencesUtility;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 import com.naman14.amber.widgets.BubbleTextGetter;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -81,22 +81,22 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ItemHolder
         final Artist localItem = arraylist.get(i);
 
         itemHolder.name.setText(localItem.name);
-        String albumNmber = TimberUtils.makeLabel(mContext, R.plurals.Nalbums, localItem.albumCount);
-        String songCount = TimberUtils.makeLabel(mContext, R.plurals.Nsongs, localItem.songCount);
-        itemHolder.albums.setText(TimberUtils.makeCombinedString(mContext, albumNmber, songCount));
-
+        String albumNmber = AmberUtils.makeLabel(mContext, R.plurals.Nalbums, localItem.albumCount);
+        String songCount = AmberUtils.makeLabel(mContext, R.plurals.Nsongs, localItem.songCount);
+        itemHolder.albums.setText(AmberUtils.makeCombinedString(mContext, albumNmber, songCount));
+        itemHolder.artistImage.setImageResource(R.drawable.holder);
 
         LastFmClient.getInstance(mContext).getArtistInfo(new ArtistQuery(localItem.name), new ArtistInfoListener() {
             @Override
-            public void artistInfoSucess(LastfmArtist artist) {
+            public void artistInfoSuccess(LastfmArtist artist) {
                 if (artist != null && artist.mArtwork != null) {
                     if (isGrid) {
                         ImageLoader.getInstance().displayImage(artist.mArtwork.get(2).mUrl, itemHolder.artistImage,
                                 new DisplayImageOptions.Builder().cacheInMemory(true)
                                         .cacheOnDisk(true)
-                                        .showImageOnLoading(R.drawable.ic_empty_music2)
+                                        .showImageOnLoading(R.drawable.holder)
                                         .resetViewBeforeLoading(true)
-                                        .displayer(new FadeInBitmapDisplayer(400))
+                                        .displayer(new FadeInBitmapDisplayer(200))
                                         .build(), new SimpleImageLoadingListener() {
                                     @Override
                                     public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
@@ -150,7 +150,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ItemHolder
             }
         });
 
-        if (TimberUtils.isLollipop())
+        if (AmberUtils.isLollipop())
             itemHolder.artistImage.setTransitionName("transition_artist_art" + i);
 
     }

@@ -37,7 +37,7 @@ import com.naman14.amber.models.Album;
 import com.naman14.amber.models.Artist;
 import com.naman14.amber.models.Song;
 import com.naman14.amber.utils.NavigationUtils;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
@@ -88,7 +88,7 @@ public class SearchAdapter extends BaseSongAdapter<SearchAdapter.ItemHolder> {
                 Song song = (Song) searchResults.get(i);
                 itemHolder.title.setText(song.title);
                 itemHolder.songartist.setText(song.albumName);
-                ImageLoader.getInstance().displayImage(TimberUtils.getAlbumArtUri(song.albumId).toString(), itemHolder.albumArt,
+                ImageLoader.getInstance().displayImage(AmberUtils.getAlbumArtUri(song.albumId).toString(), itemHolder.albumArt,
                         new DisplayImageOptions.Builder().cacheInMemory(true)
                                 .cacheOnDisk(true)
                                 .showImageOnFail(R.drawable.ic_empty_music2)
@@ -101,7 +101,7 @@ public class SearchAdapter extends BaseSongAdapter<SearchAdapter.ItemHolder> {
                 Album album = (Album) searchResults.get(i);
                 itemHolder.albumtitle.setText(album.title);
                 itemHolder.albumartist.setText(album.artistName);
-                ImageLoader.getInstance().displayImage(TimberUtils.getAlbumArtUri(album.id).toString(), itemHolder.albumArt,
+                ImageLoader.getInstance().displayImage(AmberUtils.getAlbumArtUri(album.id).toString(), itemHolder.albumArt,
                         new DisplayImageOptions.Builder().cacheInMemory(true)
                                 .cacheOnDisk(true)
                                 .showImageOnFail(R.drawable.ic_empty_music2)
@@ -112,12 +112,12 @@ public class SearchAdapter extends BaseSongAdapter<SearchAdapter.ItemHolder> {
             case 2:
                 Artist artist = (Artist) searchResults.get(i);
                 itemHolder.artisttitle.setText(artist.name);
-                String albumNmber = TimberUtils.makeLabel(mContext, R.plurals.Nalbums, artist.albumCount);
-                String songCount = TimberUtils.makeLabel(mContext, R.plurals.Nsongs, artist.songCount);
-                itemHolder.albumsongcount.setText(TimberUtils.makeCombinedString(mContext, albumNmber, songCount));
+                String albumNmber = AmberUtils.makeLabel(mContext, R.plurals.Nalbums, artist.albumCount);
+                String songCount = AmberUtils.makeLabel(mContext, R.plurals.Nsongs, artist.songCount);
+                itemHolder.albumsongcount.setText(AmberUtils.makeCombinedString(mContext, albumNmber, songCount));
                 LastFmClient.getInstance(mContext).getArtistInfo(new ArtistQuery(artist.name), new ArtistInfoListener() {
                     @Override
-                    public void artistInfoSucess(LastfmArtist artist) {
+                    public void artistInfoSuccess(LastfmArtist artist) {
                         if (artist != null && itemHolder.artistImage != null) {
                             ImageLoader.getInstance().displayImage(artist.mArtwork.get(1).mUrl, itemHolder.artistImage,
                                     new DisplayImageOptions.Builder().cacheInMemory(true)
@@ -166,10 +166,10 @@ public class SearchAdapter extends BaseSongAdapter<SearchAdapter.ItemHolder> {
                         song[0] = ((Song) searchResults.get(position)).id;
                         switch (item.getItemId()) {
                             case R.id.popup_song_play:
-                                MusicPlayer.playAll(mContext, song, 0, -1, TimberUtils.IdType.NA, false);
+                                MusicPlayer.playAll(mContext, song, 0, -1, AmberUtils.IdType.NA, false);
                                 break;
                             case R.id.popup_song_play_next:
-                                MusicPlayer.playNext(mContext, song, -1, TimberUtils.IdType.NA);
+                                MusicPlayer.playNext(mContext, song, -1, AmberUtils.IdType.NA);
                                 break;
                             case R.id.popup_song_goto_album:
                                 NavigationUtils.navigateToAlbum(mContext, ((Song) searchResults.get(position)).albumId, null);
@@ -178,7 +178,7 @@ public class SearchAdapter extends BaseSongAdapter<SearchAdapter.ItemHolder> {
                                 NavigationUtils.navigateToArtist(mContext, ((Song) searchResults.get(position)).artistId, null);
                                 break;
                             case R.id.popup_song_addto_queue:
-                                MusicPlayer.addToQueue(mContext, song, -1, TimberUtils.IdType.NA);
+                                MusicPlayer.addToQueue(mContext, song, -1, AmberUtils.IdType.NA);
                                 break;
                             case R.id.popup_song_addto_playlist:
                                 AddPlaylistDialog.newInstance(((Song) searchResults.get(position))).show(((AppCompatActivity) mContext).getSupportFragmentManager(), "ADD_PLAYLIST");
@@ -246,7 +246,7 @@ public class SearchAdapter extends BaseSongAdapter<SearchAdapter.ItemHolder> {
                         public void run() {
                             long[] ret = new long[1];
                             ret[0] = ((Song) searchResults.get(getAdapterPosition())).id;
-                            playAll(mContext, ret, 0, -1, TimberUtils.IdType.NA,
+                            playAll(mContext, ret, 0, -1, AmberUtils.IdType.NA,
                                     false, (Song) searchResults.get(getAdapterPosition()), false);
                         }
                     }, 100);

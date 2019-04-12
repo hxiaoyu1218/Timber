@@ -12,7 +12,7 @@ import android.widget.RemoteViews;
 import com.naman14.amber.MusicService;
 import com.naman14.amber.R;
 import com.naman14.amber.utils.NavigationUtils;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**
@@ -72,7 +72,7 @@ public class StandardWidget extends BaseWidget {
                     extras.getBoolean("playing") ? R.drawable.ic_pause_white_36dp : R.drawable.ic_play_white_36dp);
             long albumId = extras.getLong("albumid");
             if (albumId != -1) {
-                Bitmap artwork = ImageLoader.getInstance().loadImageSync(TimberUtils.getAlbumArtUri(albumId).toString());
+                Bitmap artwork = ImageLoader.getInstance().loadImageSync(AmberUtils.getAlbumArtUri(albumId).toString());
                 if (artwork != null) {
                     remoteViews.setImageViewBitmap(R.id.imageView_cover, artwork);
                 } else {

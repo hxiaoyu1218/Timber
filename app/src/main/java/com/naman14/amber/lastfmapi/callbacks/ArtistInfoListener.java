@@ -18,7 +18,7 @@ import com.naman14.amber.lastfmapi.models.LastfmArtist;
 
 public interface ArtistInfoListener {
 
-    void artistInfoSucess(LastfmArtist artist);
+    void artistInfoSuccess(LastfmArtist artist);
 
     void artistInfoFailed();
 

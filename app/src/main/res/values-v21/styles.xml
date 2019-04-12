@@ -12,13 +12,19 @@
     </style>
 
     <style name="AppThemeLight" parent="ThemeBaseLight">
-
-
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="AppThemeSplash" parent="AppThemeLight">
+        <item name="android:windowBackground">@drawable/splash_bg</item>
+    </style>
+
+    <style name="AppThemeMain" parent="AppThemeLight">
+
     </style>
 
     <style name="AppTheme.FullScreen.Dark" parent="ThemeBaseDark">

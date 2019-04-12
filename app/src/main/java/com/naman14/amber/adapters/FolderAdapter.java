@@ -22,7 +22,7 @@ import com.naman14.amber.dataloaders.FolderLoader;
 import com.naman14.amber.dataloaders.SongLoader;
 import com.naman14.amber.models.Song;
 import com.naman14.amber.utils.PreferencesUtility;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 import com.naman14.amber.widgets.BubbleTextGetter;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -83,7 +83,7 @@ public class FolderAdapter extends BaseSongAdapter<FolderAdapter.ItemHolder> imp
         if (localItem.isDirectory()) {
             itemHolder.albumArt.setImageDrawable("..".equals(localItem.getName()) ? mIcons[1] : mIcons[0]);
         } else {
-            ImageLoader.getInstance().displayImage(TimberUtils.getAlbumArtUri(song.albumId).toString(),
+            ImageLoader.getInstance().displayImage(AmberUtils.getAlbumArtUri(song.albumId).toString(),
                     itemHolder.albumArt,
                     new DisplayImageOptions.Builder().
                             cacheInMemory(true).showImageOnFail(mIcons[2])
@@ -244,7 +244,7 @@ public class FolderAdapter extends BaseSongAdapter<FolderAdapter.ItemHolder> imp
                                 j++;
                             }
                         }
-                        playAll(mContext, ret, current, -1, TimberUtils.IdType.NA,
+                        playAll(mContext, ret, current, -1, AmberUtils.IdType.NA,
                                 false, mSongs.get(getAdapterPosition()), false);
                     }
                 }, 100);

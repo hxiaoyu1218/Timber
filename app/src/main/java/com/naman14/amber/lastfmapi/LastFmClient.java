@@ -120,7 +120,7 @@ public class LastFmClient {
         mRestService.getArtistInfo(artistQuery.mArtist, new Callback<ArtistInfo>() {
             @Override
             public void success(ArtistInfo artistInfo, Response response) {
-                listener.artistInfoSucess(artistInfo.mArtist);
+                listener.artistInfoSuccess(artistInfo.mArtist);
             }
 
             @Override

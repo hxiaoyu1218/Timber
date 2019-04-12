@@ -1,65 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.percent.PercentRelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar"
+    <FrameLayout
+        android:id="@+id/headerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        app:layout_heightPercent="45%">
 
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/collapsing_toolbar"
+        <ImageView
+            android:id="@+id/artist_art"
             android:layout_width="match_parent"
-            android:layout_height="330dp"
-            android:background="@android:color/white"
-            android:theme="@style/Theme.AppCompat"
-            app:contentScrim="@color/colorPrimary"
-            app:expandedTitleMarginBottom="25dp"
-            app:expandedTitleMarginStart="30dp"
-            app:expandedTitleTextAppearance="@style/TextApperance.Artist.Title"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:statusBarScrim="@color/colorPrimaryDark">
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/holder" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#22000000" />
 
-            <ImageView
-                android:id="@+id/artist_art"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fitsSystemWindows="true"
-                android:scaleType="centerCrop"
-                android:transitionName="transition_artist_image" />
+        <TextView
+            android:id="@+id/artist_detail_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            style="@style/TextApperance.Artist.Title"
+            android:textColor="#ffffff"
+            android:layout_marginStart="24dp"
+            android:layout_marginBottom="12dp"
+            tools:text="HAHAHAHAH"/>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#33000000" />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_marginTop="@dimen/statusBarHeight"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-
-            </android.support.v7.widget.Toolbar>
-
-
-        </android.support.design.widget.CollapsingToolbarLayout>
-
-    </android.support.design.widget.AppBarLayout>
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/container"
+        android:layout_below="@id/headerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:layout_height="match_parent" />
 
-
-</android.support.design.widget.CoordinatorLayout>
+</android.support.percent.PercentRelativeLayout >
 

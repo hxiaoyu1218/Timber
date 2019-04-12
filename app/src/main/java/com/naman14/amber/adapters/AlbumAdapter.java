@@ -31,7 +31,7 @@ import com.naman14.amber.models.Album;
 import com.naman14.amber.utils.Helpers;
 import com.naman14.amber.utils.NavigationUtils;
 import com.naman14.amber.utils.PreferencesUtility;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -73,11 +73,11 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ItemHolder> 
         itemHolder.title.setText(localItem.title);
         itemHolder.artist.setText(localItem.artistName);
 
-        ImageLoader.getInstance().displayImage(TimberUtils.getAlbumArtUri(localItem.id).toString(), itemHolder.albumArt,
+        ImageLoader.getInstance().displayImage(AmberUtils.getAlbumArtUri(localItem.id).toString(), itemHolder.albumArt,
                 new DisplayImageOptions.Builder().cacheInMemory(true)
-                        .showImageOnLoading(R.drawable.ic_empty_music2)
+                        .showImageOnLoading(R.drawable.holder)
                         .resetViewBeforeLoading(true)
-                        .displayer(new FadeInBitmapDisplayer(400))
+                        .displayer(new FadeInBitmapDisplayer(100))
                         .build(), new SimpleImageLoadingListener() {
                     @Override
                     public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
@@ -89,7 +89,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ItemHolder> 
                                     if (swatch != null) {
                                         int color = swatch.getRgb();
                                         itemHolder.footer.setBackgroundColor(color);
-                                        int textColor = TimberUtils.getBlackWhiteColor(swatch.getTitleTextColor());
+                                        int textColor = AmberUtils.getBlackWhiteColor(swatch.getTitleTextColor());
                                         itemHolder.title.setTextColor(textColor);
                                         itemHolder.artist.setTextColor(textColor);
                                     } else {
@@ -97,7 +97,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ItemHolder> 
                                         if (mutedSwatch != null) {
                                             int color = mutedSwatch.getRgb();
                                             itemHolder.footer.setBackgroundColor(color);
-                                            int textColor = TimberUtils.getBlackWhiteColor(mutedSwatch.getTitleTextColor());
+                                            int textColor = AmberUtils.getBlackWhiteColor(mutedSwatch.getTitleTextColor());
                                             itemHolder.title.setTextColor(textColor);
                                             itemHolder.artist.setTextColor(textColor);
                                         }
@@ -123,7 +123,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ItemHolder> 
                     }
                 });
 
-        if (TimberUtils.isLollipop())
+        if (AmberUtils.isLollipop())
             itemHolder.albumArt.setTransitionName("transition_album_art" + i);
 
     }

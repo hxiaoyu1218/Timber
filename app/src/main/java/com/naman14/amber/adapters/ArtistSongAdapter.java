@@ -34,7 +34,7 @@ import com.naman14.amber.dataloaders.ArtistAlbumLoader;
 import com.naman14.amber.dialogs.AddPlaylistDialog;
 import com.naman14.amber.models.Song;
 import com.naman14.amber.utils.NavigationUtils;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -79,9 +79,9 @@ public class ArtistSongAdapter extends BaseSongAdapter<ArtistSongAdapter.ItemHol
             itemHolder.title.setText(localItem.title);
             itemHolder.album.setText(localItem.albumName);
 
-            ImageLoader.getInstance().displayImage(TimberUtils.getAlbumArtUri(localItem.albumId).toString(),
+            ImageLoader.getInstance().displayImage(AmberUtils.getAlbumArtUri(localItem.albumId).toString(),
                     itemHolder.albumArt, new DisplayImageOptions.Builder()
-                            .cacheInMemory(true).showImageOnLoading(R.drawable.ic_empty_music2).resetViewBeforeLoading(true).build());
+                            .cacheInMemory(true).showImageOnLoading(R.drawable.holder).resetViewBeforeLoading(true).build());
             setOnPopupMenuListener(itemHolder, i - 1);
         }
 
@@ -112,12 +112,12 @@ public class ArtistSongAdapter extends BaseSongAdapter<ArtistSongAdapter.ItemHol
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.popup_song_play:
-                                MusicPlayer.playAll(mContext, songIDs, position + 1, -1, TimberUtils.IdType.NA, false);
+                                MusicPlayer.playAll(mContext, songIDs, position + 1, -1, AmberUtils.IdType.NA, false);
                                 break;
                             case R.id.popup_song_play_next:
                                 long[] ids = new long[1];
                                 ids[0] = arraylist.get(position + 1).id;
-                                MusicPlayer.playNext(mContext, ids, -1, TimberUtils.IdType.NA);
+                                MusicPlayer.playNext(mContext, ids, -1, AmberUtils.IdType.NA);
                                 break;
                             case R.id.popup_song_goto_album:
                                 NavigationUtils.goToAlbum(mContext, arraylist.get(position + 1).albumId);
@@ -128,17 +128,17 @@ public class ArtistSongAdapter extends BaseSongAdapter<ArtistSongAdapter.ItemHol
                             case R.id.popup_song_addto_queue:
                                 long[] id = new long[1];
                                 id[0] = arraylist.get(position + 1).id;
-                                MusicPlayer.addToQueue(mContext, id, -1, TimberUtils.IdType.NA);
+                                MusicPlayer.addToQueue(mContext, id, -1, AmberUtils.IdType.NA);
                                 break;
                             case R.id.popup_song_addto_playlist:
                                 AddPlaylistDialog.newInstance(arraylist.get(position + 1)).show(((AppCompatActivity) mContext).getSupportFragmentManager(), "ADD_PLAYLIST");
                                 break;
                             case R.id.popup_song_share:
-                                TimberUtils.shareTrack(mContext, arraylist.get(position + 1).id);
+                                AmberUtils.shareTrack(mContext, arraylist.get(position + 1).id);
                                 break;
                             case R.id.popup_song_delete:
                                 long[] deleteIds = {arraylist.get(position + 1).id};
-                                TimberUtils.showDeleteDialog(mContext,arraylist.get(position + 1).title, deleteIds, ArtistSongAdapter.this, position + 1);
+                                AmberUtils.showDeleteDialog(mContext,arraylist.get(position + 1).title, deleteIds, ArtistSongAdapter.this, position + 1);
                                 break;
                         }
                         return false;
@@ -229,7 +229,7 @@ public class ArtistSongAdapter extends BaseSongAdapter<ArtistSongAdapter.ItemHol
                 @Override
                 public void run() {
                     playAll(mContext, songIDs, getAdapterPosition(), artistID,
-                            TimberUtils.IdType.Artist, false,
+                            AmberUtils.IdType.Artist, false,
                             arraylist.get(getAdapterPosition()), true);
                 }
             }, 100);

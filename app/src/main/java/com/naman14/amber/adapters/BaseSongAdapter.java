@@ -11,7 +11,7 @@ import com.naman14.amber.activities.BaseActivity;
 import com.naman14.amber.cast.TimberCastHelper;
 import com.naman14.amber.models.Song;
 import com.naman14.amber.utils.NavigationUtils;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 
 import java.util.List;
 
@@ -50,7 +50,7 @@ public class BaseSongAdapter<V extends RecyclerView.ViewHolder> extends Recycler
     }
 
     public void playAll(final Activity context, final long[] list, int position,
-                        final long sourceId, final TimberUtils.IdType sourceType,
+                        final long sourceId, final AmberUtils.IdType sourceType,
                         final boolean forceShuffle, final Song currentSong, boolean navigateNowPlaying) {
 
         if (context instanceof BaseActivity) {
@@ -59,10 +59,10 @@ public class BaseSongAdapter<V extends RecyclerView.ViewHolder> extends Recycler
                 navigateNowPlaying = false;
                 TimberCastHelper.startCasting(castSession, currentSong);
             } else {
-                MusicPlayer.playAll(context, list, position, -1, TimberUtils.IdType.NA, false);
+                MusicPlayer.playAll(context, list, position, -1, AmberUtils.IdType.NA, false);
             }
         } else {
-            MusicPlayer.playAll(context, list, position, -1, TimberUtils.IdType.NA, false);
+            MusicPlayer.playAll(context, list, position, -1, AmberUtils.IdType.NA, false);
         }
 
         if (navigateNowPlaying) {

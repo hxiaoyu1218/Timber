@@ -48,7 +48,7 @@ import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.List;
 
-public class TimberUtils {
+public class AmberUtils {
 
     public static final String MUSIC_ONLY_SELECTION = MediaStore.Audio.AudioColumns.IS_MUSIC + "=1"
             + " AND " + MediaStore.Audio.AudioColumns.TITLE + " != ''";
@@ -239,7 +239,7 @@ public class TimberUtils {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        TimberUtils.deleteTracks(context, list);
+                        AmberUtils.deleteTracks(context, list);
                         adapter.removeSongAt(pos);
                         adapter.notifyItemRemoved(pos);
                         adapter.notifyItemRangeChanged(pos, adapter.getItemCount());
@@ -264,7 +264,7 @@ public class TimberUtils {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        TimberUtils.deleteTracks(context, list);
+                        AmberUtils.deleteTracks(context, list);
                         qAdapter.removeSongAt(pos);
                         qAdapter.notifyItemRemoved(pos);
                         qAdapter.notifyItemRangeChanged(pos, qAdapter.getItemCount());

@@ -28,8 +28,10 @@ import android.view.ViewGroup;
 import com.afollestad.appthemeengine.ATE;
 import com.afollestad.appthemeengine.Config;
 import com.naman14.amber.R;
+import com.naman14.amber.activities.MainActivity;
 import com.naman14.amber.utils.ATEUtils;
 import com.naman14.amber.utils.Helpers;
+import com.naman14.amber.utils.NavigationUtils;
 import com.naman14.amber.utils.PreferencesUtility;
 import com.naman14.amber.widgets.SingleTabLayout;
 
@@ -42,10 +44,13 @@ import java.util.List;
  *   Time 2019/4/7
  **/
 
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements View.OnClickListener {
 
     private PreferencesUtility mPreferences;
     private ViewPager viewPager;
+    private View searchBar;
+    private View settingIc;
+    private View navigationIc;
     private SingleTabLayout tabLayout;
 
     @Override
@@ -73,6 +78,13 @@ public class MainFragment extends Fragment {
             viewPager.setOffscreenPageLimit(2);
         }
 
+        searchBar = rootView.findViewById(R.id.title_search_bar);
+        settingIc = rootView.findViewById(R.id.title_right_setting);
+        navigationIc = rootView.findViewById(R.id.title_left_menu);
+
+        searchBar.setOnClickListener(this);
+        settingIc.setOnClickListener(this);
+        navigationIc.setOnClickListener(this);
 
         Resources resources = getResources();
         tabLayout = rootView.findViewById(R.id.tab_layout);
@@ -99,6 +111,17 @@ public class MainFragment extends Fragment {
         //启动页默认page
        // viewPager.setCurrentItem(mPreferences.getStartPageIndex());
         viewPager.setCurrentItem(0);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.title_left_menu) {
+            ((MainActivity) getActivity()).openDrawer();
+        } else if (v.getId() == R.id.title_right_setting) {
+            NavigationUtils.navigateToSettings(getActivity());
+        } else if (v.getId() == R.id.title_search_bar) {
+            NavigationUtils.navigateToSearch(getActivity());
+        }
     }
 
     private void setupViewPager(ViewPager viewPager) {

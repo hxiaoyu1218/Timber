@@ -28,6 +28,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.naman14.amber.R;
+import com.naman14.amber.activities.AlbumDetailActivity;
+import com.naman14.amber.activities.ArtistDetailActivity;
 import com.naman14.amber.activities.MainActivity;
 import com.naman14.amber.activities.NowPlayingActivity;
 import com.naman14.amber.activities.PlaylistDetailActivity;
@@ -35,12 +37,7 @@ import com.naman14.amber.activities.SearchActivity;
 import com.naman14.amber.activities.SettingsActivity;
 import com.naman14.amber.fragments.AlbumDetailFragment;
 import com.naman14.amber.fragments.ArtistDetailFragment;
-import com.naman14.amber.nowplaying.Timber1;
-import com.naman14.amber.nowplaying.Timber2;
-import com.naman14.amber.nowplaying.Timber3;
-import com.naman14.amber.nowplaying.Timber4;
-import com.naman14.amber.nowplaying.Timber5;
-import com.naman14.amber.nowplaying.Timber6;
+import com.naman14.amber.nowplaying.AmberPlayerFragment;
 
 import java.util.ArrayList;
 
@@ -49,47 +46,59 @@ public class NavigationUtils {
     @TargetApi(21)
     public static void navigateToAlbum(Activity context, long albumID, Pair<View, String> transitionViews) {
 
-        FragmentTransaction transaction = ((AppCompatActivity) context).getSupportFragmentManager().beginTransaction();
-        Fragment fragment;
+//        FragmentTransaction transaction = ((AppCompatActivity) context).getSupportFragmentManager().beginTransaction();
+//        Fragment fragment;
+//
+//        transaction.setCustomAnimations(R.anim.activity_fade_in,
+//                R.anim.activity_fade_out, R.anim.activity_fade_in, R.anim.activity_fade_out);
+//        fragment = AlbumDetailFragment.newInstance(albumID, false, null);
+//
+//        transaction.hide(((AppCompatActivity) context).getSupportFragmentManager().findFragmentById(R.id.fragment_container));
+//        transaction.add(R.id.fragment_container, fragment);
+//        transaction.addToBackStack(null).commit();
 
-        transaction.setCustomAnimations(R.anim.activity_fade_in,
-                R.anim.activity_fade_out, R.anim.activity_fade_in, R.anim.activity_fade_out);
-        fragment = AlbumDetailFragment.newInstance(albumID, false, null);
-
-        transaction.hide(((AppCompatActivity) context).getSupportFragmentManager().findFragmentById(R.id.fragment_container));
-        transaction.add(R.id.fragment_container, fragment);
-        transaction.addToBackStack(null).commit();
+        Intent intent = new Intent(context, AlbumDetailActivity.class);
+        intent.putExtra(Constants.ALBUM_ID, albumID);
+        context.startActivity(intent);
 
     }
 
     @TargetApi(21)
     public static void navigateToArtist(Activity context, long artistID, Pair<View, String> transitionViews) {
 
-        FragmentTransaction transaction = ((AppCompatActivity) context).getSupportFragmentManager().beginTransaction();
-        Fragment fragment;
-
-        transaction.setCustomAnimations(R.anim.activity_fade_in,
-                R.anim.activity_fade_out, R.anim.activity_fade_in, R.anim.activity_fade_out);
-        fragment = ArtistDetailFragment.newInstance(artistID, false, null);
-
-        transaction.hide(((AppCompatActivity) context).getSupportFragmentManager().findFragmentById(R.id.fragment_container));
-        transaction.add(R.id.fragment_container, fragment);
-        transaction.addToBackStack(null).commit();
-
+//        FragmentTransaction transaction = ((AppCompatActivity) context).getSupportFragmentManager().beginTransaction();
+//        Fragment fragment;
+//
+//        transaction.setCustomAnimations(R.anim.activity_fade_in,
+//                R.anim.activity_fade_out, R.anim.activity_fade_in, R.anim.activity_fade_out);
+//        fragment = ArtistDetailFragment.newInstance(artistID, false, null);
+//
+//        transaction.hide(((AppCompatActivity) context).getSupportFragmentManager().findFragmentById(R.id.fragment_container));
+//        transaction.add(R.id.fragment_container, fragment);
+//        transaction.addToBackStack(null).commit();
+        Intent intent = new Intent(context, ArtistDetailActivity.class);
+        intent.putExtra(Constants.ARTIST_ID, artistID);
+        context.startActivity(intent);
     }
 
     public static void goToArtist(Context context, long artistId) {
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.setAction(Constants.NAVIGATE_ARTIST);
+//        Intent intent = new Intent(context, MainActivity.class);
+//        intent.setAction(Constants.NAVIGATE_ARTIST);
+//        intent.putExtra(Constants.ARTIST_ID, artistId);
+//        context.startActivity(intent);
+        Intent intent = new Intent(context, ArtistDetailActivity.class);
         intent.putExtra(Constants.ARTIST_ID, artistId);
         context.startActivity(intent);
     }
 
     public static void goToAlbum(Context context, long albumId) {
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.setAction(Constants.NAVIGATE_ALBUM);
+        Intent intent = new Intent(context, AlbumDetailActivity.class);
         intent.putExtra(Constants.ALBUM_ID, albumId);
         context.startActivity(intent);
+//        Intent intent = new Intent(context, MainActivity.class);
+//        intent.setAction(Constants.NAVIGATE_ALBUM);
+//        intent.putExtra(Constants.ALBUM_ID, albumId);
+//        context.startActivity(intent);
     }
 
     public static void goToLyrics(Context context) {
@@ -135,7 +144,7 @@ public class NavigationUtils {
         intent.putExtra(Constants.PLAYLIST_NAME, playlistName);
         intent.putExtra(Constants.ACTIVITY_TRANSITION, transitionViews != null);
 
-        if (transitionViews != null && TimberUtils.isLollipop()) {
+        if (transitionViews != null && AmberUtils.isLollipop()) {
             ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(context, transitionViews.get(0), transitionViews.get(1), transitionViews.get(2));
             context.startActivityForResult(intent, Constants.ACTION_DELETE_PLAYLIST, options.toBundle());
         } else {
@@ -146,21 +155,21 @@ public class NavigationUtils {
     public static void navigateToEqualizer(Activity context) {
         try {
             // The google MusicFX apps need to be started using startActivityForResult
-            context.startActivityForResult(TimberUtils.createEffectsIntent(), 666);
+            context.startActivityForResult(AmberUtils.createEffectsIntent(), 666);
         } catch (final ActivityNotFoundException notFound) {
             Toast.makeText(context, "Equalizer not found", Toast.LENGTH_SHORT).show();
         }
     }
 
     public static Fragment getFragmentForNowplayingID(String fragmentID) {
-        return new Timber3();
+        return new AmberPlayerFragment();
 //        switch (fragmentID) {
 //            case Constants.TIMBER1:
 //                return new Timber1();
 //            case Constants.TIMBER2:
 //                return new Timber2();
 //            case Constants.TIMBER3:
-//                return new Timber3();
+//                return new AmberPlayerFragment();
 //            case Constants.TIMBER4:
 //                return new Timber4();
 //            case Constants.TIMBER5:

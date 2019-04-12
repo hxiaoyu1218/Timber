@@ -28,7 +28,7 @@ import com.naman14.amber.R;
 import com.naman14.amber.models.Album;
 import com.naman14.amber.utils.ImageUtils;
 import com.naman14.amber.utils.NavigationUtils;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 
 import java.util.List;
 
@@ -56,12 +56,12 @@ public class ArtistAlbumAdapter extends RecyclerView.Adapter<ArtistAlbumAdapter.
         Album localItem = arraylist.get(i);
 
         itemHolder.title.setText(localItem.title);
-        String songCount = TimberUtils.makeLabel(mContext, R.plurals.Nsongs, localItem.songCount);
+        String songCount = AmberUtils.makeLabel(mContext, R.plurals.Nsongs, localItem.songCount);
         itemHolder.details.setText(songCount);
 
         ImageUtils.loadAlbumArtIntoView(localItem.id, itemHolder.albumArt);
 
-        if (TimberUtils.isLollipop())
+        if (AmberUtils.isLollipop())
             itemHolder.albumArt.setTransitionName("transition_album_art" + i);
 
     }

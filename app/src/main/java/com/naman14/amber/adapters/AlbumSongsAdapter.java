@@ -31,7 +31,7 @@ import com.naman14.amber.R;
 import com.naman14.amber.dialogs.AddPlaylistDialog;
 import com.naman14.amber.models.Song;
 import com.naman14.amber.utils.NavigationUtils;
-import com.naman14.amber.utils.TimberUtils;
+import com.naman14.amber.utils.AmberUtils;
 
 import java.util.List;
 
@@ -65,7 +65,7 @@ public class AlbumSongsAdapter extends BaseSongAdapter<AlbumSongsAdapter.ItemHol
         Song localItem = arraylist.get(i);
 
         itemHolder.title.setText(localItem.title);
-        itemHolder.duration.setText(TimberUtils.makeShortTimeString(mContext, (localItem.duration) / 1000));
+        itemHolder.duration.setText(AmberUtils.makeShortTimeString(mContext, (localItem.duration) / 1000));
         int tracknumber = localItem.trackNumber;
         if (tracknumber == 0) {
             itemHolder.trackNumber.setText("-");
@@ -88,12 +88,12 @@ public class AlbumSongsAdapter extends BaseSongAdapter<AlbumSongsAdapter.ItemHol
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.popup_song_play:
-                                MusicPlayer.playAll(mContext, songIDs, position, -1, TimberUtils.IdType.NA, false);
+                                MusicPlayer.playAll(mContext, songIDs, position, -1, AmberUtils.IdType.NA, false);
                                 break;
                             case R.id.popup_song_play_next:
                                 long[] ids = new long[1];
                                 ids[0] = arraylist.get(position).id;
-                                MusicPlayer.playNext(mContext, ids, -1, TimberUtils.IdType.NA);
+                                MusicPlayer.playNext(mContext, ids, -1, AmberUtils.IdType.NA);
                                 break;
                             case R.id.popup_song_goto_album:
                                 NavigationUtils.goToAlbum(mContext, arraylist.get(position).albumId);
@@ -104,17 +104,17 @@ public class AlbumSongsAdapter extends BaseSongAdapter<AlbumSongsAdapter.ItemHol
                             case R.id.popup_song_addto_queue:
                                 long[] id = new long[1];
                                 id[0] = arraylist.get(position).id;
-                                MusicPlayer.addToQueue(mContext, id, -1, TimberUtils.IdType.NA);
+                                MusicPlayer.addToQueue(mContext, id, -1, AmberUtils.IdType.NA);
                                 break;
                             case R.id.popup_song_addto_playlist:
                                 AddPlaylistDialog.newInstance(arraylist.get(position)).show(((AppCompatActivity) mContext).getSupportFragmentManager(), "ADD_PLAYLIST");
                                 break;
                             case R.id.popup_song_share:
-                                TimberUtils.shareTrack(mContext, arraylist.get(position).id);
+                                AmberUtils.shareTrack(mContext, arraylist.get(position).id);
                                 break;
                             case R.id.popup_song_delete:
                                 long[] deleteIds = {arraylist.get(position).id};
-                                TimberUtils.showDeleteDialog(mContext,arraylist.get(position).title, deleteIds, AlbumSongsAdapter.this, position);
+                                AmberUtils.showDeleteDialog(mContext,arraylist.get(position).title, deleteIds, AlbumSongsAdapter.this, position);
                                 break;
                         }
                         return false;
@@ -171,7 +171,7 @@ public class AlbumSongsAdapter extends BaseSongAdapter<AlbumSongsAdapter.ItemHol
                 @Override
                 public void run() {
                     playAll(mContext, songIDs, getAdapterPosition(), albumID,
-                            TimberUtils.IdType.Album, false,
+                            AmberUtils.IdType.Album, false,
                             arraylist.get(getAdapterPosition()), true);
                 }
             }, 100);
