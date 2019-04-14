@@ -44,7 +44,7 @@ public class ImageUtils {
                                                 new DisplayImageOptions.Builder()
                                                         .cacheInMemory(true)
                                                         .cacheOnDisk(true)
-                                                        .showImageOnFail(R.drawable.ic_empty_music2)
+                                                        .showImageOnFail(R.drawable.holder)
                                                         .build();
 
     private static final DisplayImageOptions diskDisplayImageOptions =

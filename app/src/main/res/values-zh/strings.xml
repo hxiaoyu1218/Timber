@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-    <string name="app_name">Timber</string>
+    <string name="app_name">Amber</string>
     <string name="action_settings">设置</string>
 
     <string name="accessibility_play">播放</string>
@@ -37,6 +37,7 @@
     <string name="playlist_top_tracks">我的最佳曲目</string>
 
     <string name="timber_source">在 <u>这里</u> 报告漏洞</string>
+    <string name="amber_report">发送邮件到下方的地址报告Bug </string>
     <string name="timber_feature_request">在 <u>这里</u> 通过 Google+ 提出特性请求</string>
 
     <string name="menu_show_as">视图</string>
@@ -79,7 +80,7 @@
     <string name="personalisation">个性化</string>
     <string name="other">其他</string>
     <string name="advanced">高级</string>
-    <string name="timber_about_opensource">Timber 是 Naman Dwivedi 开发的一款开源的音乐播放器</string>
+    <string name="timber_about_opensource">Amber 是huangxiaoyu开发的一款音乐播放器</string>
     <string name="summary_pause_detach">当耳机拔出时暂停播放</string>
     <string name="pause_detach">拔出时暂停</string>
     <string name="summary_xposed_trackselector">需要安装 Xposed 和 Xposed 模块 XMediaNotificationTrackSelector。这将在通知中提供播放队列控制。</string>

@@ -25,7 +25,8 @@
         android:background="@drawable/search_bar_bg" >
 
         <ImageView
-            android:src="@drawable/ic_search"
+            android:id="@+id/title_search_ic"
+            android:src="@drawable/ic_search_dark"
             android:layout_centerVertical="true"
             android:layout_marginStart="10dp"
             android:layout_width="16dp"
@@ -51,6 +52,6 @@
         android:layout_height="48dp"
         android:layout_alignParentRight="true"
         android:padding="12dp"
-        android:src="@drawable/ic_setting" />
+        android:src="@drawable/ic_setting_dark" />
 
 </RelativeLayout>

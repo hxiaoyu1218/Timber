@@ -85,7 +85,7 @@
 
         <activity
             android:name="com.naman14.amber.activities.PlaylistDetailActivity"
-            android:theme="@style/AppTheme.FullScreen.Light" />
+            android:theme="@style/PlayerThemeFullScreen" />
 
         <activity
             android:name="com.naman14.amber.activities.SearchActivity"

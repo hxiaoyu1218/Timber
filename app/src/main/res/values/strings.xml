@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-    <string name="app_name">Timber</string>
+    <string name="app_name">Amber</string>
     <string name="action_settings">Settings</string>
 
     <string name="accessibility_play">Play</string>
@@ -37,6 +37,7 @@
     <string name="playlist_top_tracks">My Top Tracks</string>
 
     <string name="timber_source">Report any bugs <u> here </u> </string>
+    <string name="amber_report">Report any bugs to the email below </string>
     <string name="timber_feature_request">Specify any feature request in the Google+ community <u> here </u></string>
 
     <string name="menu_show_as">View As</string>
@@ -166,5 +167,5 @@
     <string name="cast">Cast</string>
     <string name="now_playing_no_track_selected">\"No current track selected.</string>
     <string name="lyrics_loading">Loading...</string>
-
+    <string name="hide_auto_list">Hide auto play lists</string>
 </resources>

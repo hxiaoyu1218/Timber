@@ -429,7 +429,7 @@ public class MusicService extends Service {
             }
         });
         mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
-                          | MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS);
+                | MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS);
     }
 
     @Override
@@ -569,8 +569,7 @@ public class MusicService extends Service {
             cycleShuffle();
         } else if (UPDATE_PREFERENCES.equals(action)) {
             onPreferencesUpdate(intent.getExtras());
-        }
-        else if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
+        } else if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
             if (PreferencesUtility.getInstance(getApplicationContext()).pauseEnabledOnDetach()) {
                 pause();
             }
@@ -579,7 +578,7 @@ public class MusicService extends Service {
 
     private void onPreferencesUpdate(Bundle extras) {
         mShowAlbumArtOnLockscreen = extras.getBoolean("lockscreen", mShowAlbumArtOnLockscreen);
-        mActivateXTrackSelector = extras.getBoolean("xtrack",mActivateXTrackSelector);
+        mActivateXTrackSelector = extras.getBoolean("xtrack", mActivateXTrackSelector);
         LastfmUserSession session = LastfmUserSession.getSession(this);
         session.mToken = extras.getString("lf_token", session.mToken);
         session.mUsername = extras.getString("lf_user", session.mUsername);

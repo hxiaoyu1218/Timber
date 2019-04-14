@@ -81,12 +81,18 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
     private Handler navDrawerRunnable = new Handler();
     private DrawerLayout mDrawerLayout;
     private boolean isDarkTheme;
+    private Fragment currentFragment;
 
     //音乐库
     private Runnable navigateLibrary = new Runnable() {
         public void run() {
             navigationView.getMenu().findItem(R.id.nav_library).setChecked(true);
             Fragment fragment = new MainFragment();
+            if (currentFragment instanceof MainFragment) {
+                return;
+            } else {
+                currentFragment = fragment;
+            }
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, fragment).addToBackStack(null).commitAllowingStateLoss();
 
@@ -98,6 +104,11 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
         public void run() {
             navigationView.getMenu().findItem(R.id.nav_playlists).setChecked(true);
             Fragment fragment = new PlaylistFragment();
+            if (currentFragment instanceof PlaylistFragment) {
+                return;
+            } else {
+                currentFragment = fragment;
+            }
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.hide(getSupportFragmentManager().findFragmentById(R.id.fragment_container));
             transaction.replace(R.id.fragment_container, fragment).commit();
@@ -110,6 +121,11 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
         public void run() {
             navigationView.getMenu().findItem(R.id.nav_folders).setChecked(true);
             Fragment fragment = new FoldersFragment();
+            if (currentFragment instanceof FoldersFragment) {
+                return;
+            } else {
+                currentFragment = fragment;
+            }
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.hide(getSupportFragmentManager().findFragmentById(R.id.fragment_container));
             transaction.replace(R.id.fragment_container, fragment).commit();
@@ -122,6 +138,11 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
         public void run() {
             navigationView.getMenu().findItem(R.id.nav_queue).setChecked(true);
             Fragment fragment = new QueueFragment();
+            if (currentFragment instanceof QueueFragment) {
+                return;
+            } else {
+                currentFragment = fragment;
+            }
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.hide(getSupportFragmentManager().findFragmentById(R.id.fragment_container));
             transaction.replace(R.id.fragment_container, fragment).commit();
@@ -152,6 +173,11 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
     private Runnable navigateLyrics = new Runnable() {
         public void run() {
             Fragment fragment = new LyricsFragment();
+            if (currentFragment instanceof LyricsFragment) {
+                return;
+            } else {
+                currentFragment = fragment;
+            }
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, fragment).commit();
@@ -358,7 +384,6 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
             navigationView.getMenu().findItem(R.id.nav_nowplaying).setIcon(R.drawable.bookmark_music);
             navigationView.getMenu().findItem(R.id.nav_settings).setIcon(R.drawable.settings);
             navigationView.getMenu().findItem(R.id.nav_about).setIcon(R.drawable.information);
-            navigationView.getMenu().findItem(R.id.nav_donate).setIcon(R.drawable.payment_black);
         } else {
             navigationView.getMenu().findItem(R.id.nav_library).setIcon(R.drawable.library_music_white);
             navigationView.getMenu().findItem(R.id.nav_playlists).setIcon(R.drawable.playlist_play_white);
@@ -367,16 +392,8 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
             navigationView.getMenu().findItem(R.id.nav_nowplaying).setIcon(R.drawable.bookmark_music_white);
             navigationView.getMenu().findItem(R.id.nav_settings).setIcon(R.drawable.settings_white);
             navigationView.getMenu().findItem(R.id.nav_about).setIcon(R.drawable.information_white);
-            navigationView.getMenu().findItem(R.id.nav_donate).setIcon(R.drawable.payment_white);
         }
 
-        try {
-            if (!BillingProcessor.isIabServiceAvailable(this)) {
-                navigationView.getMenu().removeItem(R.id.nav_donate);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
     }
 
@@ -419,10 +436,6 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
                     }
                 }, 350);
                 break;
-            case R.id.nav_donate:
-                runnable = null;
-                startActivity(new Intent(MainActivity.this, DonateActivity.class));
-                break;
             default:
                 runnable = null;
                 break;
@@ -446,7 +459,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
         }
         ImageLoader.getInstance().displayImage(AmberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), albumart,
                 new DisplayImageOptions.Builder().cacheInMemory(true)
-                        .showImageOnFail(R.drawable.ic_empty_music2)
+                        .showImageOnFail(R.drawable.holder)
                         .resetViewBeforeLoading(true)
                         .build());
     }

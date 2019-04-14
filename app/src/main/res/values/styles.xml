@@ -157,5 +157,8 @@
         </item>
     </style>
 
+    <style name="ToolBarDark" parent="ThemeOverlay.AppCompat.Dark"/>
+    <style name="ToolBarLight" parent="ThemeOverlay.AppCompat.Light"/>
+
 
 </resources>

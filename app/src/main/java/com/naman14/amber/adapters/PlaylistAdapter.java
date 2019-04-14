@@ -80,7 +80,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ItemHo
         itemHolder.albumArt.setTag(firstAlbumID);
         ImageLoader.getInstance().displayImage(s, itemHolder.albumArt,
                 new DisplayImageOptions.Builder().cacheInMemory(true)
-                        .showImageOnFail(R.drawable.ic_empty_music2)
+                        .showImageOnFail(R.drawable.holder)
                         .resetViewBeforeLoading(true)
                         .build(), new SimpleImageLoadingListener() {
                     @Override

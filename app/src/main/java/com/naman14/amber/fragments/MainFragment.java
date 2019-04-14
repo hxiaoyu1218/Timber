@@ -22,8 +22,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.TextView;
 
 import com.afollestad.appthemeengine.ATE;
 import com.afollestad.appthemeengine.Config;
@@ -49,9 +53,13 @@ public class MainFragment extends Fragment implements View.OnClickListener {
     private PreferencesUtility mPreferences;
     private ViewPager viewPager;
     private View searchBar;
-    private View settingIc;
-    private View navigationIc;
+    private ImageView settingIc;
+    private ImageView navigationIc;
     private SingleTabLayout tabLayout;
+    private ImageView searchIc;
+    private TextView searchText;
+    private ImageView sortIc;
+    private Adapter adapter;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -81,10 +89,14 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         searchBar = rootView.findViewById(R.id.title_search_bar);
         settingIc = rootView.findViewById(R.id.title_right_setting);
         navigationIc = rootView.findViewById(R.id.title_left_menu);
+        searchIc = rootView.findViewById(R.id.title_search_ic);
+        searchText = rootView.findViewById(R.id.title_search_text);
+        sortIc = rootView.findViewById(R.id.title_sort_ic);
 
         searchBar.setOnClickListener(this);
         settingIc.setOnClickListener(this);
         navigationIc.setOnClickListener(this);
+        sortIc.setOnClickListener(this);
 
         Resources resources = getResources();
         tabLayout = rootView.findViewById(R.id.tab_layout);
@@ -104,13 +116,24 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("dark_theme", false)) {
             ATE.apply(this, "dark_theme");
             tabLayout.setTheme(true);
+            navigationIc.setImageResource(R.drawable.ic_menu);
+            settingIc.setImageResource(R.drawable.ic_setting);
+            searchBar.setBackgroundResource(R.drawable.search_bar_bg_dark);
+            searchIc.setImageResource(R.drawable.ic_search);
+            searchText.setTextColor(getResources().getColor(R.color.C0_test));
+            sortIc.setImageResource(R.drawable.ic_sort);
         } else {
             ATE.apply(this, "light_theme");
             tabLayout.setTheme(false);
+            navigationIc.setImageResource(R.drawable.ic_menu_dark);
+            settingIc.setImageResource(R.drawable.ic_setting_dark);
+            searchBar.setBackgroundResource(R.drawable.search_bar_bg);
+            searchIc.setImageResource(R.drawable.ic_search_dark);
+            searchText.setTextColor(getResources().getColor(R.color.C3_test));
+            sortIc.setImageResource(R.drawable.ic_sort_dark);
         }
         //启动页默认page
-       // viewPager.setCurrentItem(mPreferences.getStartPageIndex());
-        viewPager.setCurrentItem(0);
+        viewPager.setCurrentItem(mPreferences.getStartPageIndex());
     }
 
     @Override
@@ -121,11 +144,23 @@ public class MainFragment extends Fragment implements View.OnClickListener {
             NavigationUtils.navigateToSettings(getActivity());
         } else if (v.getId() == R.id.title_search_bar) {
             NavigationUtils.navigateToSearch(getActivity());
+        } else if (v.getId() == R.id.title_sort_ic) {
+            final AbsListFragment f = adapter.getItem(viewPager.getCurrentItem());
+            final PopupMenu menu = new PopupMenu(getContext(), v);
+            menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    f.handleSortMenuClick(item);
+                    return false;
+                }
+            });
+            menu.inflate(f.getSortMenuLayout());
+            menu.show();
         }
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        Adapter adapter = new Adapter(getChildFragmentManager());
+        adapter = new Adapter(getChildFragmentManager());
         adapter.addFragment(new SongsFragment(), this.getString(R.string.songs));
         adapter.addFragment(new AlbumFragment(), this.getString(R.string.albums));
         adapter.addFragment(new ArtistFragment(), this.getString(R.string.artists));
@@ -154,20 +189,20 @@ public class MainFragment extends Fragment implements View.OnClickListener {
     }
 
     static class Adapter extends FragmentPagerAdapter {
-        private final List<Fragment> mFragments = new ArrayList<>();
+        private final List<AbsListFragment> mFragments = new ArrayList<>();
         private final List<String> mFragmentTitles = new ArrayList<>();
 
         public Adapter(FragmentManager fm) {
             super(fm);
         }
 
-        public void addFragment(Fragment fragment, String title) {
+        public void addFragment(AbsListFragment fragment, String title) {
             mFragments.add(fragment);
             mFragmentTitles.add(title);
         }
 
         @Override
-        public Fragment getItem(int position) {
+        public AbsListFragment getItem(int position) {
             return mFragments.get(position);
         }
 
@@ -180,5 +215,10 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         public CharSequence getPageTitle(int position) {
             return mFragmentTitles.get(position);
         }
+    }
+
+    public static abstract class AbsListFragment extends Fragment {
+        public abstract int getSortMenuLayout();
+        public abstract void handleSortMenuClick(MenuItem item);
     }
 }

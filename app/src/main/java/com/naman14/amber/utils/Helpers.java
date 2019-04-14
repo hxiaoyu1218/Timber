@@ -62,6 +62,7 @@ public class Helpers {
         String urltwitter = "https://twitter.com/naman1405";
         String urlgithub = "https://github.com/naman14";
         String urlsource = "https://github.com/naman14/Timber/issues";
+        String mail = "hxiaoyu1218@gmail.com";
 
         public AboutDialog() {
         }
@@ -80,6 +81,7 @@ public class Helpers {
             TextView github = (TextView) aboutBodyView.findViewById(R.id.github);
             TextView source = (TextView) aboutBodyView.findViewById(R.id.source);
             TextView community = (TextView) aboutBodyView.findViewById(R.id.feature_request);
+            TextView email = (TextView) aboutBodyView.findViewById(R.id.email);
 
             TextView dismiss = (TextView) aboutBodyView.findViewById(R.id.dismiss_dialog);
             dismiss.setOnClickListener(new View.OnClickListener() {
@@ -91,6 +93,7 @@ public class Helpers {
             googleplus.setPaintFlags(googleplus.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             twitter.setPaintFlags(twitter.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             github.setPaintFlags(github.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+            email.setText(mail);
 
             googleplus.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -138,8 +141,7 @@ public class Helpers {
             try {
                 PackageInfo pInfo = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
                 String version = pInfo.versionName;
-                int versionCode = pInfo.versionCode;
-                appversion.setText("Timber " + version);
+                appversion.setText(getResources().getString(R.string.app_name) + " " + version);
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }

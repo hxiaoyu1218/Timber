@@ -50,7 +50,7 @@ import java.util.Random;
 public class PlaylistPagerFragment extends Fragment {
 
     private static final String ARG_PAGE_NUMBER = "pageNumber";
-    private int[] foregroundColors = {R.color.pink_transparent, R.color.green_transparent, R.color.blue_transparent, R.color.red_transparent, R.color.purple_transparent};
+    private int[] foregroundColors = {R.color.blue_transparent};
     private int pageNumber, songCountInt, totalRuntime;
     private int foregroundColor;
     private long firstAlbumID = -1;
@@ -223,7 +223,7 @@ public class PlaylistPagerFragment extends Fragment {
         protected void onPostExecute(String uri) {
             ImageLoader.getInstance().displayImage(uri, playlistImage,
                     new DisplayImageOptions.Builder().cacheInMemory(true)
-                            .showImageOnFail(R.drawable.ic_empty_music2)
+                            .showImageOnFail(R.drawable.holder)
                             .resetViewBeforeLoading(true)
                             .build(), new SimpleImageLoadingListener() {
                         @Override

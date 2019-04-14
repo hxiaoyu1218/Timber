@@ -91,7 +91,7 @@ public class SearchAdapter extends BaseSongAdapter<SearchAdapter.ItemHolder> {
                 ImageLoader.getInstance().displayImage(AmberUtils.getAlbumArtUri(song.albumId).toString(), itemHolder.albumArt,
                         new DisplayImageOptions.Builder().cacheInMemory(true)
                                 .cacheOnDisk(true)
-                                .showImageOnFail(R.drawable.ic_empty_music2)
+                                .showImageOnFail(R.drawable.holder)
                                 .resetViewBeforeLoading(true)
                                 .displayer(new FadeInBitmapDisplayer(400))
                                 .build());
@@ -104,7 +104,7 @@ public class SearchAdapter extends BaseSongAdapter<SearchAdapter.ItemHolder> {
                 ImageLoader.getInstance().displayImage(AmberUtils.getAlbumArtUri(album.id).toString(), itemHolder.albumArt,
                         new DisplayImageOptions.Builder().cacheInMemory(true)
                                 .cacheOnDisk(true)
-                                .showImageOnFail(R.drawable.ic_empty_music2)
+                                .showImageOnFail(R.drawable.holder)
                                 .resetViewBeforeLoading(true)
                                 .displayer(new FadeInBitmapDisplayer(400))
                                 .build());
@@ -122,7 +122,7 @@ public class SearchAdapter extends BaseSongAdapter<SearchAdapter.ItemHolder> {
                             ImageLoader.getInstance().displayImage(artist.mArtwork.get(1).mUrl, itemHolder.artistImage,
                                     new DisplayImageOptions.Builder().cacheInMemory(true)
                                             .cacheOnDisk(true)
-                                            .showImageOnFail(R.drawable.ic_empty_music2)
+                                            .showImageOnFail(R.drawable.holder)
                                             .resetViewBeforeLoading(true)
                                             .displayer(new FadeInBitmapDisplayer(400))
                                             .build());

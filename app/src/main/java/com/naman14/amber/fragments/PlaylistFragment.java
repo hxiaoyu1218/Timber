@@ -16,6 +16,7 @@ package com.naman14.amber.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
@@ -86,6 +87,11 @@ public class PlaylistFragment extends Fragment {
         pager = (MultiViewPager) rootView.findViewById(R.id.playlistpager);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
 
+        if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("dark_theme", false)) {
+            toolbar.setPopupTheme(R.style.ToolBarDark);
+        } else {
+            toolbar.setPopupTheme(R.style.ToolBarLight);
+        }
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
@@ -181,13 +187,10 @@ public class PlaylistFragment extends Fragment {
         @Override
         public void getItemOffsets(Rect outRect, View view,
                                    RecyclerView parent, RecyclerView.State state) {
-
-
             outRect.left = space;
             outRect.top = space;
             outRect.right = space;
             outRect.bottom = space;
-
         }
     }
 
@@ -212,7 +215,6 @@ public class PlaylistFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_playlist, menu);
-
     }
 
     @Override

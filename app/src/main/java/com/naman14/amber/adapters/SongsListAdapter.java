@@ -86,7 +86,7 @@ public class SongsListAdapter extends BaseSongAdapter<SongsListAdapter.ItemHolde
 
         ImageLoader.getInstance().displayImage(AmberUtils.getAlbumArtUri(localItem.albumId).toString(),
                 itemHolder.albumArt, new DisplayImageOptions.Builder().cacheInMemory(true)
-                        .showImageOnLoading(R.drawable.ic_empty_music2)
+                        .showImageOnLoading(R.drawable.holder)
                         .resetViewBeforeLoading(true).build());
 
         if (MusicPlayer.getCurrentAudioId() == localItem.id) {

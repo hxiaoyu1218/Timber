@@ -177,7 +177,7 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
     private void loadBitmap(String uri) {
         ImageLoader.getInstance().displayImage(uri, blurFrame,
                 new DisplayImageOptions.Builder().cacheInMemory(true)
-                        .showImageOnFail(R.drawable.ic_empty_music2)
+                        .showImageOnFail(R.drawable.holder)
                         .resetViewBeforeLoading(true)
                         .build());
     }
@@ -199,7 +199,7 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
     @StyleRes
     @Override
     public int getActivityTheme() {
-        return PreferenceManager.getDefaultSharedPreferences(this).getBoolean("dark_theme", false) ? R.style.AppTheme_FullScreen_Dark : R.style.AppTheme_FullScreen_Light;
+        return R.style.PlayerThemeFullScreen;
 
     }
 

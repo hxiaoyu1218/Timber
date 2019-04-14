@@ -12,11 +12,25 @@
         android:layout_width="match_parent"
         android:layout_height="48dp" />
 
-    <com.naman14.amber.widgets.SingleTabLayout
-        android:id="@+id/tab_layout"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="38dp"
-        android:paddingStart="16dp" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.naman14.amber.widgets.SingleTabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="38dp"
+            android:paddingStart="16dp" />
+
+        <ImageView
+            android:id="@+id/title_sort_ic"
+            android:layout_width="48dp"
+            android:padding="6dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_sort_dark"/>
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"

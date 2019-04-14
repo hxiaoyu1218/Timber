@@ -47,7 +47,11 @@ public class FoldersFragment extends Fragment implements StorageSelectDialog.OnD
 
         Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-
+        if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("dark_theme", false)) {
+            toolbar.setPopupTheme(R.style.ToolBarDark);
+        } else {
+            toolbar.setPopupTheme(R.style.ToolBarLight);
+        }
         ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
         ab.setHomeAsUpIndicator(R.drawable.ic_menu);
         ab.setDisplayHomeAsUpEnabled(true);

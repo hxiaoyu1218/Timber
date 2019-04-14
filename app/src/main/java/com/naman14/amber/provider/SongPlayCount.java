@@ -313,7 +313,7 @@ public class SongPlayCount {
      * @param numResults number of results to limit by.  If <= 0 it returns all results
      * @return the top tracks
      */
-    public Cursor getTopPlayedResults(int numResults) {
+    public Cursor      getTopPlayedResults(int numResults) {
         updateResults();
 
         final SQLiteDatabase database = mMusicDatabase.getReadableDatabase();

@@ -50,7 +50,11 @@ public class QueueFragment extends Fragment implements MusicStateListener {
 
         Toolbar toolbar = rootView.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-
+        if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("dark_theme", false)) {
+            toolbar.setPopupTheme(R.style.ToolBarDark);
+        } else {
+            toolbar.setPopupTheme(R.style.ToolBarLight);
+        }
         final ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
         ab.setHomeAsUpIndicator(R.drawable.ic_menu);
         ab.setDisplayHomeAsUpEnabled(true);

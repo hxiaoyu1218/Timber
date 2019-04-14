@@ -61,7 +61,7 @@ public class SlidingQueueAdapter extends RecyclerView.Adapter<SlidingQueueAdapte
 
         ImageLoader.getInstance().displayImage(AmberUtils.getAlbumArtUri(localItem.albumId).toString(),
                 itemHolder.albumArt, new DisplayImageOptions.Builder().cacheInMemory(true)
-                        .showImageOnLoading(R.drawable.ic_empty_music2).resetViewBeforeLoading(true).build());
+                        .showImageOnLoading(R.drawable.holder).resetViewBeforeLoading(true).build());
 
     }
 

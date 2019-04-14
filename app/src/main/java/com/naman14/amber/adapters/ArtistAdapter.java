@@ -136,7 +136,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ItemHolder
                         ImageLoader.getInstance().displayImage(artist.mArtwork.get(1).mUrl, itemHolder.artistImage,
                                 new DisplayImageOptions.Builder().cacheInMemory(true)
                                         .cacheOnDisk(true)
-                                        .showImageOnLoading(R.drawable.ic_empty_music2)
+                                        .showImageOnLoading(R.drawable.holder)
                                         .resetViewBeforeLoading(true)
                                         .displayer(new FadeInBitmapDisplayer(400))
                                         .build());

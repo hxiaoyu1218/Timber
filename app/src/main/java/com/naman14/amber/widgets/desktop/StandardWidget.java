@@ -76,7 +76,7 @@ public class StandardWidget extends BaseWidget {
                 if (artwork != null) {
                     remoteViews.setImageViewBitmap(R.id.imageView_cover, artwork);
                 } else {
-                    remoteViews.setImageViewResource(R.id.imageView_cover, R.drawable.ic_empty_music2);
+                    remoteViews.setImageViewResource(R.id.imageView_cover, R.drawable.holder);
                 }
             }
         }

@@ -39,7 +39,7 @@ import com.naman14.amber.widgets.FastScroller;
 
 import java.util.List;
 
-public class ArtistFragment extends Fragment {
+public class ArtistFragment extends MainFragment.AbsListFragment {
 
     private ArtistAdapter mAdapter;
     private BaseRecyclerView recyclerView;
@@ -205,5 +205,14 @@ public class ArtistFragment extends Fragment {
         }
     }
 
+    @Override
+    public int getSortMenuLayout() {
+        return R.menu.menu_sort_artist;
+    }
+
+    @Override
+    public void handleSortMenuClick(MenuItem item) {
+        onOptionsItemSelected(item);
+    }
 
 }

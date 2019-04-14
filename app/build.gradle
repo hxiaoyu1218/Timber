@@ -9,8 +9,8 @@ android {
         applicationId "naman14.amber"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 20
-        versionName "1.6"
+        versionCode 1
+        versionName "1.0"
         //renderscript support mode is not supported for 21+ with gradle version 2.0
         renderscriptTargetApi 20
         renderscriptSupportModeEnabled true

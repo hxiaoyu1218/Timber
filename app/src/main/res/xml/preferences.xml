@@ -13,26 +13,6 @@
             android:widgetLayout="@layout/ate_preference_checkbox"
             app:ateKey_pref_checkBox="?ate_key" />
 
-        <com.afollestad.appthemeengine.prefs.ATECheckBoxPreference
-            android:defaultValue="true"
-            android:key="colored_status_bar"
-            android:persistent="false"
-            android:summary="@string/colored_status_bar_summary"
-            android:title="@string/colored_status_bar"
-            app:ateKey_pref_checkBox="?ate_key" />
-
-        <com.afollestad.appthemeengine.prefs.ATECheckBoxPreference
-            android:defaultValue="true"
-            android:key="colored_nav_bar"
-            android:persistent="false"
-            android:summary="@string/colored_nav_bar_summary"
-            android:title="@string/colored_nav_bar"
-            app:ateKey_pref_checkBox="?ate_key" />
-
-    </com.naman14.amber.widgets.ThemedPreferenceCategory>
-
-    <com.naman14.amber.widgets.ThemedPreferenceCategory android:title="@string/other">
-
         <com.afollestad.appthemeengine.prefs.ATEListPreference
             android:defaultValue="last_opened"
             android:entries="@array/pref_startpage_entries"
@@ -41,6 +21,11 @@
             android:summary="@string/choose_start_page"
             android:title="@string/start_page"
             app:ateKey_pref_checkBox="?ate_key" />
+
+
+    </com.naman14.amber.widgets.ThemedPreferenceCategory>
+
+    <com.naman14.amber.widgets.ThemedPreferenceCategory android:title="@string/other">
 
         <com.afollestad.appthemeengine.prefs.ATECheckBoxPreference
             android:defaultValue="true"

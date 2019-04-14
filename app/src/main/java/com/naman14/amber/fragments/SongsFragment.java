@@ -40,7 +40,7 @@ import com.naman14.amber.widgets.FastScroller;
 
 import java.util.List;
 
-public class SongsFragment extends Fragment implements MusicStateListener {
+public class SongsFragment extends MainFragment.AbsListFragment implements MusicStateListener {
 
     private SongsListAdapter mAdapter;
     private BaseRecyclerView recyclerView;
@@ -161,5 +161,15 @@ public class SongsFragment extends Fragment implements MusicStateListener {
         @Override
         protected void onPreExecute() {
         }
+    }
+
+    @Override
+    public int getSortMenuLayout() {
+        return R.menu.menu_sort_song;
+    }
+
+    @Override
+    public void handleSortMenuClick(MenuItem item) {
+         onOptionsItemSelected(item);
     }
 }
