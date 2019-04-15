@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="15dp"
+    android:orientation="vertical"
+    android:paddingBottom="16dp"
+    android:paddingTop="15dp">
+
+    <TextView
+        android:id="@+id/app_version_name"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="24dp"
+        android:paddingTop="10dp"
+        android:text="@string/schedule_shut_down"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+
+    <TextView
+        android:id="@+id/shutdown_disable"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:background="?attr/selectableItemBackground"
+        android:paddingBottom="14dp"
+        android:paddingLeft="24dp"
+        android:paddingTop="14dp"
+        android:text="@string/shutdown_disable"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/shutdown_five"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:paddingBottom="14dp"
+        android:paddingLeft="24dp"
+        android:paddingTop="14dp"
+        android:text="@string/shutdown_five"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/shutdown_quarter"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:paddingBottom="14dp"
+        android:paddingLeft="24dp"
+        android:paddingTop="14dp"
+        android:text="@string/shutdown_quarter"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/shutdown_half"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:paddingBottom="14dp"
+        android:paddingLeft="24dp"
+        android:paddingTop="14dp"
+        android:text="@string/shutdown_half_hour"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/shutdown_hour"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:paddingBottom="14dp"
+        android:paddingLeft="24dp"
+        android:paddingTop="14dp"
+        android:text="@string/shutdown_hour"
+        android:textSize="16sp" />
+
+</LinearLayout>

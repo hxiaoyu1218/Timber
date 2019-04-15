@@ -58,6 +58,7 @@
     <string name="playlists">播放列表</string>
     <string name="playing_queue">播放队列</string>
     <string name="now_playing">正在播放</string>
+    <string name="schedule_shut_down">定时关闭</string>
     <string name="settings">设置</string>
     <string name="about">关于</string>
     <string name="help_and_feedback">帮助和反馈</string>
@@ -149,5 +150,9 @@
     <string name="lastfm_loged_in">已登录为 %s</string>
 
     <string name="cancel">取消</string>
-
+    <string name="shutdown_disable">不开启</string>
+    <string name="shutdown_five">5分钟后</string>
+    <string name="shutdown_quarter">15分钟后</string>
+    <string name="shutdown_half_hour">30分钟后</string>
+    <string name="shutdown_hour">60分钟后</string>
 </resources>

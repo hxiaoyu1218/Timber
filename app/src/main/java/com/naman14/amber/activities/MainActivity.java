@@ -45,6 +45,7 @@ import com.google.android.gms.cast.framework.media.widget.ExpandedControllerActi
 import com.naman14.amber.MusicPlayer;
 import com.naman14.amber.R;
 import com.naman14.amber.cast.ExpandedControlsActivity;
+import com.naman14.amber.dialogs.AutoShutdownDialog;
 import com.naman14.amber.fragments.AlbumDetailFragment;
 import com.naman14.amber.fragments.ArtistDetailFragment;
 import com.naman14.amber.fragments.FoldersFragment;
@@ -65,9 +66,11 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import java.util.HashMap;
 import java.util.Map;
 
+import kotlin.jvm.functions.Function1;
+
 /**
- *   Created by huangxiaoyu
- *   Time 2019/4/7
+ * Created by huangxiaoyu
+ * Time 2019/4/7
  **/
 
 public class MainActivity extends BaseActivity implements ATEActivityThemeCustomizer, ATEStatusBarCustomizer {
@@ -257,7 +260,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
 
         addBackstackListener();
 
-        if(Intent.ACTION_VIEW.equals(action)) {
+        if (Intent.ACTION_VIEW.equals(action)) {
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -270,7 +273,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
             }, 350);
         }
 
-        if (!panelLayout.isPanelHidden() && MusicPlayer.getTrackName() == null ) {
+        if (!panelLayout.isPanelHidden() && MusicPlayer.getTrackName() == null) {
             panelLayout.hidePanel();
         }
 
@@ -384,6 +387,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
             navigationView.getMenu().findItem(R.id.nav_nowplaying).setIcon(R.drawable.bookmark_music);
             navigationView.getMenu().findItem(R.id.nav_settings).setIcon(R.drawable.settings);
             navigationView.getMenu().findItem(R.id.nav_about).setIcon(R.drawable.information);
+            navigationView.getMenu().findItem(R.id.nav_shutdown).setIcon(R.drawable.ic_clock_dark);
         } else {
             navigationView.getMenu().findItem(R.id.nav_library).setIcon(R.drawable.library_music_white);
             navigationView.getMenu().findItem(R.id.nav_playlists).setIcon(R.drawable.playlist_play_white);
@@ -392,6 +396,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
             navigationView.getMenu().findItem(R.id.nav_nowplaying).setIcon(R.drawable.bookmark_music_white);
             navigationView.getMenu().findItem(R.id.nav_settings).setIcon(R.drawable.settings_white);
             navigationView.getMenu().findItem(R.id.nav_about).setIcon(R.drawable.information_white);
+            navigationView.getMenu().findItem(R.id.nav_shutdown).setIcon(R.drawable.ic_clock);
         }
 
 
@@ -436,6 +441,11 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
                     }
                 }, 350);
                 break;
+            case R.id.nav_shutdown:
+                runnable = null;
+                handleAutoShutdownClick();
+                mDrawerLayout.closeDrawers();
+                break;
             default:
                 runnable = null;
                 break;
@@ -447,6 +457,34 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
             Handler handler = new Handler();
             handler.postDelayed(runnable, 350);
         }
+    }
+
+    private void handleAutoShutdownClick() {
+        AutoShutdownDialog.Companion.showAutoShutdownDialog(this, new Function1<Integer, Boolean>() {
+            @Override
+            public Boolean invoke(Integer integer) {
+                switch (integer) {
+                    case R.id.shutdown_disable:
+                        MusicPlayer.setAutoShutDown(-1);
+                        break;
+                    case R.id.shutdown_five:
+                        MusicPlayer.setAutoShutDown(10 * 1000);
+                        break;
+                    case R.id.shutdown_quarter:
+                        MusicPlayer.setAutoShutDown(15 * 60 * 1000);
+                        break;
+                    case R.id.shutdown_half:
+                        MusicPlayer.setAutoShutDown(30 * 60 * 1000);
+                        break;
+                    case R.id.shutdown_hour:
+                        MusicPlayer.setAutoShutDown(60 * 60 * 1000);
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
     }
 
     public void setDetailsToHeader() {
@@ -535,7 +573,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
 
     @Override
     public int getLightStatusBarMode() {
-        return isDarkTheme? Config.LIGHT_STATUS_BAR_OFF : Config.LIGHT_STATUS_BAR_ON;
+        return isDarkTheme ? Config.LIGHT_STATUS_BAR_OFF : Config.LIGHT_STATUS_BAR_ON;
     }
 }
 

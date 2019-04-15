@@ -139,6 +139,7 @@ public class MusicService extends Service {
     private static final String TAG = "MusicPlaybackService";
     private static final boolean D = false;
     private static final String SHUTDOWN = "com.naman14.timber.shutdown";
+    private static final String AUTOSHUTDOWN = "com.naman14.timber.auto_shutdown";
     private static final int IDCOLIDX = 0;
     private static final int TRACK_ENDED = 1;
     private static final int TRACK_WENT_TO_NEXT = 2;
@@ -180,7 +181,9 @@ public class MusicService extends Service {
     private WakeLock mWakeLock;
     private AlarmManager mAlarmManager;
     private PendingIntent mShutdownIntent;
+    private PendingIntent mAutoShutdownIntent;
     private boolean mShutdownScheduled;
+    private boolean mAutoShutdownScheduled;
     private NotificationManagerCompat mNotificationManager;
     private Cursor mCursor;
     private Cursor mAlbumCursor;
@@ -334,6 +337,7 @@ public class MusicService extends Service {
         filter.addAction(SHUFFLE_ACTION);
         filter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         filter.addAction(Intent.ACTION_SCREEN_ON);
+        filter.addAction(AUTOSHUTDOWN);
         // Attach the broadcast listener
         registerReceiver(mIntentReceiver, filter);
 
@@ -354,6 +358,11 @@ public class MusicService extends Service {
 
         mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         mShutdownIntent = PendingIntent.getService(this, 0, shutdownIntent, 0);
+
+
+        final Intent autoShutdown = new Intent(this, MusicService.class);
+        autoShutdown.setAction(AUTOSHUTDOWN);
+        mAutoShutdownIntent = PendingIntent.getService(this, 0, autoShutdown, 0);
 
         scheduleDelayedShutdown();
 
@@ -488,6 +497,10 @@ public class MusicService extends Service {
                 mShutdownScheduled = false;
                 releaseServiceUiAndStop();
                 return START_NOT_STICKY;
+            } else if (AUTOSHUTDOWN.equals(action)) {
+                mAutoShutdownScheduled = false;
+                autoShutdown();
+                return START_NOT_STICKY;
             }
 
             handleCommandIntent(intent);
@@ -508,6 +521,46 @@ public class MusicService extends Service {
             String trackname = getTrackName();
             if (trackname != null)
                 LastFmClient.getInstance(this).Scrobble(new ScrobbleQuery(getArtistName(), trackname, System.currentTimeMillis() / 1000));
+        }
+    }
+
+    private void setAutoShutdown(long time) {
+        if (time == -1) {
+            if (mAutoShutdownScheduled) {
+                Log.d(TAG, "Cancelling auto shutdown");
+                if (mAutoShutdownScheduled) {
+                    mAlarmManager.cancel(mAutoShutdownIntent);
+                    mAutoShutdownScheduled = false;
+                }
+            }
+        } else {
+            if(mAutoShutdownScheduled) {
+                mAlarmManager.cancel(mAutoShutdownIntent);
+            }
+            Log.v(TAG, "Scheduling auto shutdown in " + time + " ms");
+            mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                    SystemClock.elapsedRealtime() + time, mAutoShutdownIntent);
+            mAutoShutdownScheduled = true;
+        }
+    }
+
+    private void autoShutdown() {
+        if (isPlaying()
+                || mPausedByTransientLossOfFocus
+                || mPlayerHandler.hasMessages(TRACK_ENDED)) {
+            pause();
+            return;
+        }
+
+        if (D) Log.d(TAG, "Nothing is playing anymore, releasing notification");
+        cancelNotification();
+        mAudioManager.abandonAudioFocus(mAudioFocusListener);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            mSession.setActive(false);
+
+        if (!mServiceInUse) {
+            saveQueue(true);
+            stopSelf(mServiceStartId);
         }
     }
 
@@ -2601,6 +2654,10 @@ public class MusicService extends Service {
             mService = new WeakReference<MusicService>(service);
         }
 
+        @Override
+        public void setAutoShutDown(long time) throws RemoteException {
+            mService.get().setAutoShutdown(time);
+        }
 
         @Override
         public void openFile(final String path) throws RemoteException {

@@ -187,6 +187,15 @@ public class MusicPlayer {
         return false;
     }
 
+    public static void setAutoShutDown(long time) {
+        if (mService != null) {
+            try {
+                mService.setAutoShutDown(time);
+            } catch (final RemoteException ignored) {
+            }
+        }
+    }
+
     public static final int getShuffleMode() {
         if (mService != null) {
             try {

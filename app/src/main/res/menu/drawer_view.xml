@@ -26,6 +26,11 @@
             android:checkable="false"
             android:title="@string/now_playing" />
 
+
+        <item android:id="@+id/nav_shutdown"
+            android:checkable="false"
+            android:title="@string/schedule_shut_down"/>
+
     </group>
 
     <group

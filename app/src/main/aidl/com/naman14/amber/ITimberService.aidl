@@ -48,5 +48,6 @@ interface ITimberService
     int getRepeatMode();
     int getMediaMountedCount();
     int getAudioSessionId();
+    void setAutoShutDown(long time);
 }
 
