@@ -27,26 +27,21 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.afollestad.appthemeengine.Config;
 import com.afollestad.appthemeengine.customizers.ATEActivityThemeCustomizer;
 import com.afollestad.appthemeengine.customizers.ATEStatusBarCustomizer;
-import com.anjlab.android.iab.v3.BillingProcessor;
-import com.google.android.gms.cast.framework.media.widget.ExpandedControllerActivity;
 import com.naman14.amber.MusicPlayer;
 import com.naman14.amber.R;
 import com.naman14.amber.cast.ExpandedControlsActivity;
 import com.naman14.amber.dialogs.AutoShutdownDialog;
-import com.naman14.amber.fragments.AlbumDetailFragment;
 import com.naman14.amber.fragments.ArtistDetailFragment;
 import com.naman14.amber.fragments.FoldersFragment;
 import com.naman14.amber.fragments.MainFragment;
@@ -56,10 +51,10 @@ import com.naman14.amber.permissions.Nammu;
 import com.naman14.amber.permissions.PermissionCallback;
 import com.naman14.amber.slidinguppanel.SlidingUpPanelLayout;
 import com.naman14.amber.subfragments.LyricsFragment;
+import com.naman14.amber.utils.AmberUtils;
 import com.naman14.amber.utils.Constants;
 import com.naman14.amber.utils.Helpers;
 import com.naman14.amber.utils.NavigationUtils;
-import com.naman14.amber.utils.AmberUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -277,24 +272,24 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
             panelLayout.hidePanel();
         }
 
-        if (playServicesAvailable) {
-
-            final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.WRAP_CONTENT,
-                    FrameLayout.LayoutParams.WRAP_CONTENT);
-            params.gravity = Gravity.BOTTOM;
-
-            FrameLayout contentRoot = findViewById(R.id.content_root);
-            contentRoot.addView(LayoutInflater.from(this)
-                    .inflate(R.layout.fragment_cast_mini_controller, null), params);
-
-            findViewById(R.id.castMiniController).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivity(new Intent(MainActivity.this, ExpandedControllerActivity.class));
-                }
-            });
-        }
+//        if (playServicesAvailable) {
+//
+//            final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+//                    FrameLayout.LayoutParams.WRAP_CONTENT,
+//                    FrameLayout.LayoutParams.WRAP_CONTENT);
+//            params.gravity = Gravity.BOTTOM;
+//
+//            FrameLayout contentRoot = findViewById(R.id.content_root);
+//            contentRoot.addView(LayoutInflater.from(this)
+//                    .inflate(R.layout.fragment_cast_mini_controller, null), params);
+//
+//            findViewById(R.id.castMiniController).setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    startActivity(new Intent(MainActivity.this, ExpandedControllerActivity.class));
+//                }
+//            });
+//        }
 
     }
 
@@ -495,6 +490,10 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
             songtitle.setText(name);
             songartist.setText(artist);
         }
+        if (MusicPlayer.getCurrentAlbumId() == -1) {
+            return;
+        }
+        Log.d("huangxiaoyutag","load navigation header"+AmberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString());
         ImageLoader.getInstance().displayImage(AmberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), albumart,
                 new DisplayImageOptions.Builder().cacheInMemory(true)
                         .showImageOnFail(R.drawable.holder)

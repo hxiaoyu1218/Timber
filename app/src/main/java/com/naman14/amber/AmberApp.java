@@ -18,6 +18,7 @@ import android.graphics.Color;
 import android.support.multidex.MultiDexApplication;
 
 import com.afollestad.appthemeengine.ATE;
+import com.afollestad.appthemeengine.Config;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.naman14.amber.permissions.Nammu;
@@ -75,8 +76,10 @@ public class AmberApp extends MultiDexApplication {
                     .primaryColorRes(R.color.colorPrimaryLightDefault)
                     .accentColorRes(R.color.colorAccentLightDefault)
                     .toolbarColor(Color.WHITE)
+                    .lightStatusBarMode(Config.LIGHT_STATUS_BAR_ON)
                     .coloredNavigationBar(false)
                     .usingMaterialDialogs(true)
+                    .coloredStatusBar(true)
                     .commit();
 
 
