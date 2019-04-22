@@ -10,6 +10,7 @@ import com.afollestad.appthemeengine.Config
 import com.naman14.amber.MusicPlayer
 import com.naman14.amber.R
 import com.naman14.amber.fragments.OnlineMainFragment
+import com.naman14.amber.helpers.MainCellModel
 import com.naman14.amber.helpers.SongModel
 import com.naman14.amber.services.ServiceClient
 import com.naman14.amber.services.SongListModel
@@ -21,9 +22,9 @@ import com.nostra13.universalimageloader.core.ImageLoader
 
 /**
  *   Created by huangxiaoyu
- *   Time 2019/4/20
+ *   Time 2019/4/22
  **/
-class OnlineSongListAdapter(val f: OnlineMainFragment) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class OnlineMainPageAdapter(val f: OnlineMainFragment) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     val mData = ArrayList<SongModel>()
     val ateKey = Helpers.getATEKey(f.context)
@@ -46,7 +47,12 @@ class OnlineSongListAdapter(val f: OnlineMainFragment) : RecyclerView.Adapter<Re
         notifyDataSetChanged()
     }
 
-    class OnlineSongViewHolder(val adapter: OnlineSongListAdapter, view: View) : RecyclerView.ViewHolder(view) {
+    class OnlineHeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        var title = view.findViewById<View>(R.id.text) as TextView
+        fun bind(data:MainCellModel){}
+    }
+
+    class OnlineSongViewHolder(val adapter: OnlineMainPageAdapter, view: View) : RecyclerView.ViewHolder(view) {
 
         var title = view.findViewById<View>(R.id.song_title) as TextView
         var artist = view.findViewById<View>(R.id.song_artist) as TextView

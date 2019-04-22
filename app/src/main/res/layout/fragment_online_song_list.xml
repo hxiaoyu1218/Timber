@@ -6,16 +6,16 @@
 
     <include
         android:id="@+id/fragment_online_title_bar"
-        layout="@layout/fragment_main_title_bar_layout"
+        layout="@layout/fragment_online_main_title_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="48dp" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/online_song_list"
+    <com.naman14.amber.coordinatescroll.CoordinateScrollLinearLayout
         android:layout_below="@id/fragment_online_title_bar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent">
 
+
+    </com.naman14.amber.coordinatescroll.CoordinateScrollLinearLayout>
 
 </RelativeLayout>
