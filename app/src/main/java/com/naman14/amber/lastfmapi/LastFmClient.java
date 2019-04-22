@@ -76,7 +76,7 @@ public class LastFmClient {
                 sInstance = new LastFmClient();
                 sInstance.context = context;
                 sInstance.mRestService = RestServiceFactory.createStatic(context, BASE_API_URL, LastFmRestService.class);
-                sInstance.mUserRestService = RestServiceFactory.create(context, BASE_SECURE_API_URL, LastFmUserRestService.class);
+                sInstance.mUserRestService = RestServiceFactory.create(BASE_SECURE_API_URL, LastFmUserRestService.class);
                 sInstance.mUserSession = LastfmUserSession.getSession(context);
 
             }

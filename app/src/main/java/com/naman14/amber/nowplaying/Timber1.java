@@ -60,7 +60,7 @@ public class Timber1 extends BaseNowplayingFragment {
                         public void run() {
                             MusicPlayer.setShuffleMode(MusicService.SHUFFLE_NORMAL);
                             MusicPlayer.next();
-                            recyclerView.scrollToPosition(MusicPlayer.getQueuePosition());
+
                         }
                     }, 150);
 

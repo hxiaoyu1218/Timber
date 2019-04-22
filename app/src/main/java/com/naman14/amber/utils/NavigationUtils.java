@@ -107,6 +107,13 @@ public class NavigationUtils {
         context.startActivity(intent);
     }
 
+    public static void navigateToNowplayingOnline(Activity context) {
+
+        final Intent intent = new Intent(context, NowPlayingActivity.class);
+        intent.putExtra(Constants.IS_ONLINE_PLAYING, true);
+        context.startActivity(intent);
+    }
+
     public static void navigateToNowplaying(Activity context, boolean withAnimations) {
 
         final Intent intent = new Intent(context, NowPlayingActivity.class);
@@ -161,7 +168,7 @@ public class NavigationUtils {
         }
     }
 
-    public static Fragment getFragmentForNowplayingID(String fragmentID) {
+    public static AmberPlayerFragment getFragmentForNowplayingID(String fragmentID) {
         return new AmberPlayerFragment();
 //        switch (fragmentID) {
 //            case Constants.TIMBER1:

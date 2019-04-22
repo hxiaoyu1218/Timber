@@ -6,6 +6,11 @@
         android:id="@+id/group1"
         android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_online"
+
+            android:title="Online"/>
+
+        <item
             android:id="@+id/nav_library"
 
             android:title="@string/library" />

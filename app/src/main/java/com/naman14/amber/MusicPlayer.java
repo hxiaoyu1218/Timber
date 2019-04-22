@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import com.naman14.amber.dataloaders.SongLoader;
 import com.naman14.amber.helpers.MusicPlaybackTrack;
+import com.naman14.amber.helpers.SongModel;
 import com.naman14.amber.utils.AmberUtils.IdType;
 
 import java.util.Arrays;
@@ -274,6 +275,83 @@ public class MusicPlayer {
             }
         }
         return -1;
+    }
+
+    public static String getCurrentOnlineId() {
+        if (mService != null) {
+            try {
+                return mService.getCurrentOnlineId();
+            } catch (final RemoteException ignored) {
+            }
+        }
+        return "";
+    }
+
+    public static boolean isOnlinePlaying() {
+        if (mService != null) {
+            try {
+                return mService.isOnlinePlaying();
+            } catch (final RemoteException ignored) {
+            }
+        }
+        return false;
+    }
+
+    public static void pauseOnline() {
+        if (mService != null) {
+            try {
+                mService.onlinePause();
+            } catch (final RemoteException ignored) {
+            }
+        }
+    }
+
+    public static void playOrPauseOnline() {
+        if (mService != null) {
+            try {
+                mService.playOrPauseOnline();
+            } catch (final RemoteException ignored) {
+            }
+        }
+    }
+
+    public static long positionOnline() {
+        if (mService != null) {
+            try {
+                return mService.positionOnline();
+            } catch (final RemoteException ignored) {
+            }
+        }
+        return 0;
+    }
+
+    public static void seekOnline(long pos) {
+        if (mService != null) {
+            try {
+                mService.seekOnline(pos);
+            } catch (final RemoteException ignored) {
+            }
+        }
+    }
+
+    public static SongModel getCurrentSongModel() {
+        if (mService != null) {
+            try {
+                return mService.getCurrentSongOnline();
+            } catch (final RemoteException ignored) {
+            }
+        }
+        return null;
+    }
+
+    public static int getCurrentPosOnline() {
+        if (mService != null) {
+            try {
+                return mService.getCurrentPosOnline();
+            } catch (final RemoteException ignored) {
+            }
+        }
+        return 0;
     }
 
     public static final MusicPlaybackTrack getCurrentTrack() {
@@ -522,8 +600,8 @@ public class MusicPlayer {
         try {
             mService.setShuffleMode(MusicService.SHUFFLE_NORMAL);
             if (getQueuePosition() == 0 && mService.getAudioId() == trackList[0] && Arrays.equals(trackList, getQueue())) {
-                    mService.play();
-                    return;
+                mService.play();
+                return;
             }
             mService.open(trackList, -1, -1, IdType.NA.mId);
             mService.play();
@@ -658,7 +736,7 @@ public class MusicPlayer {
     }
 
     public static void clearQueue() {
-        if (mService!=null) {
+        if (mService != null) {
             try {
                 mService.removeTracks(0, Integer.MAX_VALUE);
             } catch (final RemoteException ignored) {
@@ -763,6 +841,15 @@ public class MusicPlayer {
         if (mService != null) {
             try {
                 mService.openFile(path);
+            } catch (final RemoteException ignored) {
+            }
+        }
+    }
+
+    public static void playOnline(final SongModel model) {
+        if (mService != null) {
+            try {
+                mService.playOnline(model);
             } catch (final RemoteException ignored) {
             }
         }

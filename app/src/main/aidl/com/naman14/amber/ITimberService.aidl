@@ -1,6 +1,7 @@
 package com.naman14.amber;
 
 import com.naman14.amber.helpers.MusicPlaybackTrack;
+import com.naman14.amber.helpers.SongModel;
 
 interface ITimberService
 {
@@ -49,5 +50,21 @@ interface ITimberService
     int getMediaMountedCount();
     int getAudioSessionId();
     void setAutoShutDown(long time);
+
+    void playOnline(in SongModel model);
+    void playOnlineWithList(in List<SongModel> list, int pos);
+    String getCurrentOnlineId();
+    boolean isOnlinePlaying();
+    void onlinePause();
+    void playOrPauseOnline();
+    void onlineStart();
+    long positionOnline();
+    void seekOnline(long pos);
+    void playPreviousOnline();
+    void playNextOnline();
+    int getCurrentPosOnline();
+    int getShuffleStateOnline();
+    int getRepeatStateOnline();
+    SongModel getCurrentSongOnline();
 }
 

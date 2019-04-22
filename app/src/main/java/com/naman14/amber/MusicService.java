@@ -75,6 +75,8 @@ import com.naman14.amber.permissions.Nammu;
 import com.naman14.amber.provider.MusicPlaybackState;
 import com.naman14.amber.provider.RecentStore;
 import com.naman14.amber.provider.SongPlayCount;
+import com.naman14.amber.services.ServiceClient;
+import com.naman14.amber.helpers.SongModel;
 import com.naman14.amber.utils.NavigationUtils;
 import com.naman14.amber.utils.PreferencesUtility;
 import com.naman14.amber.utils.AmberUtils;
@@ -85,6 +87,7 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
 import java.util.TreeSet;
@@ -92,6 +95,8 @@ import java.util.TreeSet;
 import de.Maxr1998.trackselectorlib.ModNotInstalledException;
 import de.Maxr1998.trackselectorlib.NotificationHelper;
 import de.Maxr1998.trackselectorlib.TrackItem;
+import tv.danmaku.ijk.media.player.IMediaPlayer;
+import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
 @SuppressLint("NewApi")
 public class MusicService extends Service {
@@ -196,6 +201,9 @@ public class MusicService extends Service {
     private long mNotificationPostTime = 0;
     private boolean mQueueIsSaveable = true;
     private boolean mPausedByTransientLossOfFocus = false;
+    private String currentOnlineId;
+    private int onlinePos = 0;
+    private ArrayList<SongModel> onlineList = new ArrayList<>();
 
     private MediaSessionCompat mSession;
     @SuppressWarnings("deprecation")
@@ -534,7 +542,7 @@ public class MusicService extends Service {
                 }
             }
         } else {
-            if(mAutoShutdownScheduled) {
+            if (mAutoShutdownScheduled) {
                 mAlarmManager.cancel(mAutoShutdownIntent);
             }
             Log.v(TAG, "Scheduling auto shutdown in " + time + " ms");
@@ -2457,6 +2465,8 @@ public class MusicService extends Service {
 
         private MediaPlayer mNextMediaPlayer;
 
+        private IjkMediaPlayer mOnlinePlayer = new IjkMediaPlayer();
+
         private Handler mHandler;
 
         private boolean mIsInitialized = false;
@@ -2644,6 +2654,93 @@ public class MusicService extends Service {
                 mHandler.sendEmptyMessage(RELEASE_WAKELOCK);
             }
         }
+
+        public void playOnline(String id) {
+            mOnlinePlayer.release();
+            mOnlinePlayer = new IjkMediaPlayer();
+            mOnlinePlayer.setOnPreparedListener(new IjkMediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(IMediaPlayer mediaPlayer) {
+                    Log.d("huangxiaoyu", "start");
+                    mediaPlayer.start();
+                    mService.get().notifyChange(META_CHANGED);
+                    mService.get().mPlayerHandler.removeMessages(FADEDOWN);
+                    mService.get().mPlayerHandler.sendEmptyMessage(FADEUP);
+                }
+            });
+            try {
+                mOnlinePlayer.setDataSource(ServiceClient.SERVICE_URL + "/music?song_id=" + id);
+                mOnlinePlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                mOnlinePlayer.prepareAsync();
+            } catch (Exception e) {
+                Log.d("huang", e.getMessage());
+            }
+
+
+        }
+
+
+    }
+
+    public void playOnline(SongModel model) {
+        int status = mAudioManager.requestAudioFocus(mAudioFocusListener,
+                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+
+        if (D) Log.d(TAG, "Starting playback: audio focus request status = " + status);
+
+        if (status != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            return;
+        }
+
+        final Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
+        intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
+        intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, getPackageName());
+        sendBroadcast(intent);
+
+        mAudioManager.registerMediaButtonEventReceiver(new ComponentName(getPackageName(),
+                MediaButtonIntentReceiver.class.getName()));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            mSession.setActive(true);
+        currentOnlineId = model.getId();
+        onlineList.clear();
+        onlineList.add(model);
+        onlinePos = 0;
+        mPlayer.playOnline(model.getId());
+    }
+
+    public void playOnlineWithList(List<SongModel> list, int pos) {
+        onlineList.clear();
+        onlineList.addAll(list);
+        onlinePos = pos;
+        currentOnlineId = list.get(pos).getId();
+        mPlayer.playOnline(list.get(pos).getId());
+    }
+
+    public String getCurrentOnlineId() {
+        return currentOnlineId;
+    }
+
+    public void onlinePause() {
+        mPlayerHandler.removeMessages(FADEUP);
+        final Intent intent = new Intent(
+                AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION);
+        intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
+        intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, getPackageName());
+        sendBroadcast(intent);
+
+        mPlayer.mOnlinePlayer.pause();
+        notifyChange(META_CHANGED);
+    }
+
+    public boolean isOnlinePlaying() {
+        return mPlayer.mOnlinePlayer.isPlaying();
+    }
+
+    public void seekOnline(long pos) {
+        if (pos > onlineList.get(onlinePos).getDuration() * 1000) {
+            pos = onlineList.get(onlinePos).getDuration() * 1000;
+        }
+        mPlayer.mOnlinePlayer.seekTo(pos);
     }
 
     private static final class ServiceStub extends ITimberService.Stub {
@@ -2887,6 +2984,84 @@ public class MusicService extends Service {
             return mService.get().getAudioSessionId();
         }
 
+        @Override
+        public void playOnline(SongModel model) throws RemoteException {
+            mService.get().playOnline(model);
+        }
+
+        @Override
+        public void playOnlineWithList(List<SongModel> list, int pos) throws RemoteException {
+            mService.get().playOnlineWithList(list, pos);
+        }
+
+        @Override
+        public String getCurrentOnlineId() throws RemoteException {
+            return mService.get().getCurrentOnlineId();
+        }
+
+        @Override
+        public boolean isOnlinePlaying() throws RemoteException {
+            return mService.get().isOnlinePlaying();
+        }
+
+        @Override
+        public void onlinePause() throws RemoteException {
+            mService.get().onlinePause();
+        }
+
+        @Override
+        public void playOrPauseOnline() throws RemoteException {
+            if (mService.get().isOnlinePlaying()) {
+                mService.get().onlinePause();
+            } else {
+                mService.get().mPlayer.mOnlinePlayer.start();
+            }
+        }
+
+        @Override
+        public void onlineStart() throws RemoteException {
+            mService.get().mPlayer.mOnlinePlayer.start();
+        }
+
+        @Override
+        public long positionOnline() throws RemoteException {
+            return mService.get().mPlayer.mOnlinePlayer.getCurrentPosition();
+        }
+
+        @Override
+        public void seekOnline(long pos) throws RemoteException {
+            mService.get().seekOnline(pos);
+        }
+
+        @Override
+        public void playPreviousOnline() throws RemoteException {
+
+        }
+
+        @Override
+        public void playNextOnline() throws RemoteException {
+
+        }
+
+        @Override
+        public int getCurrentPosOnline() throws RemoteException {
+            return 0;
+        }
+
+        @Override
+        public int getShuffleStateOnline() throws RemoteException {
+            return 0;
+        }
+
+        @Override
+        public int getRepeatStateOnline() throws RemoteException {
+            return 0;
+        }
+
+        @Override
+        public SongModel getCurrentSongOnline() throws RemoteException {
+            return mService.get().onlineList.get(mService.get().onlinePos);
+        }
     }
 
     private class MediaStoreObserver extends ContentObserver implements Runnable {

@@ -45,6 +45,7 @@ import com.naman14.amber.dialogs.AutoShutdownDialog;
 import com.naman14.amber.fragments.ArtistDetailFragment;
 import com.naman14.amber.fragments.FoldersFragment;
 import com.naman14.amber.fragments.MainFragment;
+import com.naman14.amber.fragments.OnlineMainFragment;
 import com.naman14.amber.fragments.PlaylistFragment;
 import com.naman14.amber.fragments.QueueFragment;
 import com.naman14.amber.permissions.Nammu;
@@ -80,6 +81,21 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
     private DrawerLayout mDrawerLayout;
     private boolean isDarkTheme;
     private Fragment currentFragment;
+
+    //音乐库
+    private Runnable navigateOnline = new Runnable() {
+        public void run() {
+            navigationView.getMenu().findItem(R.id.nav_online).setChecked(true);
+            Fragment fragment = new OnlineMainFragment();
+            if (currentFragment instanceof OnlineMainFragment) {
+                return;
+            } else {
+                currentFragment = fragment;
+            }
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, fragment).addToBackStack(null).commitAllowingStateLoss();
+        }
+    };
 
     //音乐库
     private Runnable navigateLibrary = new Runnable() {
@@ -218,6 +234,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
 
 
         navigationMap.put(Constants.NAVIGATE_LIBRARY, navigateLibrary);
+        navigationMap.put(Constants.NAVIGATE_ONLINE, navigateOnline);
         navigationMap.put(Constants.NAVIGATE_PLAYLIST, navigatePlaylist);
         navigationMap.put(Constants.NAVIGATE_QUEUE, navigateQueue);
         navigationMap.put(Constants.NAVIGATE_NOWPLAYING, navigateNowplaying);
@@ -404,6 +421,9 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
             case R.id.nav_library:
                 runnable = navigateLibrary;
                 break;
+            case R.id.nav_online:
+                runnable = navigateOnline;
+                break;
             case R.id.nav_playlists:
                 runnable = navigatePlaylist;
                 break;
@@ -493,7 +513,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
         if (MusicPlayer.getCurrentAlbumId() == -1) {
             return;
         }
-        Log.d("huangxiaoyutag","load navigation header"+AmberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString());
+        Log.d("huangxiaoyutag", "load navigation header" + AmberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString());
         ImageLoader.getInstance().displayImage(AmberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), albumart,
                 new DisplayImageOptions.Builder().cacheInMemory(true)
                         .showImageOnFail(R.drawable.holder)

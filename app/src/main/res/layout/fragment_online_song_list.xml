@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <include
+        android:id="@+id/fragment_online_title_bar"
+        layout="@layout/fragment_main_title_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="48dp" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/online_song_list"
+        android:layout_below="@id/fragment_online_title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+
+</RelativeLayout>

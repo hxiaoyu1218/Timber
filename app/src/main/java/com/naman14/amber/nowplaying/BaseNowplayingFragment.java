@@ -49,7 +49,9 @@ import com.naman14.amber.activities.BaseActivity;
 import com.naman14.amber.adapters.BaseQueueAdapter;
 import com.naman14.amber.adapters.SlidingQueueAdapter;
 import com.naman14.amber.dataloaders.QueueLoader;
+import com.naman14.amber.helpers.SongModel;
 import com.naman14.amber.listeners.MusicStateListener;
+import com.naman14.amber.services.ServiceClient;
 import com.naman14.amber.timely.TimelyView;
 import com.naman14.amber.utils.Helpers;
 import com.naman14.amber.utils.NavigationUtils;
@@ -73,10 +75,9 @@ import java.security.InvalidParameterException;
 public class BaseNowplayingFragment extends Fragment implements MusicStateListener {
 
     private MaterialIconView previous, next;
-    private PlayPauseButton mPlayPause;
     private PlayPauseDrawable playPauseDrawable = new PlayPauseDrawable();
     private ImageView playPauseFloating;
-    private View playPauseWrapper;
+
 
     private String ateKey;
     private int overflowcounter = 0;
@@ -84,20 +85,12 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
     private SeekBar mProgress;
     boolean fragmentPaused = false;
 
-    private CircularSeekBar mCircularProgress;
-    private BaseQueueAdapter mAdapter;
-    private SlidingQueueAdapter slidingQueueAdapter;
-
-    private TimelyView timelyView11, timelyView12, timelyView13, timelyView14, timelyView15;
-    private TextView hourColon;
-    private int[] timeArr = new int[]{0, 0, 0, 0, 0};
-    private Handler mElapsedTimeHandler;
     private boolean duetoplaypause = false;
 
     public ImageView albumart, shuffle, repeat;
     public int accentColor;
-    public RecyclerView recyclerView;
-    private boolean isDarkTheme = false;
+
+    public boolean isOnlinePlayer = false;
 
     //seekbar
     public Runnable mUpdateProgress = new Runnable() {
@@ -105,7 +98,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         @Override
         public void run() {
 
-            long position = MusicPlayer.position();
+            long position = isOnlinePlayer ? MusicPlayer.positionOnline() : MusicPlayer.position();
             if (mProgress != null) {
                 mProgress.setProgress((int) position);
                 if (elapsedtime != null && getActivity() != null)
@@ -114,87 +107,26 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             overflowcounter--;
             int delay = 250; //not sure why this delay was so high before
             if (overflowcounter < 0 && !fragmentPaused) {
-                    overflowcounter++;
-                    mProgress.postDelayed(mUpdateProgress, delay); //delay
+                overflowcounter++;
+                mProgress.postDelayed(mUpdateProgress, delay); //delay
             }
         }
     };
 
-    //circular seekbar
-    public Runnable mUpdateCircularProgress = new Runnable() {
-
-        @Override
-        public void run() {
-            long position = MusicPlayer.position();
-            if (mCircularProgress != null) {
-                mCircularProgress.setProgress((int) position);
-                if (elapsedtime != null && getActivity() != null)
-                    elapsedtime.setText(AmberUtils.makeShortTimeString(getActivity(), position / 1000));
-
-            }
-            overflowcounter--;
-            if (MusicPlayer.isPlaying()) {
-                int delay = (int) (1500 - (position % 1000));
-                if (overflowcounter < 0 && !fragmentPaused) {
-                    overflowcounter++;
-                    mCircularProgress.postDelayed(mUpdateCircularProgress, delay);
-                }
-            }
-
-        }
-    };
-
-    public Runnable mUpdateElapsedTime = new Runnable() {
-        @Override
-        public void run() {
-            if (getActivity() != null) {
-                String time = AmberUtils.makeShortTimeString(getActivity(), MusicPlayer.position() / 1000);
-                if (time.length() < 5) {
-                    timelyView11.setVisibility(View.GONE);
-                    timelyView12.setVisibility(View.GONE);
-                    hourColon.setVisibility(View.GONE);
-                    tv13(time.charAt(0) - '0');
-                    tv14(time.charAt(2) - '0');
-                    tv15(time.charAt(3) - '0');
-                } else if (time.length() == 5) {
-                    timelyView12.setVisibility(View.VISIBLE);
-                    tv12(time.charAt(0) - '0');
-                    tv13(time.charAt(1) - '0');
-                    tv14(time.charAt(3) - '0');
-                    tv15(time.charAt(4) - '0');
-                } else {
-                    timelyView11.setVisibility(View.VISIBLE);
-                    hourColon.setVisibility(View.VISIBLE);
-                    tv11(time.charAt(0) - '0');
-                    tv12(time.charAt(2) - '0');
-                    tv13(time.charAt(3) - '0');
-                    tv14(time.charAt(5) - '0');
-                    tv15(time.charAt(6) - '0');
-                }
-                mElapsedTimeHandler.postDelayed(this, 600);
-            }
-
-        }
-    };
 
     private final View.OnClickListener mButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             duetoplaypause = true;
-            if (!mPlayPause.isPlayed()) {
-                mPlayPause.setPlayed(true);
-                mPlayPause.startAnimation();
-            } else {
-                mPlayPause.setPlayed(false);
-                mPlayPause.startAnimation();
-            }
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    MusicPlayer.playOrPause();
-                    if (recyclerView != null && recyclerView.getAdapter() != null)
-                        recyclerView.getAdapter().notifyDataSetChanged();
+                    if (isOnlinePlayer) {
+                        MusicPlayer.playOrPauseOnline();
+                    } else {
+                        MusicPlayer.playOrPause();
+                    }
                 }
             }, 200);
 
@@ -206,7 +138,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         @Override
         public void onClick(View v) {
             duetoplaypause = true;
-            if(MusicPlayer.getCurrentTrack() == null) {
+            if (MusicPlayer.getCurrentTrack() == null && MusicPlayer.getCurrentSongModel() == null) {
                 Toast.makeText(getContext(), getString(R.string.now_playing_no_track_selected), Toast.LENGTH_SHORT).show();
             } else {
                 playPauseDrawable.transformToPlay(true);
@@ -215,13 +147,14 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        MusicPlayer.playOrPause();
-                        if (recyclerView != null && recyclerView.getAdapter() != null)
-                            recyclerView.getAdapter().notifyDataSetChanged();
+                        if (isOnlinePlayer) {
+                            MusicPlayer.playOrPauseOnline();
+                        } else {
+                            MusicPlayer.playOrPause();
+                        }
                     }
                 }, 250);
             }
-
 
 
         }
@@ -248,6 +181,9 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (isOnlinePlayer) {
+            return true;
+        }
         switch (item.getItemId()) {
             case R.id.menu_go_to_album:
                 NavigationUtils.goToAlbum(getContext(), MusicPlayer.getCurrentAlbumId());
@@ -275,8 +211,6 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         if (mProgress != null)
             mProgress.postDelayed(mUpdateProgress, 10);
 
-        if (mCircularProgress != null)
-            mCircularProgress.postDelayed(mUpdateCircularProgress, 10);
     }
 
     public void setSongDetails(View view) {
@@ -287,13 +221,9 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         next = (MaterialIconView) view.findViewById(R.id.next);
         previous = (MaterialIconView) view.findViewById(R.id.previous);
 
-        //not used
-        mPlayPause = (PlayPauseButton) view.findViewById(R.id.playpause);
 
         playPauseFloating = (ImageView) view.findViewById(R.id.playpausefloating);
 
-        //not used
-        playPauseWrapper = view.findViewById(R.id.playpausewrapper);
 
         songtitle = (TextView) view.findViewById(R.id.song_title);
         songalbum = (TextView) view.findViewById(R.id.song_album);
@@ -301,22 +231,8 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         songduration = (TextView) view.findViewById(R.id.song_duration);
         elapsedtime = (TextView) view.findViewById(R.id.song_elapsed_time);
 
-        //not used
-        timelyView11 = (TimelyView) view.findViewById(R.id.timelyView11);
-        timelyView12 = (TimelyView) view.findViewById(R.id.timelyView12);
-        timelyView13 = (TimelyView) view.findViewById(R.id.timelyView13);
-        timelyView14 = (TimelyView) view.findViewById(R.id.timelyView14);
-        timelyView15 = (TimelyView) view.findViewById(R.id.timelyView15);
-        hourColon = (TextView) view.findViewById(R.id.hour_colon);
 
         mProgress = (SeekBar) view.findViewById(R.id.song_progress);
-
-        //not used
-        mCircularProgress = (CircularSeekBar) view.findViewById(R.id.song_progress_circular);
-
-        //not used
-        recyclerView = (RecyclerView) view.findViewById(R.id.queue_recyclerview);
-
 
         songtitle.setSelected(true);
 
@@ -328,50 +244,14 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             ab.setDisplayHomeAsUpEnabled(true);
             ab.setTitle("");
         }
-        if (mPlayPause != null && getActivity() != null) {
-            mPlayPause.setColor(ContextCompat.getColor(getContext(), android.R.color.white));
-        }
+
 
         if (playPauseFloating != null) {
             playPauseDrawable.setColorFilter(AmberUtils.getBlackWhiteColor(accentColor), PorterDuff.Mode.MULTIPLY);
             playPauseFloating.setImageDrawable(playPauseDrawable);
-            if (MusicPlayer.isPlaying())
+            if (MusicPlayer.isOnlinePlaying() || MusicPlayer.isPlaying())
                 playPauseDrawable.transformToPause(false);
             else playPauseDrawable.transformToPlay(false);
-        }
-
-        if (mCircularProgress != null) {
-            mCircularProgress.setCircleProgressColor(accentColor);
-            mCircularProgress.setPointerColor(accentColor);
-            mCircularProgress.setPointerHaloColor(accentColor);
-        }
-
-        if (timelyView11 != null) {
-            String time = AmberUtils.makeShortTimeString(getActivity(), MusicPlayer.position() / 1000);
-            if (time.length() < 5) {
-                timelyView11.setVisibility(View.GONE);
-                timelyView12.setVisibility(View.GONE);
-                hourColon.setVisibility(View.GONE);
-
-                changeDigit(timelyView13, time.charAt(0) - '0');
-                changeDigit(timelyView14, time.charAt(2) - '0');
-                changeDigit(timelyView15, time.charAt(3) - '0');
-
-            } else if (time.length() == 5) {
-                timelyView12.setVisibility(View.VISIBLE);
-                changeDigit(timelyView12, time.charAt(0) - '0');
-                changeDigit(timelyView13, time.charAt(1) - '0');
-                changeDigit(timelyView14, time.charAt(3) - '0');
-                changeDigit(timelyView15, time.charAt(4) - '0');
-            } else {
-                timelyView11.setVisibility(View.VISIBLE);
-                hourColon.setVisibility(View.VISIBLE);
-                changeDigit(timelyView11, time.charAt(0) - '0');
-                changeDigit(timelyView12, time.charAt(2) - '0');
-                changeDigit(timelyView13, time.charAt(3) - '0');
-                changeDigit(timelyView14, time.charAt(5) - '0');
-                changeDigit(timelyView15, time.charAt(6) - '0');
-            }
         }
 
         setSongDetails();
@@ -383,10 +263,8 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         super.onViewCreated(view, savedInstanceState);
         if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("dark_theme", false)) {
             ATE.apply(this, "dark_theme");
-            isDarkTheme = true;
         } else {
             ATE.apply(this, "light_theme");
-            isDarkTheme = false;
         }
         updateUITheme();
     }
@@ -407,10 +285,6 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
 
     private void setSongDetails() {
         updateSongDetails();
-
-        if (recyclerView != null)
-            setQueueSongs();
-
         setSeekBarListener();
 
         if (next != null) {
@@ -421,7 +295,11 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            MusicPlayer.next();
+                            if (isOnlinePlayer) {
+
+                            } else {
+                                MusicPlayer.next();
+                            }
                             notifyPlayingDrawableChange();
                         }
                     }, 200);
@@ -437,7 +315,11 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            MusicPlayer.previous(getActivity(), false);
+                            if (isOnlinePlayer) {
+
+                            } else {
+                                MusicPlayer.previous(getActivity(), false);
+                            }
                             notifyPlayingDrawableChange();
                         }
                     }, 200);
@@ -446,8 +328,6 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             });
         }
 
-        if (playPauseWrapper != null)
-            playPauseWrapper.setOnClickListener(mButtonListener);
 
         if (playPauseFloating != null)
             playPauseFloating.setOnClickListener(mFLoatingButtonListener);
@@ -487,17 +367,17 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             MaterialDrawableBuilder builder = MaterialDrawableBuilder.with(getActivity())
                     .setSizeDp(30);
 
-                if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_NONE) {
-                    builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT);
-                    builder.setColor(Color.WHITE);
-                   // builder.setColor(Config.textColorPrimary(getActivity(), ateKey));
-                } else if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_CURRENT) {
-                    builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT_ONCE);
-                    builder.setColor(Config.accentColor(getActivity(), ateKey));
-                } else if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_ALL) {
-                    builder.setColor(Config.accentColor(getActivity(), ateKey));
-                    builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT);
-                }
+            if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_NONE) {
+                builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT);
+                builder.setColor(Color.WHITE);
+                // builder.setColor(Config.textColorPrimary(getActivity(), ateKey));
+            } else if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_CURRENT) {
+                builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT_ONCE);
+                builder.setColor(Config.accentColor(getActivity(), ateKey));
+            } else if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_ALL) {
+                builder.setColor(Config.accentColor(getActivity(), ateKey));
+                builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT);
+            }
 
 
             repeat.setImageDrawable(builder.build());
@@ -518,7 +398,10 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                     if (b) {
-                        MusicPlayer.seek((long) i);
+                        if (isOnlinePlayer) {
+                        } else {
+                            MusicPlayer.seek((long) i);
+                        }
                     }
                 }
 
@@ -530,35 +413,15 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                 public void onStopTrackingTouch(SeekBar seekBar) {
                 }
             });
-        if (mCircularProgress != null) {
-            mCircularProgress.setOnSeekBarChangeListener(new CircularSeekBar.OnCircularSeekBarChangeListener() {
-                @Override
-                public void onProgressChanged(CircularSeekBar circularSeekBar, int progress, boolean fromUser) {
-                    if (fromUser) {
-                        MusicPlayer.seek((long) progress);
-                    }
-                }
-
-                @Override
-                public void onStopTrackingTouch(CircularSeekBar seekBar) {
-
-                }
-
-                @Override
-                public void onStartTrackingTouch(CircularSeekBar seekBar) {
-
-                }
-            });
-        }
     }
 
     public void updateSongDetails() {
         //do not reload image if it was a play/pause change
         if (!duetoplaypause) {
             if (albumart != null) {
-                ImageLoader.getInstance().displayImage(AmberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), albumart,
+                ImageLoader.getInstance().displayImage(isOnlinePlayer ? ServiceClient.SERVICE_URL + "/album_pic?song_id=" + MusicPlayer.getCurrentSongModel().getId() : AmberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), albumart,
                         new DisplayImageOptions.Builder().cacheInMemory(true)
-                                .showImageOnFail(R.drawable.ic_empty_music2)
+                                .showImageOnFail(R.drawable.holder)
                                 .build(), new SimpleImageLoadingListener() {
 
                             @Override
@@ -574,88 +437,83 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
 
                         });
             }
-            if (songtitle != null && MusicPlayer.getTrackName() != null) {
-                    songtitle.setText(MusicPlayer.getTrackName());
-                    if(MusicPlayer.getTrackName().length() <= 23){
-                        songtitle.setTextSize(25);
+            if (isOnlinePlayer) {
+                SongModel song = MusicPlayer.getCurrentSongModel();
+                if (song != null) {
+                    if (songtitle != null && song.getName() != null) {
+                        songtitle.setText(song.getName());
+                        if (song.getName().length() <= 23) {
+                            songtitle.setTextSize(25);
+                        } else if (song.getName().length() >= 30) {
+                            songtitle.setTextSize(18);
+                        } else {
+                            songtitle.setTextSize(18 + (song.getName().length() - 24));
+                        }
+                        Log.v("BaseNowPlayingFrag", "Title Text Size: " + songtitle.getTextSize());
                     }
-                    else if(MusicPlayer.getTrackName().length() >= 30){
-                        songtitle.setTextSize(18);
+                    if (songartist != null) {
+                        songartist.setText(song.getArtistName());
+                        songartist.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                NavigationUtils.goToArtist(getContext(), MusicPlayer.getCurrentArtistId());
+                            }
+                        });
                     }
-                    else{
-                        songtitle.setTextSize(18 + (MusicPlayer.getTrackName().length() - 24));
-                    }
-                    Log.v("BaseNowPlayingFrag", "Title Text Size: " + songtitle.getTextSize());
+                    if (songalbum != null)
+                        songalbum.setText(song.getAlbumId());
+                }
+            } else {
+                setSongUI();
             }
-            if (songartist != null) {
-                songartist.setText(MusicPlayer.getArtistName());
-                songartist.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        NavigationUtils.goToArtist(getContext(), MusicPlayer.getCurrentArtistId());
-                    }
-                });
-            }
-            if (songalbum != null)
-                songalbum.setText(MusicPlayer.getAlbumName());
+
 
         }
         duetoplaypause = false;
 
-        if (mPlayPause != null)
-            updatePlayPauseButton();
 
         if (playPauseFloating != null)
             updatePlayPauseFloatingButton();
 
         if (songduration != null && getActivity() != null)
-            songduration.setText(AmberUtils.makeShortTimeString(getActivity(), MusicPlayer.duration() / 1000));
+            songduration.setText(AmberUtils.makeShortTimeString(getActivity(), (isOnlinePlayer ? MusicPlayer.getCurrentSongModel().getDuration() : (int) MusicPlayer.duration() / 1000)));
 
         if (mProgress != null) {
-            mProgress.setMax((int) MusicPlayer.duration());
+            mProgress.setMax(isOnlinePlayer ? MusicPlayer.getCurrentSongModel().getDuration() * 1000 : (int) MusicPlayer.duration());
             if (mUpdateProgress != null) {
                 mProgress.removeCallbacks(mUpdateProgress);
             }
             mProgress.postDelayed(mUpdateProgress, 10);
         }
-        if (mCircularProgress != null) {
-            mCircularProgress.setMax((int) MusicPlayer.duration());
-            if (mUpdateCircularProgress != null) {
-                mCircularProgress.removeCallbacks(mUpdateCircularProgress);
-            }
-            mCircularProgress.postDelayed(mUpdateCircularProgress, 10);
-        }
-
-        if (timelyView11 != null) {
-            mElapsedTimeHandler = new Handler();
-            mElapsedTimeHandler.postDelayed(mUpdateElapsedTime, 600);
-        }
     }
 
-    public void setQueueSongs() {
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        //load queue songs in asynctask
-        if (getActivity() != null)
-            new loadQueueSongs().execute("");
-
-    }
-
-    public void updatePlayPauseButton() {
-        if (MusicPlayer.isPlaying()) {
-            if (!mPlayPause.isPlayed()) {
-                mPlayPause.setPlayed(true);
-                mPlayPause.startAnimation();
+    private void setSongUI() {
+        if (songtitle != null && MusicPlayer.getTrackName() != null) {
+            songtitle.setText(MusicPlayer.getTrackName());
+            if (MusicPlayer.getTrackName().length() <= 23) {
+                songtitle.setTextSize(25);
+            } else if (MusicPlayer.getTrackName().length() >= 30) {
+                songtitle.setTextSize(18);
+            } else {
+                songtitle.setTextSize(18 + (MusicPlayer.getTrackName().length() - 24));
             }
-        } else {
-            if (mPlayPause.isPlayed()) {
-                mPlayPause.setPlayed(false);
-                mPlayPause.startAnimation();
-            }
+            Log.v("BaseNowPlayingFrag", "Title Text Size: " + songtitle.getTextSize());
         }
+        if (songartist != null) {
+            songartist.setText(MusicPlayer.getArtistName());
+            songartist.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    NavigationUtils.goToArtist(getContext(), MusicPlayer.getCurrentArtistId());
+                }
+            });
+        }
+        if (songalbum != null)
+            songalbum.setText(MusicPlayer.getAlbumName());
     }
 
     public void updatePlayPauseFloatingButton() {
-        if (MusicPlayer.isPlaying()) {
+        if (MusicPlayer.isOnlinePlaying() || MusicPlayer.isPlaying()) {
             playPauseDrawable.transformToPause(false);
         } else {
             playPauseDrawable.transformToPlay(false);
@@ -663,7 +521,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
     }
 
     public void notifyPlayingDrawableChange() {
-        int position = MusicPlayer.getQueuePosition();
+        int position = isOnlinePlayer ? MusicPlayer.getCurrentPosOnline() : MusicPlayer.getQueuePosition();
         BaseQueueAdapter.currentlyPlayingPosition = position;
     }
 
@@ -677,9 +535,6 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
 
     public void onMetaChanged() {
         updateSongDetails();
-
-        if (recyclerView != null && recyclerView.getAdapter() != null)
-            recyclerView.getAdapter().notifyDataSetChanged();
     }
 
     public void setMusicStateListener() {
@@ -690,57 +545,6 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
 
     }
 
-    public void changeDigit(TimelyView tv, int end) {
-        ObjectAnimator obja = tv.animate(end);
-        obja.setDuration(400);
-        obja.start();
-    }
-
-    public void changeDigit(TimelyView tv, int start, int end) {
-        try {
-            ObjectAnimator obja = tv.animate(start, end);
-            obja.setDuration(400);
-            obja.start();
-        } catch (InvalidParameterException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void tv11(int a) {
-        if (a != timeArr[0]) {
-            changeDigit(timelyView11, timeArr[0], a);
-            timeArr[0] = a;
-        }
-    }
-
-    public void tv12(int a) {
-        if (a != timeArr[1]) {
-            changeDigit(timelyView12, timeArr[1], a);
-            timeArr[1] = a;
-        }
-    }
-
-    public void tv13(int a) {
-        if (a != timeArr[2]) {
-            changeDigit(timelyView13, timeArr[2], a);
-            timeArr[2] = a;
-        }
-    }
-
-    public void tv14(int a) {
-        if (a != timeArr[3]) {
-            changeDigit(timelyView14, timeArr[3], a);
-            timeArr[3] = a;
-        }
-    }
-
-    public void tv15(int a) {
-        if (a != timeArr[4]) {
-            changeDigit(timelyView15, timeArr[4], a);
-            timeArr[4] = a;
-        }
-    }
-
     protected void initGestures(View v) {
         if (PreferencesUtility.getInstance(v.getContext()).isGesturesEnabled()) {
             new SlideTrackSwitcher() {
@@ -749,32 +553,6 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                     getActivity().finish();
                 }
             }.attach(v);
-        }
-    }
-
-    private class loadQueueSongs extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            if (getActivity() != null) {
-                mAdapter = new BaseQueueAdapter((AppCompatActivity) getActivity(), QueueLoader.getQueueSongs(getActivity()));
-                return "Executed";
-            } else return null;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            if (result != null) {
-                recyclerView.setAdapter(mAdapter);
-                if (getActivity() != null)
-                    recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
-                recyclerView.scrollToPosition(MusicPlayer.getQueuePosition() - 1);
-            }
-
-        }
-
-        @Override
-        protected void onPreExecute() {
         }
     }
 }

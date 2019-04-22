@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'io.fabric'
-
+apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion rootProject.compileSdkVersion
 
@@ -44,6 +44,10 @@ android {
         disable 'ExtraTranslation'
     }
 
+    androidExtensions {
+        experimental = true
+    }
+
     buildToolsVersion '28.0.3'
 }
 
@@ -84,6 +88,7 @@ dependencies {
     implementation 'com.squareup.okhttp:okhttp:2.3.0'
     implementation 'com.google.code.gson:gson:2.3'
     implementation 'de.Maxr1998:track-selector-lib:1.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.0'
     implementation 'com.afollestad.material-dialogs:core:0.9.0.2'
     implementation 'com.afollestad.material-dialogs:commons:0.9.0.2'
     implementation('com.github.naman14:app-theme-engine:0.5.2@aar') {
@@ -95,4 +100,14 @@ dependencies {
     implementation 'com.anjlab.android.iab.v3:library:1.0.+'
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    compile 'com.danikula:videocache:2.7.1'
+    compile 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
+    compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.8'
+
+
+    compile 'tv.danmaku.ijk.media:ijkplayer-armv5:0.8.8'
+    compile 'tv.danmaku.ijk.media:ijkplayer-arm64:0.8.8'
+    compile 'tv.danmaku.ijk.media:ijkplayer-x86:0.8.8'
+    compile 'tv.danmaku.ijk.media:ijkplayer-x86_64:0.8.8'
+
 }
