@@ -11,6 +11,7 @@
         android:layout_height="48dp" />
 
     <com.naman14.amber.coordinatescroll.CoordinateScrollLinearLayout
+        android:id="@+id/fragment_online_scroll_view"
         android:layout_below="@id/fragment_online_title_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

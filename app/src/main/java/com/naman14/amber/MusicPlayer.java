@@ -38,6 +38,7 @@ import com.naman14.amber.helpers.SongModel;
 import com.naman14.amber.utils.AmberUtils.IdType;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.WeakHashMap;
 
 public class MusicPlayer {
@@ -275,6 +276,80 @@ public class MusicPlayer {
             }
         }
         return -1;
+    }
+
+    public static void setShuffleOnline(int state) {
+        if (mService != null) {
+            try {
+                mService.setShuffleStateOnline(state);
+            } catch (final RemoteException ignored) {
+            }
+        }
+    }
+
+    public static void setRepeatOnline(int state) {
+        if (mService != null) {
+            try {
+                mService.setRepeatStateOnline(state);
+            } catch (final RemoteException ignored) {
+            }
+        }
+    }
+
+    public static int getShuffleStateOnline() {
+        if (mService != null) {
+            try {
+                return mService.getShuffleStateOnline();
+            } catch (final RemoteException ignored) {
+            }
+        }
+        return -1;
+    }
+
+    public static int getRepeatStateOnline() {
+        if (mService != null) {
+            try {
+                return mService.getRepeatStateOnline();
+            } catch (final RemoteException ignored) {
+            }
+        }
+        return -1;
+    }
+
+    public static void playOnlinePrevious() {
+        if (mService != null) {
+            try {
+                mService.playPreviousOnline();
+            } catch (final RemoteException ignored) {
+            }
+        }
+    }
+
+    public static void playOnlineNext() {
+        if (mService != null) {
+            try {
+                mService.playNextOnline();
+            } catch (final RemoteException ignored) {
+            }
+        }
+    }
+
+    public static void playOnline(final SongModel model) {
+        if (mService != null) {
+            try {
+                mService.playOnline(model);
+            } catch (final RemoteException ignored) {
+            }
+        }
+    }
+
+    public static void playOnlineWithList(final List<SongModel> list, int pos) {
+        if (mService != null) {
+            try {
+                mService.playOnlineWithList(list, pos);
+            } catch (final RemoteException ignored) {
+            }
+        }
     }
 
     public static String getCurrentOnlineId() {
@@ -841,15 +916,6 @@ public class MusicPlayer {
         if (mService != null) {
             try {
                 mService.openFile(path);
-            } catch (final RemoteException ignored) {
-            }
-        }
-    }
-
-    public static void playOnline(final SongModel model) {
-        if (mService != null) {
-            try {
-                mService.playOnline(model);
             } catch (final RemoteException ignored) {
             }
         }

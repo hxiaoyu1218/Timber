@@ -11,20 +11,21 @@ import android.widget.TextView
 import com.naman14.amber.R
 import com.naman14.amber.adapters.OnlineSongListAdapter
 import com.naman14.amber.fragments.OnlineMainFragment
-import com.naman14.amber.services.DailySongModel
+import com.naman14.amber.services.LatestSongModel
 
 /**
  *   Created by huangxiaoyu
- *   Time 2019/4/22
+ *   Time 2019/4/23
  **/
-class DailySongModule(val f: OnlineMainFragment, val data: DailySongModel) {
 
-    val view = DailySongView(f.context)
+class LatestSongModule(val f: OnlineMainFragment, val data: LatestSongModel) {
+
+    val view = LatestSongView(f.context)
             .setCallBackFragment(f)
             .init()
             .bindData(data)
 
-    class DailySongView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0)
+    class LatestSongView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0)
         : RelativeLayout(context, attrs, defStyleAttr) {
 
         lateinit var title: TextView
@@ -45,18 +46,18 @@ class DailySongModule(val f: OnlineMainFragment, val data: DailySongModel) {
             recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         }
 
-        fun setCallBackFragment(f: OnlineMainFragment): DailySongView {
+        fun setCallBackFragment(f: OnlineMainFragment): LatestSongView {
             fragment = f
             return this
         }
 
-        fun init(): DailySongView {
+        fun init(): LatestSongView {
             adapter = OnlineSongListAdapter(fragment)
             recyclerView.adapter = adapter
             return this
         }
 
-        fun bindData(cell: DailySongModel) :DailySongView{
+        fun bindData(cell: LatestSongModel) :LatestSongView{
             if (cell.songList.isNullOrEmpty()) {
                 return this
             }

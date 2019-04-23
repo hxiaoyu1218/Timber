@@ -2,15 +2,17 @@ package com.naman14.amber.fragments
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.naman14.amber.R
 import com.naman14.amber.adapters.OnlineSongListAdapter
-import com.naman14.amber.services.ServiceClient
-import com.naman14.amber.services.SongListModel
+import com.naman14.amber.coordinatescroll.CoordinateScrollLinearLayout
+import com.naman14.amber.modules.DailySongModule
+import com.naman14.amber.modules.LatestSongModule
+import com.naman14.amber.modules.PlayListModule
+import com.naman14.amber.services.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -26,24 +28,33 @@ import retrofit.client.Response
  **/
 class OnlineMainFragment : Fragment() {
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: OnlineSongListAdapter
+    private lateinit var scrollView: CoordinateScrollLinearLayout
+
+    private var data: MainPageModel = MainPageModel()
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater!!.inflate(
                 R.layout.fragment_online_song_list, container, false)
-        adapter = OnlineSongListAdapter(this)
-        recyclerView = rootView.findViewById(R.id.online_song_list)
-        recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
-        recyclerView.adapter = adapter
-
+        scrollView = rootView.findViewById(R.id.fragment_online_scroll_view)
 
         GlobalScope.launch(Dispatchers.Main) {
             withContext(Dispatchers.IO) {
-                ServiceClient.getSongList(object : Callback<SongListModel> {
-                    override fun success(t: SongListModel?, response: Response?) {
+                ServiceClient.getMainPage(object : Callback<String> {
+                    override fun success(t: String?, response: Response?) {
                         t?.let {
-                            adapter.bindData(it)
+                            data.extract(it)
+                            for (item: MainPageAbsModule in data.modules) {
+                                if (item.type == 0) {
+                                    val model = DailySongModule(this@OnlineMainFragment, item as DailySongModel)
+                                    scrollView.addView(model.view)
+                                } else if (item.type == 1) {
+                                    val model = LatestSongModule(this@OnlineMainFragment, item as LatestSongModel)
+                                    scrollView.addView(model.view)
+                                } else if (item.type == 2) {
+                                    val model = PlayListModule(this@OnlineMainFragment, item as PlayListModel)
+                                    scrollView.addView(model.view)
+                                }
+                            }
                         }
                     }
 

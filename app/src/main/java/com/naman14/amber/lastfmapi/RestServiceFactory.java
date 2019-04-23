@@ -20,11 +20,20 @@ import com.naman14.amber.utils.PreferencesUtility;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.util.concurrent.TimeUnit;
 
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.client.OkClient;
+import retrofit.converter.ConversionException;
+import retrofit.converter.Converter;
+import retrofit.mime.TypedInput;
+import retrofit.mime.TypedOutput;
 
 public class RestServiceFactory {
     private static final String TAG_OK_HTTP = "OkHttp";
@@ -65,13 +74,40 @@ public class RestServiceFactory {
     public static <T> T create(String baseUrl, Class<T> clazz) {
 
         RestAdapter.Builder builder = new RestAdapter.Builder()
-                .setEndpoint(baseUrl);
+                .setEndpoint(baseUrl).setConverter(new Converter() {
+                    @Override
+                    public Object fromBody(TypedInput arg0, Type arg1)
+                            throws ConversionException {
+
+                        try {
+                            BufferedReader br = null;
+                            StringBuilder sb = new StringBuilder();
+
+                            String line;
+
+                            br = new BufferedReader(new InputStreamReader(arg0.in()));
+                            while ((line = br.readLine()) != null) {
+                                sb.append(line);
+                                sb.append('\n');
+                            }
+                            return sb.toString();
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            return null;
+                        }
+                    }
+
+                    @Override
+                    public TypedOutput toBody(Object arg0) {
+                        return null;
+                    }
+                });
 
         return builder
                 .build()
                 .create(clazz);
 
     }
-
 
 }

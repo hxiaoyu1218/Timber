@@ -246,6 +246,8 @@ public class MusicService extends Service {
     private boolean mActivateXTrackSelector;
     private SongPlayCount mSongPlayCount;
     private RecentStore mRecentStore;
+    private int onlineShuffleState = 0;
+    private int onlineRepeatState = 0;
     private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
 
         @Override
@@ -2655,7 +2657,7 @@ public class MusicService extends Service {
             }
         }
 
-        public void playOnline(String id) {
+        public void playOnline(final String id) {
             mOnlinePlayer.release();
             mOnlinePlayer = new IjkMediaPlayer();
             mOnlinePlayer.setOnPreparedListener(new IjkMediaPlayer.OnPreparedListener() {
@@ -2663,9 +2665,16 @@ public class MusicService extends Service {
                 public void onPrepared(IMediaPlayer mediaPlayer) {
                     Log.d("huangxiaoyu", "start");
                     mediaPlayer.start();
+                    mService.get().currentOnlineId = id;
                     mService.get().notifyChange(META_CHANGED);
                     mService.get().mPlayerHandler.removeMessages(FADEDOWN);
                     mService.get().mPlayerHandler.sendEmptyMessage(FADEUP);
+                }
+            });
+            mOnlinePlayer.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(IMediaPlayer iMediaPlayer) {
+                    mService.get().playOnlineNext();
                 }
             });
             try {
@@ -2701,7 +2710,6 @@ public class MusicService extends Service {
                 MediaButtonIntentReceiver.class.getName()));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             mSession.setActive(true);
-        currentOnlineId = model.getId();
         onlineList.clear();
         onlineList.add(model);
         onlinePos = 0;
@@ -2712,7 +2720,6 @@ public class MusicService extends Service {
         onlineList.clear();
         onlineList.addAll(list);
         onlinePos = pos;
-        currentOnlineId = list.get(pos).getId();
         mPlayer.playOnline(list.get(pos).getId());
     }
 
@@ -2741,6 +2748,32 @@ public class MusicService extends Service {
             pos = onlineList.get(onlinePos).getDuration() * 1000;
         }
         mPlayer.mOnlinePlayer.seekTo(pos);
+    }
+
+    public void playOnlineNext() {
+        int pos = onlinePos;
+        if (onlineRepeatState == 0) {
+            if (onlineShuffleState == 0) {
+                if (pos == onlineList.size()) {
+                    pos = 0;
+                } else {
+                    pos += 1;
+                }
+            } else {
+                pos = new Random().nextInt(onlineList.size() - 1);
+            }
+        }
+        onlinePos = pos;
+        mPlayer.playOnline(onlineList.get(onlinePos).getId());
+    }
+
+    public void playOnlinePrevious() {
+        if (onlinePos == 0) {
+            onlinePos = onlineList.size() - 1;
+        } else {
+            onlinePos -= 1;
+        }
+        mPlayer.playOnline(onlineList.get(onlinePos).getId());
     }
 
     private static final class ServiceStub extends ITimberService.Stub {
@@ -3035,32 +3068,42 @@ public class MusicService extends Service {
 
         @Override
         public void playPreviousOnline() throws RemoteException {
-
+            mService.get().playOnlinePrevious();
         }
 
         @Override
         public void playNextOnline() throws RemoteException {
-
+            mService.get().playOnlineNext();
         }
 
         @Override
         public int getCurrentPosOnline() throws RemoteException {
-            return 0;
+            return mService.get().onlinePos;
         }
 
         @Override
         public int getShuffleStateOnline() throws RemoteException {
-            return 0;
+            return mService.get().onlineShuffleState;
         }
 
         @Override
         public int getRepeatStateOnline() throws RemoteException {
-            return 0;
+            return mService.get().onlineRepeatState;
         }
 
         @Override
         public SongModel getCurrentSongOnline() throws RemoteException {
             return mService.get().onlineList.get(mService.get().onlinePos);
+        }
+
+        @Override
+        public void setShuffleStateOnline(int state) throws RemoteException {
+            mService.get().onlineShuffleState = state;
+        }
+
+        @Override
+        public void setRepeatStateOnline(int state) throws RemoteException {
+            mService.get().onlineRepeatState = state;
         }
     }
 

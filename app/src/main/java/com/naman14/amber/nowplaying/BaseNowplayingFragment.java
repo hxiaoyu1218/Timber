@@ -14,21 +14,16 @@
 
 package com.naman14.amber.nowplaying;
 
-import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -47,20 +42,14 @@ import com.naman14.amber.MusicService;
 import com.naman14.amber.R;
 import com.naman14.amber.activities.BaseActivity;
 import com.naman14.amber.adapters.BaseQueueAdapter;
-import com.naman14.amber.adapters.SlidingQueueAdapter;
-import com.naman14.amber.dataloaders.QueueLoader;
 import com.naman14.amber.helpers.SongModel;
 import com.naman14.amber.listeners.MusicStateListener;
 import com.naman14.amber.services.ServiceClient;
-import com.naman14.amber.timely.TimelyView;
 import com.naman14.amber.utils.Helpers;
 import com.naman14.amber.utils.NavigationUtils;
 import com.naman14.amber.utils.PreferencesUtility;
 import com.naman14.amber.utils.SlideTrackSwitcher;
 import com.naman14.amber.utils.AmberUtils;
-import com.naman14.amber.widgets.CircularSeekBar;
-import com.naman14.amber.widgets.DividerItemDecoration;
-import com.naman14.amber.widgets.PlayPauseButton;
 import com.naman14.amber.widgets.PlayPauseDrawable;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -69,8 +58,6 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 import net.steamcrafted.materialiconlib.MaterialIconView;
-
-import java.security.InvalidParameterException;
 
 public class BaseNowplayingFragment extends Fragment implements MusicStateListener {
 
@@ -110,27 +97,6 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                 overflowcounter++;
                 mProgress.postDelayed(mUpdateProgress, delay); //delay
             }
-        }
-    };
-
-
-    private final View.OnClickListener mButtonListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            duetoplaypause = true;
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (isOnlinePlayer) {
-                        MusicPlayer.playOrPauseOnline();
-                    } else {
-                        MusicPlayer.playOrPause();
-                    }
-                }
-            }, 200);
-
-
         }
     };
 
@@ -296,7 +262,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                         @Override
                         public void run() {
                             if (isOnlinePlayer) {
-
+                                MusicPlayer.playOnlineNext();
                             } else {
                                 MusicPlayer.next();
                             }
@@ -316,7 +282,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                         @Override
                         public void run() {
                             if (isOnlinePlayer) {
-
+                                MusicPlayer.playOnlinePrevious();
                             } else {
                                 MusicPlayer.previous(getActivity(), false);
                             }
@@ -344,19 +310,41 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                     .setSizeDp(30);
 
             if (getActivity() != null) {
-                if (MusicPlayer.getShuffleMode() == 0) {
-                    builder.setColor(Color.WHITE);
-                    //builder.setColor(Config.textColorPrimary(getActivity(), ateKey));
-                } else builder.setColor(Config.accentColor(getActivity(), ateKey));
+                if (isOnlinePlayer) {
+                    if (MusicPlayer.getShuffleStateOnline() == 0) {
+                        builder.setColor(Color.WHITE);
+                        //builder.setColor(Config.textColorPrimary(getActivity(), ateKey));
+                    } else {
+                        builder.setColor(Config.accentColor(getActivity(), ateKey));
+                    }
+                } else {
+                    if (MusicPlayer.getShuffleMode() == 0) {
+                        builder.setColor(Color.WHITE);
+                        //builder.setColor(Config.textColorPrimary(getActivity(), ateKey));
+                    } else {
+                        builder.setColor(Config.accentColor(getActivity(), ateKey));
+                    }
+                }
+
             }
 
             shuffle.setImageDrawable(builder.build());
             shuffle.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    MusicPlayer.cycleShuffle();
-                    updateShuffleState();
-                    updateRepeatState();
+                    if (isOnlinePlayer) {
+                        if (MusicPlayer.getShuffleStateOnline() == 1) {
+                            MusicPlayer.setShuffleOnline(0);
+                        } else {
+                            MusicPlayer.setShuffleOnline(1);
+                        }
+                        updateShuffleState();
+                    } else {
+                        MusicPlayer.cycleShuffle();
+                        updateShuffleState();
+                        updateRepeatState();
+                    }
+
                 }
             });
         }
@@ -367,16 +355,26 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             MaterialDrawableBuilder builder = MaterialDrawableBuilder.with(getActivity())
                     .setSizeDp(30);
 
-            if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_NONE) {
-                builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT);
-                builder.setColor(Color.WHITE);
-                // builder.setColor(Config.textColorPrimary(getActivity(), ateKey));
-            } else if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_CURRENT) {
-                builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT_ONCE);
-                builder.setColor(Config.accentColor(getActivity(), ateKey));
-            } else if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_ALL) {
-                builder.setColor(Config.accentColor(getActivity(), ateKey));
-                builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT);
+            if (isOnlinePlayer) {
+                if (MusicPlayer.getRepeatStateOnline() == 0) {
+                    builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT);
+                    builder.setColor(Color.WHITE);
+                } else {
+                    builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT_ONCE);
+                    builder.setColor(Config.accentColor(getActivity(), ateKey));
+                }
+            } else {
+                if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_NONE) {
+                    builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT);
+                    builder.setColor(Color.WHITE);
+                    // builder.setColor(Config.textColorPrimary(getActivity(), ateKey));
+                } else if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_CURRENT) {
+                    builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT_ONCE);
+                    builder.setColor(Config.accentColor(getActivity(), ateKey));
+                } else if (MusicPlayer.getRepeatMode() == MusicService.REPEAT_ALL) {
+                    builder.setColor(Config.accentColor(getActivity(), ateKey));
+                    builder.setIcon(MaterialDrawableBuilder.IconValue.REPEAT);
+                }
             }
 
 
@@ -384,9 +382,19 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             repeat.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    MusicPlayer.cycleRepeat();
-                    updateRepeatState();
-                    updateShuffleState();
+                    if (isOnlinePlayer) {
+                        if (MusicPlayer.getRepeatStateOnline() == 1) {
+                            MusicPlayer.setRepeatOnline(0);
+                        } else {
+                            MusicPlayer.setRepeatOnline(1);
+                        }
+                        updateRepeatState();
+                    } else {
+                        MusicPlayer.cycleRepeat();
+                        updateRepeatState();
+                        updateShuffleState();
+                    }
+
                 }
             });
         }

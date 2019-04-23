@@ -40,9 +40,9 @@ class OnlineSongListAdapter(val f: OnlineMainFragment) : RecyclerView.Adapter<Re
         (holder as OnlineSongViewHolder).bind(mData[position])
     }
 
-    fun bindData(model: SongListModel) {
+    fun bindData(songList: List<SongModel>) {
         mData.clear()
-        mData.addAll(model.songList)
+        mData.addAll(songList)
         notifyDataSetChanged()
     }
 
@@ -60,7 +60,7 @@ class OnlineSongListAdapter(val f: OnlineMainFragment) : RecyclerView.Adapter<Re
             itemView.setOnClickListener {
                 data?.let {
                     NavigationUtils.navigateToNowplayingOnline(adapter.f.activity)
-                    MusicPlayer.playOnline(it)
+                    MusicPlayer.playOnlineWithList(adapter.mData, adapterPosition)
                     adapter.notifyItemChanged(adapter.currentlyPlayingPosition)
                     adapter.currentlyPlayingPosition = adapterPosition
                     title.setTextColor(Config.accentColor(adapter.f.context, adapter.ateKey))
