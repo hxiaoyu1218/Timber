@@ -29,6 +29,7 @@ import android.widget.TextView;
 import com.naman14.amber.MusicPlayer;
 import com.naman14.amber.R;
 import com.naman14.amber.dialogs.AddPlaylistDialog;
+import com.naman14.amber.dialogs.AddPlaylistDialogOnline;
 import com.naman14.amber.lastfmapi.LastFmClient;
 import com.naman14.amber.lastfmapi.callbacks.ArtistInfoListener;
 import com.naman14.amber.lastfmapi.models.ArtistQuery;

@@ -35,6 +35,7 @@ import com.naman14.amber.dataloaders.SongLoader;
 import com.naman14.amber.dataloaders.TopTracksLoader;
 import com.naman14.amber.models.Playlist;
 import com.naman14.amber.models.Song;
+import com.naman14.amber.services.ServiceClient;
 import com.naman14.amber.utils.Constants;
 import com.naman14.amber.utils.NavigationUtils;
 import com.naman14.amber.utils.PreferencesUtility;
@@ -75,7 +76,7 @@ public class PlaylistPagerFragment extends Fragment {
         showAuto = PreferencesUtility.getInstance(getActivity()).showAutoPlaylist();
         View rootView = inflater.inflate(R.layout.fragment_playlist_pager, container, false);
 
-        final List<Playlist> playlists = PlaylistLoader.getPlaylists(getActivity(), showAuto);
+        final List<Playlist> playlists = PlaylistLoader.INSTANCE.getPlaylists(getActivity(), showAuto);
 
         pageNumber = getArguments().getInt(ARG_PAGE_NUMBER);
         playlist = playlists.get(pageNumber);
@@ -87,7 +88,11 @@ public class PlaylistPagerFragment extends Fragment {
         playlisttype = (TextView) rootView.findViewById(R.id.playlisttype);
         playlistImage = (ImageView) rootView.findViewById(R.id.playlist_image);
         foreground = rootView.findViewById(R.id.foreground);
-
+        if (playlist.isOnline) {
+            playlisttype.setText("Online\nPlaylist");
+        } else {
+            playlisttype.setText("Auto Local\nPlaylist");
+        }
         playlistImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -95,6 +100,10 @@ public class PlaylistPagerFragment extends Fragment {
                 tranitionViews.add(0, Pair.create((View) playlistame, "transition_playlist_name"));
                 tranitionViews.add(1, Pair.create((View) playlistImage, "transition_album_art"));
                 tranitionViews.add(2, Pair.create(foreground, "transition_foreground"));
+                if (playlist.isOnline) {
+                    NavigationUtils.navigateToPlaylistDetailOnline(getActivity(), getPlaylistType(), pageNumber, foregroundColor, tranitionViews);
+                    return;
+                }
                 NavigationUtils.navigateToPlaylistDetail(getActivity(), getPlaylistType(), firstAlbumID, String.valueOf(playlistame.getText()), foregroundColor, playlist.id, tranitionViews);
             }
         });
@@ -162,7 +171,7 @@ public class PlaylistPagerFragment extends Fragment {
                         case 0:
                             List<Song> lastAddedSongs = LastAddedLoader.getLastAddedSongs(getActivity());
                             songCountInt = lastAddedSongs.size();
-                            for(Song song : lastAddedSongs) {
+                            for (Song song : lastAddedSongs) {
                                 totalRuntime += song.duration / 1000; //for some reason default playlists have songs with durations 1000x larger than they should be
                             }
                             if (songCountInt != 0) {
@@ -173,8 +182,8 @@ public class PlaylistPagerFragment extends Fragment {
                             TopTracksLoader recentloader = new TopTracksLoader(getActivity(), TopTracksLoader.QueryType.RecentSongs);
                             List<Song> recentsongs = SongLoader.getSongsForCursor(TopTracksLoader.getCursor());
                             songCountInt = recentsongs.size();
-                            for(Song song : recentsongs){
-                                    totalRuntime += song.duration / 1000;
+                            for (Song song : recentsongs) {
+                                totalRuntime += song.duration / 1000;
                             }
 
                             if (songCountInt != 0) {
@@ -185,17 +194,21 @@ public class PlaylistPagerFragment extends Fragment {
                             TopTracksLoader topTracksLoader = new TopTracksLoader(getActivity(), TopTracksLoader.QueryType.TopTracks);
                             List<Song> topsongs = SongLoader.getSongsForCursor(TopTracksLoader.getCursor());
                             songCountInt = topsongs.size();
-                            for(Song song : topsongs){
-                                    totalRuntime += song.duration / 1000;
+                            for (Song song : topsongs) {
+                                totalRuntime += song.duration / 1000;
                             }
                             if (songCountInt != 0) {
                                 firstAlbumID = topsongs.get(0).albumId;
                                 return AmberUtils.getAlbumArtUri(firstAlbumID).toString();
                             } else return "nosongs";
                         default:
+                            if (playlist.isOnline) {
+                                songCountInt = playlist.songCount;
+                                return ServiceClient.SERVICE_URL + "/album_pic?song_id=" + playlist.listPic;
+                            }
                             List<Song> playlistsongs = PlaylistSongLoader.getSongsInPlaylist(getActivity(), playlist.id);
                             songCountInt = playlistsongs.size();
-                            for(Song song : playlistsongs){
+                            for (Song song : playlistsongs) {
                                 totalRuntime += song.duration;
                             }
                             if (songCountInt != 0) {
@@ -205,9 +218,13 @@ public class PlaylistPagerFragment extends Fragment {
 
                     }
                 } else {
+                    if (playlist.isOnline) {
+                        songCountInt = playlist.songCount;
+                        return ServiceClient.SERVICE_URL + "/album_pic?song_id=" + playlist.listPic;
+                    }
                     List<Song> playlistsongs = PlaylistSongLoader.getSongsInPlaylist(getActivity(), playlist.id);
                     songCountInt = playlistsongs.size();
-                    for(Song song : playlistsongs){
+                    for (Song song : playlistsongs) {
                         totalRuntime += song.duration;
                     }
                     if (songCountInt != 0) {

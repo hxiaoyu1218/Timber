@@ -39,8 +39,10 @@ import android.view.ViewGroup;
 import com.afollestad.appthemeengine.ATE;
 import com.naman14.amber.R;
 import com.naman14.amber.adapters.PlaylistAdapter;
+import com.naman14.amber.dataloaders.Callback;
 import com.naman14.amber.dataloaders.PlaylistLoader;
 import com.naman14.amber.dialogs.CreatePlaylistDialog;
+import com.naman14.amber.dialogs.CreatePlaylistDialogOnline;
 import com.naman14.amber.models.Playlist;
 import com.naman14.amber.subfragments.PlaylistPagerFragment;
 import com.naman14.amber.utils.Constants;
@@ -100,7 +102,7 @@ public class PlaylistFragment extends Fragment {
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setTitle(R.string.playlists);
 
-        playlists = PlaylistLoader.getPlaylists(getActivity(), showAuto);
+        playlists = PlaylistLoader.INSTANCE.getPlaylists(getActivity(), showAuto);
         playlistcount = playlists.size();
 
         if (isDefault) {
@@ -170,7 +172,7 @@ public class PlaylistFragment extends Fragment {
 
     private void updateLayoutManager(int column) {
         recyclerView.removeItemDecoration(itemDecoration);
-        recyclerView.setAdapter(new PlaylistAdapter(getActivity(), PlaylistLoader.getPlaylists(getActivity(), showAuto)));
+        recyclerView.setAdapter(new PlaylistAdapter(getActivity(), PlaylistLoader.INSTANCE.getPlaylists(getActivity(), showAuto)));
         layoutManager.setSpanCount(column);
         layoutManager.requestLayout();
         setItemDecoration();
@@ -229,7 +231,7 @@ public class PlaylistFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_new_playlist:
-                CreatePlaylistDialog.newInstance().show(getChildFragmentManager(), "CREATE_PLAYLIST");
+                CreatePlaylistDialogOnline.Companion.newInstance().show(getChildFragmentManager(), "CREATE_PLAYLIST");
                 return true;
             case R.id.menu_show_as_list:
                 mPreferences.setPlaylistView(Constants.PLAYLIST_VIEW_LIST);
@@ -266,8 +268,27 @@ public class PlaylistFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    public void updateListForce() {
+        PlaylistLoader.INSTANCE.forceRefreshList(getActivity(), showAuto, new Callback() {
+            @Override
+            public void cb(@org.jetbrains.annotations.Nullable List<? extends Playlist> list) {
+                reloadPlaylists();
+//                playlists.clear();
+//                playlists.addAll(list);
+//                playlistcount = list.size();
+//
+//                if (isDefault) {
+//                    adapter.notifyDataSetChanged();
+//                } else {
+//                    mAdapter.updateDataSet(playlists);
+//                }
+            }
+        });
+    }
+
     public void updatePlaylists(final long id) {
-        playlists = PlaylistLoader.getPlaylists(getActivity(), showAuto);
+        playlists = PlaylistLoader.INSTANCE.getPlaylists(getActivity(), showAuto);
+
         playlistcount = playlists.size();
 
         if (isDefault) {
@@ -294,7 +315,7 @@ public class PlaylistFragment extends Fragment {
     }
 
     public void reloadPlaylists() {
-        playlists = PlaylistLoader.getPlaylists(getActivity(), showAuto);
+        playlists = PlaylistLoader.INSTANCE.getPlaylists(getActivity(), showAuto);
         playlistcount = playlists.size();
 
         if (isDefault) {

@@ -429,6 +429,16 @@ public class MusicPlayer {
         return 0;
     }
 
+    public static boolean isOnlineMode() {
+        if (mService != null) {
+            try {
+                return mService.isOnlineMode();
+            } catch (final RemoteException ignored) {
+            }
+        }
+        return false;
+    }
+
     public static final MusicPlaybackTrack getCurrentTrack() {
         if (mService != null) {
             try {

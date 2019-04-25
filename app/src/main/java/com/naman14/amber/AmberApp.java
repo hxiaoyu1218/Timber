@@ -14,28 +14,42 @@
 
 package com.naman14.amber;
 
+import android.app.ActivityManager;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.support.multidex.MultiDexApplication;
+import android.util.Log;
 
 import com.afollestad.appthemeengine.ATE;
 import com.afollestad.appthemeengine.Config;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
+import com.naman14.amber.dataloaders.PlaylistLoader;
 import com.naman14.amber.permissions.Nammu;
+import com.naman14.amber.services.ServiceClient;
+import com.naman14.amber.utils.DeviceIdGenerator;
 import com.naman14.amber.utils.PreferencesUtility;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
 import com.nostra13.universalimageloader.utils.L;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.InputStream;
 
 import io.fabric.sdk.android.Fabric;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class AmberApp extends MultiDexApplication {
 
+    private String TAG = "huangxiaoyu.application";
     private static AmberApp mInstance;
+    public String id;
 
     public static synchronized AmberApp getInstance() {
         return mInstance;
@@ -68,6 +82,10 @@ public class AmberApp extends MultiDexApplication {
         L.disableLogging();
         L.writeDebugLogs(false);
         Nammu.init(this);
+        if (!getCurrentProcessName().contains(":")) {
+            registDeviceToServer();
+            PlaylistLoader.INSTANCE.loadPlayList(this);
+        }
 
 
         if (BuildConfig.DEBUG) {
@@ -154,10 +172,54 @@ public class AmberApp extends MultiDexApplication {
                         .usingMaterialDialogs(true)
                         .commit();
             }
+
+
         }
 
 
     }
 
+    private void registDeviceToServer() {
+        id = DeviceIdGenerator.getDeviceUUID(this);
+        Log.d(TAG, "registDeviceToServer: " + id);
+        SharedPreferences sharedPreferences = getSharedPreferences("regist_app", MODE_PRIVATE);
+        final SharedPreferences.Editor editor = sharedPreferences.edit();
+        if (!sharedPreferences.getBoolean("has_regist", false)) {
+            ServiceClient.INSTANCE.registDevice(id, new Callback<String>() {
+                @Override
+                public void success(String s, Response response) {
+                    try {
+                        JSONObject object = new JSONObject(s);
+                        if (object.optString("result").equals("success")) {
+                            editor.putBoolean("has_regist", true);
+                            editor.apply();
+                        }
+                    } catch (Exception e) {
 
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+
+                }
+            });
+        }
+    }
+
+    /**
+     * 获取当前进程名
+     */
+    private String getCurrentProcessName() {
+        int pid = android.os.Process.myPid();
+        String processName = "";
+        ActivityManager manager = (ActivityManager) getApplicationContext().getSystemService
+                (Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningAppProcessInfo process : manager.getRunningAppProcesses()) {
+            if (process.pid == pid) {
+                processName = process.processName;
+            }
+        }
+        return processName;
+    }
 }

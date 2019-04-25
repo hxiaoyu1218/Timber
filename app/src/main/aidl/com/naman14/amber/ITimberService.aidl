@@ -67,6 +67,9 @@ interface ITimberService
     int getRepeatStateOnline();
     void setShuffleStateOnline(int state);
     void setRepeatStateOnline(int state);
+    void moveOnlineSong(int from, int to);
+    List<SongModel> getCurrentSongList();
     SongModel getCurrentSongOnline();
+    boolean isOnlineMode();
 }
 

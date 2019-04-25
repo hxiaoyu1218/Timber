@@ -248,6 +248,7 @@ public class MusicService extends Service {
     private RecentStore mRecentStore;
     private int onlineShuffleState = 0;
     private int onlineRepeatState = 0;
+    private int isOnlineMode = 0;
     private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
 
         @Override
@@ -2534,6 +2535,10 @@ public class MusicService extends Service {
                 mNextMediaPlayer.release();
                 mNextMediaPlayer = null;
             }
+            if (mOnlinePlayer != null) {
+                mOnlinePlayer.release();
+                mService.get().isOnlineMode = 0;
+            }
             if (path == null) {
                 return;
             }
@@ -2713,6 +2718,7 @@ public class MusicService extends Service {
         onlineList.clear();
         onlineList.add(model);
         onlinePos = 0;
+        isOnlineMode = 1;
         mPlayer.playOnline(model.getId());
     }
 
@@ -2720,6 +2726,7 @@ public class MusicService extends Service {
         onlineList.clear();
         onlineList.addAll(list);
         onlinePos = pos;
+        isOnlineMode = 1;
         mPlayer.playOnline(list.get(pos).getId());
     }
 
@@ -3104,6 +3111,21 @@ public class MusicService extends Service {
         @Override
         public void setRepeatStateOnline(int state) throws RemoteException {
             mService.get().onlineRepeatState = state;
+        }
+
+        @Override
+        public void moveOnlineSong(int from, int to) throws RemoteException {
+
+        }
+
+        @Override
+        public boolean isOnlineMode() throws RemoteException {
+            return mService.get().isOnlineMode == 1;
+        }
+
+        @Override
+        public List<SongModel> getCurrentSongList() throws RemoteException {
+            return mService.get().onlineList;
         }
     }
 

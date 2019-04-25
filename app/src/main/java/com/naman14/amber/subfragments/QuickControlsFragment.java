@@ -35,7 +35,9 @@ import com.afollestad.appthemeengine.Config;
 import com.naman14.amber.MusicPlayer;
 import com.naman14.amber.R;
 import com.naman14.amber.activities.BaseActivity;
+import com.naman14.amber.helpers.SongModel;
 import com.naman14.amber.listeners.MusicStateListener;
+import com.naman14.amber.services.ServiceClient;
 import com.naman14.amber.utils.Helpers;
 import com.naman14.amber.utils.ImageUtils;
 import com.naman14.amber.utils.NavigationUtils;
@@ -51,7 +53,6 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import net.steamcrafted.materialiconlib.MaterialIconView;
 
 public class QuickControlsFragment extends Fragment implements MusicStateListener {
-
 
     public static View topContainer;
     private ProgressBar mProgress;
@@ -72,12 +73,13 @@ public class QuickControlsFragment extends Fragment implements MusicStateListene
         @Override
         public void run() {
 
-            long position = MusicPlayer.position();
+            long position = MusicPlayer.isOnlineMode() ? MusicPlayer.positionOnline() :
+                    MusicPlayer.position();
             mProgress.setProgress((int) position);
             mSeekBar.setProgress((int) position);
 
             overflowcounter--;
-            if (MusicPlayer.isPlaying()) {
+            if (MusicPlayer.isOnlinePlaying() || MusicPlayer.isPlaying()) {
                 int delay = (int) (1500 - (position % 1000));
                 if (overflowcounter < 0 && !fragmentPaused) {
                     overflowcounter++;
@@ -103,7 +105,11 @@ public class QuickControlsFragment extends Fragment implements MusicStateListene
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    MusicPlayer.playOrPause();
+                    if (MusicPlayer.isOnlineMode()) {
+                        MusicPlayer.playOrPauseOnline();
+                    } else {
+                        MusicPlayer.playOrPause();
+                    }
                 }
             }, 200);
 
@@ -125,7 +131,11 @@ public class QuickControlsFragment extends Fragment implements MusicStateListene
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    MusicPlayer.playOrPause();
+                    if (MusicPlayer.isOnlineMode()) {
+                        MusicPlayer.playOrPauseOnline();
+                    } else {
+                        MusicPlayer.playOrPause();
+                    }
                 }
             }, 200);
 
@@ -168,6 +178,9 @@ public class QuickControlsFragment extends Fragment implements MusicStateListene
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 if (b) {
+                    if (MusicPlayer.isOnlineMode()) {
+                        return;
+                    }
                     MusicPlayer.seek((long) i);
                 }
             }
@@ -188,6 +201,10 @@ public class QuickControlsFragment extends Fragment implements MusicStateListene
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        if (MusicPlayer.isOnlineMode()) {
+                            MusicPlayer.playOnlineNext();
+                            return;
+                        }
                         MusicPlayer.next();
                     }
                 }, 200);
@@ -202,6 +219,10 @@ public class QuickControlsFragment extends Fragment implements MusicStateListene
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        if (MusicPlayer.isOnlineMode()) {
+                            MusicPlayer.playOnlinePrevious();
+                            return;
+                        }
                         MusicPlayer.previous(getActivity(), false);
                     }
                 }, 200);
@@ -274,7 +295,52 @@ public class QuickControlsFragment extends Fragment implements MusicStateListene
         mProgress.setMax((int) MusicPlayer.duration());
         mSeekBar.setMax((int) MusicPlayer.duration());
         mProgress.postDelayed(mUpdateProgress, 10);
+
     }
+
+    private void updateInfo() {
+        SongModel song = MusicPlayer.getCurrentSongModel();
+        mTitle.setText(song.getName());
+        mArtist.setText(song.getArtistName());
+        mTitleExpanded.setText(song.getName());
+        mArtistExpanded.setText(song.getArtistName());
+        if (!duetoplaypause) {
+            ImageLoader.getInstance().displayImage(ServiceClient.SERVICE_URL + "/album_pic?song_id=" + song.getId(), mAlbumArt,
+                    new DisplayImageOptions.Builder().cacheInMemory(true)
+                            .showImageOnFail(R.drawable.holder)
+                            .resetViewBeforeLoading(true)
+                            .build(), new ImageLoadingListener() {
+                        @Override
+                        public void onLoadingStarted(String imageUri, View view) {
+
+                        }
+
+                        @Override
+                        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                            Bitmap failedBitmap = ImageLoader.getInstance().loadImageSync("drawable://" + R.drawable.holder);
+                            if (getActivity() != null)
+                                new setBlurredAlbumArt().execute(failedBitmap);
+                        }
+
+                        @Override
+                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                            if (getActivity() != null)
+                                new setBlurredAlbumArt().execute(loadedImage);
+
+                        }
+
+                        @Override
+                        public void onLoadingCancelled(String imageUri, View view) {
+
+                        }
+                    });
+        }
+        duetoplaypause = false;
+        mProgress.setMax((int) song.getDuration() * 1000);
+        mSeekBar.setMax((int) song.getDuration() * 1000);
+        mProgress.postDelayed(mUpdateProgress, 10);
+    }
+
 
     @Override
     public void onStart() {
@@ -299,7 +365,7 @@ public class QuickControlsFragment extends Fragment implements MusicStateListene
     }
 
     public void updateState() {
-        if (MusicPlayer.isPlaying()) {
+        if (MusicPlayer.isOnlinePlaying() || MusicPlayer.isPlaying()) {
             if (!mPlayPause.isPlayed()) {
                 mPlayPause.setPlayed(true);
                 mPlayPause.startAnimation();
@@ -329,7 +395,11 @@ public class QuickControlsFragment extends Fragment implements MusicStateListene
     }
 
     public void onMetaChanged() {
-        updateNowplayingCard();
+        if (MusicPlayer.isOnlineMode()) {
+            updateInfo();
+        } else {
+            updateNowplayingCard();
+        }
         updateState();
     }
 

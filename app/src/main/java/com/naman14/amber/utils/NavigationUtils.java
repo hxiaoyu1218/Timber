@@ -20,6 +20,7 @@ import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +28,7 @@ import android.util.Pair;
 import android.view.View;
 import android.widget.Toast;
 
+import com.naman14.amber.MusicPlayer;
 import com.naman14.amber.R;
 import com.naman14.amber.activities.AlbumDetailActivity;
 import com.naman14.amber.activities.ArtistDetailActivity;
@@ -107,7 +109,7 @@ public class NavigationUtils {
         context.startActivity(intent);
     }
 
-    public static void navigateToNowplayingOnline(Activity context) {
+    public static void navigateToNowplayingOnline(Context context) {
 
         final Intent intent = new Intent(context, NowPlayingActivity.class);
         intent.putExtra(Constants.IS_ONLINE_PLAYING, true);
@@ -115,8 +117,10 @@ public class NavigationUtils {
     }
 
     public static void navigateToNowplaying(Activity context, boolean withAnimations) {
-
         final Intent intent = new Intent(context, NowPlayingActivity.class);
+        if (MusicPlayer.isOnlineMode()) {
+            intent.putExtra(Constants.IS_ONLINE_PLAYING, true);
+        }
         context.startActivity(intent);
     }
 
@@ -149,6 +153,23 @@ public class NavigationUtils {
         intent.putExtra(Constants.PLAYLIST_FOREGROUND_COLOR, foregroundcolor);
         intent.putExtra(Constants.ALBUM_ID, firstAlbumID);
         intent.putExtra(Constants.PLAYLIST_NAME, playlistName);
+        intent.putExtra(Constants.ACTIVITY_TRANSITION, transitionViews != null);
+
+        if (transitionViews != null && AmberUtils.isLollipop()) {
+            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(context, transitionViews.get(0), transitionViews.get(1), transitionViews.get(2));
+            context.startActivityForResult(intent, Constants.ACTION_DELETE_PLAYLIST, options.toBundle());
+        } else {
+            context.startActivityForResult(intent, Constants.ACTION_DELETE_PLAYLIST);
+        }
+    }
+
+    @TargetApi(21)
+    public static void navigateToPlaylistDetailOnline(Activity context, String action,int pos, int foregroundcolor, ArrayList<Pair> transitionViews) {
+        final Intent intent = new Intent(context, PlaylistDetailActivity.class);
+        intent.setAction(action);
+        intent.putExtra(Constants.PLAY_LIST_POS, pos);
+        intent.putExtra(Constants.IS_ONLINE_PLAYING, true);
+        intent.putExtra(Constants.PLAYLIST_FOREGROUND_COLOR, foregroundcolor);
         intent.putExtra(Constants.ACTIVITY_TRANSITION, transitionViews != null);
 
         if (transitionViews != null && AmberUtils.isLollipop()) {

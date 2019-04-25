@@ -48,8 +48,10 @@ import com.naman14.amber.fragments.MainFragment;
 import com.naman14.amber.fragments.OnlineMainFragment;
 import com.naman14.amber.fragments.PlaylistFragment;
 import com.naman14.amber.fragments.QueueFragment;
+import com.naman14.amber.helpers.SongModel;
 import com.naman14.amber.permissions.Nammu;
 import com.naman14.amber.permissions.PermissionCallback;
+import com.naman14.amber.services.ServiceClient;
 import com.naman14.amber.slidinguppanel.SlidingUpPanelLayout;
 import com.naman14.amber.subfragments.LyricsFragment;
 import com.naman14.amber.utils.AmberUtils;
@@ -202,7 +204,13 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
     private Runnable navigateNowplaying = new Runnable() {
         public void run() {
             navigateLibrary.run();
-            startActivity(new Intent(MainActivity.this, NowPlayingActivity.class));
+            if (MusicPlayer.isOnlineMode()) {
+                Intent intent = new Intent(MainActivity.this, NowPlayingActivity.class);
+                intent.putExtra(Constants.IS_ONLINE_PLAYING, true);
+                startActivity(intent);
+            } else {
+                startActivity(new Intent(MainActivity.this, NowPlayingActivity.class));
+            }
         }
     };
 
@@ -503,18 +511,21 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
     }
 
     public void setDetailsToHeader() {
-        String name = MusicPlayer.getTrackName();
-        String artist = MusicPlayer.getArtistName();
+        boolean online = MusicPlayer.isOnlineMode();
+        SongModel song = MusicPlayer.getCurrentSongModel();
+        String name = online ? song.getName() : MusicPlayer.getTrackName();
+        String artist = online ? song.getArtistName() : MusicPlayer.getArtistName();
 
         if (name != null && artist != null) {
             songtitle.setText(name);
             songartist.setText(artist);
         }
-        if (MusicPlayer.getCurrentAlbumId() == -1) {
+        if (MusicPlayer.getCurrentAlbumId() == -1 && !online) {
             return;
         }
-        Log.d("huangxiaoyutag", "load navigation header" + AmberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString());
-        ImageLoader.getInstance().displayImage(AmberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), albumart,
+        ImageLoader.getInstance().displayImage(online ?
+                        ServiceClient.SERVICE_URL + "/album_pic?song_id=" + song.getId() :
+                        AmberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), albumart,
                 new DisplayImageOptions.Builder().cacheInMemory(true)
                         .showImageOnFail(R.drawable.holder)
                         .resetViewBeforeLoading(true)
@@ -526,7 +537,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
         super.onMetaChanged();
         setDetailsToHeader();
 
-        if (panelLayout.isPanelHidden() && MusicPlayer.getTrackName() != null) {
+        if (panelLayout.isPanelHidden() && (MusicPlayer.getTrackName() != null || MusicPlayer.isOnlineMode())) {
             panelLayout.showPanel();
         }
     }

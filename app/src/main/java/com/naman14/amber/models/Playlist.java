@@ -17,18 +17,34 @@ package com.naman14.amber.models;
 public class Playlist {
 
     public final long id;
+    public String onlineId;
     public final String name;
     public final int songCount;
+    public boolean isOnline = false;
+    public String listPic;
+    public int shareCount;
 
     public Playlist() {
         this.id = -1;
         this.name = "";
         this.songCount = -1;
+        this.isOnline = false;
     }
 
     public Playlist(long _id, String _name, int _songCount) {
         this.id = _id;
         this.name = _name;
         this.songCount = _songCount;
+        this.isOnline = false;
+    }
+
+    public Playlist(String _id, String _name, int _songCount, boolean _isOnline, int _shareCount, String _listPic) {
+        this.id = 0;
+        this.onlineId = _id;
+        this.name = _name;
+        this.songCount = _songCount;
+        this.isOnline = _isOnline;
+        this.shareCount = _shareCount;
+        this.listPic = _listPic;
     }
 }

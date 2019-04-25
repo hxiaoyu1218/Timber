@@ -19,14 +19,14 @@ import java.util.List;
  */
 public class AddPlaylistDialog extends DialogFragment {
 
-    public static AddPlaylistDialog newInstance(Song song) {
+    public static AddPlaylistDialogOnline newInstance(Song song) {
         long[] songs = new long[1];
         songs[0] = song.id;
         return newInstance(songs);
     }
 
-    public static AddPlaylistDialog newInstance(long[] songList) {
-        AddPlaylistDialog dialog = new AddPlaylistDialog();
+    public static AddPlaylistDialogOnline newInstance(long[] songList) {
+        AddPlaylistDialogOnline dialog = new AddPlaylistDialogOnline();
         Bundle bundle = new Bundle();
         bundle.putLongArray("songs", songList);
         dialog.setArguments(bundle);
@@ -37,7 +37,7 @@ public class AddPlaylistDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        final List<Playlist> playlists = PlaylistLoader.getPlaylists(getActivity(), false);
+        final List<Playlist> playlists = PlaylistLoader.INSTANCE.getPlaylists(getActivity(), false);
         CharSequence[] chars = new CharSequence[playlists.size() + 1];
         chars[0] = "Create new playlist";
 

@@ -15,19 +15,13 @@
 package com.naman14.amber.fragments;
 
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -44,22 +38,18 @@ import com.naman14.amber.adapters.ArtistSongAdapter;
 import com.naman14.amber.dataloaders.ArtistLoader;
 import com.naman14.amber.dataloaders.ArtistSongLoader;
 import com.naman14.amber.dialogs.AddPlaylistDialog;
+import com.naman14.amber.dialogs.AddPlaylistDialogOnline;
 import com.naman14.amber.lastfmapi.LastFmClient;
 import com.naman14.amber.lastfmapi.callbacks.ArtistInfoListener;
 import com.naman14.amber.lastfmapi.models.ArtistQuery;
 import com.naman14.amber.lastfmapi.models.LastfmArtist;
 import com.naman14.amber.models.Artist;
 import com.naman14.amber.models.Song;
-import com.naman14.amber.utils.ATEUtils;
 import com.naman14.amber.utils.Constants;
-import com.naman14.amber.utils.Helpers;
 import com.naman14.amber.utils.ImageUtils;
 import com.naman14.amber.utils.AmberUtils;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-
-import org.w3c.dom.Text;
 
 import java.util.List;
 

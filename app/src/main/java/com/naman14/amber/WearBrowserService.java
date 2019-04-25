@@ -281,7 +281,7 @@ public class WearBrowserService extends MediaBrowserService {
                             }
                             break;
                         case TYPE_PLAYLIST:
-                            List<Playlist> playlistList = PlaylistLoader.getPlaylists(mContext, false);
+                            List<Playlist> playlistList = PlaylistLoader.INSTANCE.getPlaylists(mContext, false);
                             for (Playlist playlist : playlistList) {
                                 String songCount = AmberUtils.makeLabel(mContext, R.plurals.Nsongs, playlist.songCount);
                                 fillMediaItems(mediaItems, Integer.toString(TYPE_PLAYLIST_ALL_SONGS) + Long.toString(playlist.id), playlist.name,

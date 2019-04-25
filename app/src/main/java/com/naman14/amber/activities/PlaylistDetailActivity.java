@@ -21,7 +21,6 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.StyleRes;
@@ -42,7 +41,9 @@ import com.afollestad.appthemeengine.customizers.ATEActivityThemeCustomizer;
 import com.afollestad.appthemeengine.customizers.ATEToolbarCustomizer;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.gson.Gson;
 import com.naman14.amber.R;
+import com.naman14.amber.adapters.OnlineSongListAdapter;
 import com.naman14.amber.adapters.SongsListAdapter;
 import com.naman14.amber.dataloaders.LastAddedLoader;
 import com.naman14.amber.dataloaders.PlaylistLoader;
@@ -50,9 +51,12 @@ import com.naman14.amber.dataloaders.PlaylistSongLoader;
 import com.naman14.amber.dataloaders.SongLoader;
 import com.naman14.amber.dataloaders.TopTracksLoader;
 import com.naman14.amber.listeners.SimplelTransitionListener;
+import com.naman14.amber.models.Playlist;
 import com.naman14.amber.models.Song;
-import com.naman14.amber.utils.Constants;
+import com.naman14.amber.services.ServiceClient;
+import com.naman14.amber.services.SongListModel;
 import com.naman14.amber.utils.AmberUtils;
+import com.naman14.amber.utils.Constants;
 import com.naman14.amber.widgets.DividerItemDecoration;
 import com.naman14.amber.widgets.DragSortRecycler;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -61,14 +65,21 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import java.util.HashMap;
 import java.util.List;
 
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+
 public class PlaylistDetailActivity extends BaseActivity implements ATEActivityThemeCustomizer, ATEToolbarCustomizer {
 
     private String action;
     private long playlistID;
+    private Playlist playlist;
+    private boolean isOnline = false;
     private HashMap<String, Runnable> playlistsMap = new HashMap<>();
 
     private AppCompatActivity mContext = PlaylistDetailActivity.this;
     private SongsListAdapter mAdapter;
+    private OnlineSongListAdapter adapter;
     private RecyclerView recyclerView;
     private ImageView blurFrame;
     private TextView playlistname;
@@ -96,7 +107,26 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
     private Runnable playlistUsercreated = new Runnable() {
         @Override
         public void run() {
-            new loadUserCreatedPlaylist().execute("");
+            if (isOnline) {
+                ServiceClient.INSTANCE.getListContent(playlist.onlineId, new Callback<String>() {
+                    @Override
+                    public void success(String s, Response response) {
+                        SongListModel data = new Gson().fromJson(s, SongListModel.class);
+                        Log.d("23333333", "success: " + data.toString());
+                        adapter = new OnlineSongListAdapter(PlaylistDetailActivity.this);
+                        adapter.setList(true);
+                        adapter.bindData(data.getSongList());
+                        setRecyclerViewAapter();
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+
+                    }
+                });
+            } else {
+                new loadUserCreatedPlaylist().execute("");
+            }
         }
     };
 
@@ -126,10 +156,16 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
         foreground = findViewById(R.id.foreground);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
+        int pos = getIntent().getIntExtra(Constants.PLAY_LIST_POS, -1);
+        if (pos != -1) {
+            playlist = PlaylistLoader.INSTANCE.getPlaylists(this, true).get(pos);
+            isOnline = playlist.isOnline;
+        }
         setAlbumart();
 
         animate = getIntent().getBooleanExtra(Constants.ACTIVITY_TRANSITION, false);
+
+
         if (animate && AmberUtils.isLollipop()) {
             getWindow().getEnterTransition().addListener(new EnterTransitionListener());
         } else {
@@ -139,9 +175,10 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
     }
 
     private void setAlbumart() {
-        playlistname.setText(getIntent().getExtras().getString(Constants.PLAYLIST_NAME));
+        String name = getIntent().getExtras().getString(Constants.PLAYLIST_NAME);
+        playlistname.setText(isOnline ? playlist.name : name);
         foreground.setBackgroundColor(getIntent().getExtras().getInt(Constants.PLAYLIST_FOREGROUND_COLOR));
-        loadBitmap(AmberUtils.getAlbumArtUri(getIntent().getExtras().getLong(Constants.ALBUM_ID)).toString());
+        loadBitmap(isOnline ? ServiceClient.SERVICE_URL + "/album_pic?song_id=" + playlist.listPic : AmberUtils.getAlbumArtUri(getIntent().getExtras().getLong(Constants.ALBUM_ID)).toString());
     }
 
     private void setUpSongs() {
@@ -156,12 +193,16 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
                 @Override
                 public void onItemMoved(int from, int to) {
                     Log.d("playlist", "onItemMoved " + from + " to " + to);
-                    Song song = mAdapter.getSongAt(from);
-                    mAdapter.removeSongAt(from);
-                    mAdapter.addSongTo(to, song);
-                    mAdapter.notifyDataSetChanged();
-                    MediaStore.Audio.Playlists.Members.moveItem(getContentResolver(),
-                            playlistID, from, to);
+                    if (isOnline) {
+
+                    } else {
+                        Song song = mAdapter.getSongAt(from);
+                        mAdapter.removeSongAt(from);
+                        mAdapter.addSongTo(to, song);
+                        mAdapter.notifyDataSetChanged();
+                        MediaStore.Audio.Playlists.Members.moveItem(getContentResolver(),
+                                playlistID, from, to);
+                    }
                 }
             });
 
@@ -183,7 +224,7 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
     }
 
     private void setRecyclerViewAapter() {
-        recyclerView.setAdapter(mAdapter);
+        recyclerView.setAdapter(isOnline ? adapter : mAdapter);
         if (animate && AmberUtils.isLollipop()) {
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
@@ -346,7 +387,7 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        PlaylistLoader.deletePlaylists(PlaylistDetailActivity.this, playlistID);
+                        PlaylistLoader.INSTANCE.deletePlaylists(PlaylistDetailActivity.this, playlistID);
                         Intent returnIntent = new Intent();
                         setResult(Activity.RESULT_OK, returnIntent);
                         finish();

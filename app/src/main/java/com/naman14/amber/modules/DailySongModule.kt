@@ -51,7 +51,7 @@ class DailySongModule(val f: OnlineMainFragment, val data: DailySongModel) {
         }
 
         fun init(): DailySongView {
-            adapter = OnlineSongListAdapter(fragment)
+            adapter = OnlineSongListAdapter(fragment.context)
             recyclerView.adapter = adapter
             return this
         }
