@@ -50,6 +50,7 @@ import com.naman14.amber.dataloaders.PlaylistLoader;
 import com.naman14.amber.dataloaders.PlaylistSongLoader;
 import com.naman14.amber.dataloaders.SongLoader;
 import com.naman14.amber.dataloaders.TopTracksLoader;
+import com.naman14.amber.helpers.SongModel;
 import com.naman14.amber.listeners.SimplelTransitionListener;
 import com.naman14.amber.models.Playlist;
 import com.naman14.amber.models.Song;
@@ -194,7 +195,11 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
                 public void onItemMoved(int from, int to) {
                     Log.d("playlist", "onItemMoved " + from + " to " + to);
                     if (isOnline) {
-
+                        //server     upload to server and callback to refresh adapter data
+                        SongModel songModel = adapter.getMData().get(from);
+                        adapter.removeSong(from);
+                        adapter.addSongAt(songModel, to);
+                        adapter.notifyDataSetChanged();
                     } else {
                         Song song = mAdapter.getSongAt(from);
                         mAdapter.removeSongAt(from);

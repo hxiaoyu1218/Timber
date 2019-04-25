@@ -7,6 +7,7 @@ import android.widget.Toast
 import com.afollestad.materialdialogs.MaterialDialog
 import com.naman14.amber.AmberApp
 import com.naman14.amber.fragments.PlaylistFragment
+import com.naman14.amber.helpers.SongModel
 import com.naman14.amber.models.Song
 import com.naman14.amber.services.ServiceClient
 import org.json.JSONObject
@@ -28,6 +29,11 @@ class CreatePlaylistDialogOnline : DialogFragment() {
                 override fun success(t: String?, response: Response?) {
                     val o = JSONObject(t)
                     if (o.optString("result") == "success") {
+                        val songs = arguments.getParcelableArrayList<SongModel>("songs")
+                        if(!songs.isNullOrEmpty()){
+                            //server add new song to list
+                            //call back to update list
+                        }
                         Toast.makeText(AmberApp.getInstance(), "Created playlist", Toast.LENGTH_SHORT).show()
                         if (parentFragment is PlaylistFragment) {
                             (parentFragment as PlaylistFragment).updateListForce()
@@ -45,22 +51,23 @@ class CreatePlaylistDialogOnline : DialogFragment() {
 
     companion object {
 
-        @JvmOverloads
-        fun newInstance(song: Song? = null): CreatePlaylistDialogOnline {
-            val songs: LongArray
-            if (song == null) {
-                songs = LongArray(0)
-            } else {
-                songs = LongArray(1)
-                songs[0] = song.id
-            }
+        fun newInstance(song: SongModel): CreatePlaylistDialogOnline {
+            val songs = arrayListOf(song)
             return newInstance(songs)
         }
 
-        fun newInstance(songList: LongArray): CreatePlaylistDialogOnline {
+        fun newInstance(): CreatePlaylistDialogOnline {
             val dialog = CreatePlaylistDialogOnline()
             val bundle = Bundle()
-            bundle.putLongArray("songs", songList)
+            bundle.putParcelableArrayList("songs", ArrayList())
+            dialog.arguments = bundle
+            return dialog
+        }
+
+        fun newInstance(songList: ArrayList<SongModel>): CreatePlaylistDialogOnline {
+            val dialog = CreatePlaylistDialogOnline()
+            val bundle = Bundle()
+            bundle.putParcelableArrayList("songs", songList)
             dialog.arguments = bundle
             return dialog
         }

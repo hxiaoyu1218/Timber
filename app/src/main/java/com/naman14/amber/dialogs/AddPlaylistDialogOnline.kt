@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import com.afollestad.materialdialogs.MaterialDialog
 import com.naman14.amber.MusicPlayer
+import com.naman14.amber.R.string.songs
 import com.naman14.amber.dataloaders.PlaylistLoader
+import com.naman14.amber.helpers.SongModel
 import com.naman14.amber.models.Song
 
 /**
@@ -24,30 +26,30 @@ class AddPlaylistDialogOnline : DialogFragment() {
         for (i in playlists.indices) {
             chars[i + 1] = playlists[i].name
         }
-        return MaterialDialog.Builder(activity).title("Add to playlist").items(*chars).itemsCallback(MaterialDialog.ListCallback { dialog, itemView, which, text ->
-            val songs = arguments.getLongArray("songs")
-            if (which == 0) {
-                CreatePlaylistDialog.newInstance(songs).show(activity.supportFragmentManager, "CREATE_PLAYLIST")
-                return@ListCallback
-            }
-
-            MusicPlayer.addToPlaylist(activity, songs!!, playlists[which - 1].id)
-            dialog.dismiss()
-        }).build()
+        return MaterialDialog.Builder(activity).title("Add to playlist").items(*chars)
+            .itemsCallback(MaterialDialog.ListCallback { dialog, _, which, _ ->
+                val songs = arguments.getParcelableArrayList<SongModel>("songs")
+                if (which == 0) {
+                    CreatePlaylistDialogOnline.newInstance(songs)
+                        .show(activity.supportFragmentManager, "CREATE_PLAYLIST")
+                    return@ListCallback
+                }
+                //server
+                dialog.dismiss()
+            }).build()
     }
 
     companion object {
 
-        fun newInstance(song: Song): AddPlaylistDialogOnline {
-            val songs = LongArray(1)
-            songs[0] = song.id
+        fun newInstance(song: SongModel): AddPlaylistDialogOnline {
+            val songs = arrayListOf(song)
             return newInstance(songs)
         }
 
-        fun newInstance(songList: LongArray): AddPlaylistDialogOnline {
+        fun newInstance(songList: ArrayList<SongModel>): AddPlaylistDialogOnline {
             val dialog = AddPlaylistDialogOnline()
             val bundle = Bundle()
-            bundle.putLongArray("songs", songList)
+            bundle.putParcelableArrayList("songs", songList)
             dialog.arguments = bundle
             return dialog
         }

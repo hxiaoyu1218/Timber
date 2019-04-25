@@ -31,8 +31,10 @@ import com.afollestad.appthemeengine.ATE;
 import com.naman14.amber.MusicPlayer;
 import com.naman14.amber.R;
 import com.naman14.amber.activities.BaseActivity;
+import com.naman14.amber.adapters.OnlineSongListAdapter;
 import com.naman14.amber.adapters.PlayingQueueAdapter;
 import com.naman14.amber.dataloaders.QueueLoader;
+import com.naman14.amber.helpers.SongModel;
 import com.naman14.amber.listeners.MusicStateListener;
 import com.naman14.amber.models.Song;
 import com.naman14.amber.widgets.BaseRecyclerView;
@@ -41,13 +43,15 @@ import com.naman14.amber.widgets.DragSortRecycler;
 public class QueueFragment extends Fragment implements MusicStateListener {
 
     private PlayingQueueAdapter mAdapter;
+    private OnlineSongListAdapter adapter;
     private BaseRecyclerView recyclerView;
+    private boolean isOnline;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(
                 R.layout.fragment_queue, container, false);
-
+        isOnline = MusicPlayer.isOnlineMode();
         Toolbar toolbar = rootView.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("dark_theme", false)) {
@@ -90,21 +94,33 @@ public class QueueFragment extends Fragment implements MusicStateListener {
     }
 
     public void onMetaChanged() {
-        if (mAdapter != null)
+        if (mAdapter != null) {
             mAdapter.notifyDataSetChanged();
+        }
     }
 
     private class loadQueueSongs extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... params) {
-            mAdapter = new PlayingQueueAdapter(getActivity(), QueueLoader.getQueueSongs(getActivity()));
+            if (isOnline) {
+                adapter = new OnlineSongListAdapter(getActivity());
+                adapter.bindData(MusicPlayer.getCurrentSongList());
+            } else {
+                mAdapter = new PlayingQueueAdapter(getActivity(), QueueLoader.getQueueSongs(getActivity()));
+            }
+
             return "Executed";
         }
 
         @Override
         protected void onPostExecute(String result) {
-            recyclerView.setAdapter(mAdapter);
+            if (isOnline) {
+                recyclerView.setAdapter(adapter);
+            } else {
+                recyclerView.setAdapter(mAdapter);
+            }
+
             DragSortRecycler dragSortRecycler = new DragSortRecycler();
             dragSortRecycler.setViewHandleId(R.id.reorder);
 
@@ -112,11 +128,19 @@ public class QueueFragment extends Fragment implements MusicStateListener {
                 @Override
                 public void onItemMoved(int from, int to) {
                     Log.d("queue", "onItemMoved " + from + " to " + to);
-                    Song song = mAdapter.getSongAt(from);
-                    mAdapter.removeSongAt(from);
-                    mAdapter.addSongTo(to, song);
-                    mAdapter.notifyDataSetChanged();
-                    MusicPlayer.moveQueueItem(from, to);
+                    if (isOnline) {
+                        //server     upload to server and callback to refresh adapter data
+                        SongModel songModel = adapter.getMData().get(from);
+                        adapter.removeSong(from);
+                        adapter.addSongAt(songModel, to);
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        Song song = mAdapter.getSongAt(from);
+                        mAdapter.removeSongAt(from);
+                        mAdapter.addSongTo(to, song);
+                        mAdapter.notifyDataSetChanged();
+                        MusicPlayer.moveQueueItem(from, to);
+                    }
                 }
             });
 
@@ -124,7 +148,7 @@ public class QueueFragment extends Fragment implements MusicStateListener {
             recyclerView.addOnItemTouchListener(dragSortRecycler);
             recyclerView.addOnScrollListener(dragSortRecycler.getScrollListener());
 
-            recyclerView.getLayoutManager().scrollToPosition(mAdapter.currentlyPlayingPosition);
+            recyclerView.getLayoutManager().scrollToPosition(isOnline ? adapter.getCurrentlyPlayingPosition() : mAdapter.currentlyPlayingPosition);
 
         }
 

@@ -37,6 +37,7 @@ import com.naman14.amber.helpers.MusicPlaybackTrack;
 import com.naman14.amber.helpers.SongModel;
 import com.naman14.amber.utils.AmberUtils.IdType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.WeakHashMap;
@@ -417,6 +418,16 @@ public class MusicPlayer {
             }
         }
         return null;
+    }
+
+    public static List<SongModel> getCurrentSongList() {
+        if (mService != null) {
+            try {
+                return mService.getCurrentSongList();
+            } catch (final RemoteException ignored) {
+            }
+        }
+        return new ArrayList<SongModel>();
     }
 
     public static int getCurrentPosOnline() {

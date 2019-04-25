@@ -19,14 +19,14 @@ import java.util.List;
  */
 public class AddPlaylistDialog extends DialogFragment {
 
-    public static AddPlaylistDialogOnline newInstance(Song song) {
+    public static AddPlaylistDialog newInstance(Song song) {
         long[] songs = new long[1];
         songs[0] = song.id;
         return newInstance(songs);
     }
 
-    public static AddPlaylistDialogOnline newInstance(long[] songList) {
-        AddPlaylistDialogOnline dialog = new AddPlaylistDialogOnline();
+    public static AddPlaylistDialog newInstance(long[] songList) {
+        AddPlaylistDialog dialog = new AddPlaylistDialog();
         Bundle bundle = new Bundle();
         bundle.putLongArray("songs", songList);
         dialog.setArguments(bundle);
