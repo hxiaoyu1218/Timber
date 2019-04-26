@@ -44,6 +44,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.gson.Gson;
 import com.naman14.amber.R;
 import com.naman14.amber.adapters.OnlineSongListAdapter;
+import com.naman14.amber.adapters.OnlineSongListAdapter.SongPlayListCallBack;
 import com.naman14.amber.adapters.SongsListAdapter;
 import com.naman14.amber.dataloaders.LastAddedLoader;
 import com.naman14.amber.dataloaders.PlaylistLoader;
@@ -58,11 +59,15 @@ import com.naman14.amber.services.ServiceClient;
 import com.naman14.amber.services.SongListModel;
 import com.naman14.amber.utils.AmberUtils;
 import com.naman14.amber.utils.Constants;
+import com.naman14.amber.utils.PreferencesUtility;
 import com.naman14.amber.widgets.DividerItemDecoration;
 import com.naman14.amber.widgets.DragSortRecycler;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -115,7 +120,29 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
                         SongListModel data = new Gson().fromJson(s, SongListModel.class);
                         Log.d("23333333", "success: " + data.toString());
                         adapter = new OnlineSongListAdapter(PlaylistDetailActivity.this);
-                        adapter.setList(true);
+                        adapter.initPlayList(new SongPlayListCallBack() {
+                            @Override
+                            public void OnSongRemoved(@NotNull SongModel song, final int position) {
+                                HashMap<String, Object> map = new HashMap<>();
+                                map.put("action_type", 2);
+                                map.put("list_id", playlist.onlineId);
+                                ArrayList<String> list = new ArrayList<>();
+                                list.add(song.getId());
+                                map.put("songs", list);
+                                ServiceClient.INSTANCE.listAction(ServiceClient.INSTANCE.getJsonObject(map), new Callback<String>() {
+                                    @Override
+                                    public void success(String s, Response response) {
+                                        adapter.removeSong(position);
+                                        playlist.songCount--;
+                                    }
+
+                                    @Override
+                                    public void failure(RetrofitError error) {
+
+                                    }
+                                });
+                            }
+                        });
                         adapter.bindData(data.getSongList());
                         setRecyclerViewAapter();
                     }
@@ -137,7 +164,7 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist_detail);
-
+        boolean showAuto = PreferencesUtility.getInstance(this).showAutoPlaylist();
         action = getIntent().getAction();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -159,13 +186,12 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         int pos = getIntent().getIntExtra(Constants.PLAY_LIST_POS, -1);
         if (pos != -1) {
-            playlist = PlaylistLoader.INSTANCE.getPlaylists(this, true).get(pos);
+            playlist = PlaylistLoader.INSTANCE.getPlaylists(this, showAuto).get(pos);
             isOnline = playlist.isOnline;
         }
         setAlbumart();
 
         animate = getIntent().getBooleanExtra(Constants.ACTIVITY_TRANSITION, false);
-
 
         if (animate && AmberUtils.isLollipop()) {
             getWindow().getEnterTransition().addListener(new EnterTransitionListener());
@@ -238,8 +264,9 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
                     recyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST, R.drawable.item_divider_white));
                 }
             }, 250);
-        } else
+        } else {
             recyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL_LIST, R.drawable.item_divider_white));
+        }
     }
 
     @StyleRes
@@ -427,8 +454,9 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
     @Override
     public void onMetaChanged() {
         super.onMetaChanged();
-        if (mAdapter != null)
+        if (mAdapter != null) {
             mAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override

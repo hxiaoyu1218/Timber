@@ -55,6 +55,7 @@
     <string name="albums">Albums</string>
     <string name="artists">Artists</string>
     <string name="library">Library</string>
+    <string name="online">Online Service</string>
     <string name="playlists">Playlists</string>
     <string name="playing_queue">Playing Queue</string>
     <string name="now_playing">Now Playing</string>

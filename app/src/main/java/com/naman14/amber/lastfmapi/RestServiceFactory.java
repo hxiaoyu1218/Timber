@@ -16,6 +16,7 @@ package com.naman14.amber.lastfmapi;
 
 import android.content.Context;
 
+import com.google.gson.Gson;
 import com.naman14.amber.utils.PreferencesUtility;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
@@ -32,6 +33,7 @@ import retrofit.RestAdapter;
 import retrofit.client.OkClient;
 import retrofit.converter.ConversionException;
 import retrofit.converter.Converter;
+import retrofit.converter.GsonConverter;
 import retrofit.mime.TypedInput;
 import retrofit.mime.TypedOutput;
 
@@ -100,7 +102,7 @@ public class RestServiceFactory {
 
                     @Override
                     public TypedOutput toBody(Object arg0) {
-                        return null;
+                        return new GsonConverter(new Gson()).toBody(arg0);
                     }
                 });
 

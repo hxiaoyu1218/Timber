@@ -14,6 +14,8 @@ import android.widget.TextView
 import com.afollestad.appthemeengine.Config
 import com.naman14.amber.MusicPlayer
 import com.naman14.amber.R
+import com.naman14.amber.R.string.playlists
+import com.naman14.amber.R.string.songs
 import com.naman14.amber.activities.BaseActivity
 import com.naman14.amber.dialogs.AddPlaylistDialog
 import com.naman14.amber.dialogs.AddPlaylistDialogOnline
@@ -34,10 +36,15 @@ import com.nostra13.universalimageloader.core.ImageLoader
 class OnlineSongListAdapter(val activity: Context) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    interface SongPlayListCallBack {
+        fun OnSongRemoved(song: SongModel, position: Int)
+    }
+
     val mData = ArrayList<SongModel>()
     val ateKey = Helpers.getATEKey(activity)
     var currentlyPlayingPosition = 0
     var isList = false
+    var callBack: SongPlayListCallBack? = null
 
     init {
         currentlyPlayingPosition = MusicPlayer.getCurrentPosOnline()
@@ -60,6 +67,11 @@ class OnlineSongListAdapter(val activity: Context) :
         (holder as OnlineSongViewHolder).bind(mData[position], position)
     }
 
+    fun initPlayList(cb: OnlineSongListAdapter.SongPlayListCallBack) {
+        callBack = cb
+        isList = true
+    }
+
     fun bindData(songList: List<SongModel>) {
         mData.clear()
         mData.addAll(songList)
@@ -71,7 +83,7 @@ class OnlineSongListAdapter(val activity: Context) :
         notifyItemRemoved(pos)
     }
 
-    fun addSongAt(song:SongModel, pos:Int){
+    fun addSongAt(song: SongModel, pos: Int) {
 
     }
 
@@ -106,7 +118,7 @@ class OnlineSongListAdapter(val activity: Context) :
                     when (it.itemId) {
                         R.id.popup_song_remove_playlist -> {
                             //server
-                            adapter.removeSong(adapterPosition)
+                            adapter.callBack?.OnSongRemoved(data!!,adapterPosition)
                         }
                         R.id.popup_song_play -> {
 
@@ -119,7 +131,10 @@ class OnlineSongListAdapter(val activity: Context) :
                         }
                         R.id.popup_song_addto_playlist -> {
                             AddPlaylistDialogOnline.newInstance(data!!)
-                                .show((adapter.activity as BaseActivity).supportFragmentManager, "ADD_PLAYLIST")
+                                .show(
+                                    (adapter.activity as BaseActivity).supportFragmentManager,
+                                    "ADD_PLAYLIST"
+                                )
                         }
                     }
                     return@setOnMenuItemClickListener false

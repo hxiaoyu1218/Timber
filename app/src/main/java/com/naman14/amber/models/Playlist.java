@@ -19,7 +19,7 @@ public class Playlist {
     public final long id;
     public String onlineId;
     public final String name;
-    public final int songCount;
+    public int songCount;
     public boolean isOnline = false;
     public String listPic;
     public int shareCount;

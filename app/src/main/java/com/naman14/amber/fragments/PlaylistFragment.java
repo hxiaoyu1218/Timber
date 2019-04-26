@@ -102,14 +102,15 @@ public class PlaylistFragment extends Fragment {
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setTitle(R.string.playlists);
 
-        playlists = PlaylistLoader.INSTANCE.getPlaylists(getActivity(), showAuto);
-        playlistcount = playlists.size();
-
-        if (isDefault) {
-            initPager();
-        } else {
-            initRecyclerView();
-        }
+        updateListForce();
+//        playlists = PlaylistLoader.INSTANCE.getPlaylists(getActivity(), showAuto);
+//        playlistcount = playlists.size();
+//
+//        if (isDefault) {
+//            initPager();
+//        } else {
+//            initRecyclerView();
+//        }
 
         return rootView;
 

@@ -55,6 +55,7 @@
     <string name="albums">专辑</string>
     <string name="artists">艺术家</string>
     <string name="library">库</string>
+    <string name="online">在线服务</string>
     <string name="playlists">播放列表</string>
     <string name="playing_queue">播放队列</string>
     <string name="now_playing">正在播放</string>

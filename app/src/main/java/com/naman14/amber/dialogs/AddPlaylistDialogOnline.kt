@@ -3,12 +3,19 @@ package com.naman14.amber.dialogs
 import android.app.Dialog
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
+import android.util.Log
+import android.widget.Toast
 import com.afollestad.materialdialogs.MaterialDialog
-import com.naman14.amber.MusicPlayer
-import com.naman14.amber.R.string.songs
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonParser
+import com.naman14.amber.AmberApp
 import com.naman14.amber.dataloaders.PlaylistLoader
 import com.naman14.amber.helpers.SongModel
-import com.naman14.amber.models.Song
+import com.naman14.amber.services.ServiceClient
+import retrofit.Callback
+import retrofit.RetrofitError
+import retrofit.client.Response
+
 
 /**
  *   Created by huangxiaoyu
@@ -19,7 +26,7 @@ class AddPlaylistDialogOnline : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
-        val playlists = PlaylistLoader.getPlaylists(activity, false)
+        val playlists = PlaylistLoader.getPlaylists(activity, false)?.filter { it.isOnline }
         val chars = arrayOfNulls<CharSequence>(playlists!!.size + 1)
         chars[0] = "Create new playlist"
 
@@ -34,8 +41,30 @@ class AddPlaylistDialogOnline : DialogFragment() {
                         .show(activity.supportFragmentManager, "CREATE_PLAYLIST")
                     return@ListCallback
                 }
-                //server
-                dialog.dismiss()
+                val map = HashMap<String, Any>()
+                map.put("action_type", 1)
+                map.put("list_id", playlists[which - 1].onlineId)
+                val list = ArrayList<String>()
+                for (item in songs) {
+                    list.add(item.id)
+                }
+                map.put("songs", list)
+                ServiceClient.listAction(ServiceClient.getJsonObject(map), object : Callback<String> {
+                    override fun success(t: String?, response: Response?) {
+                        //h
+                        Toast.makeText(
+                            AmberApp.getInstance(),
+                            "Added",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        dialog.dismiss()
+                    }
+
+                    override fun failure(error: RetrofitError?) {
+                        dialog.dismiss()
+                    }
+                })
+
             }).build()
     }
 

@@ -408,6 +408,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
             navigationView.getMenu().findItem(R.id.nav_settings).setIcon(R.drawable.settings);
             navigationView.getMenu().findItem(R.id.nav_about).setIcon(R.drawable.information);
             navigationView.getMenu().findItem(R.id.nav_shutdown).setIcon(R.drawable.ic_clock_dark);
+            navigationView.getMenu().findItem(R.id.nav_online).setIcon(R.drawable.ic_internet_dark);
         } else {
             navigationView.getMenu().findItem(R.id.nav_library).setIcon(R.drawable.library_music_white);
             navigationView.getMenu().findItem(R.id.nav_playlists).setIcon(R.drawable.playlist_play_white);
@@ -417,6 +418,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
             navigationView.getMenu().findItem(R.id.nav_settings).setIcon(R.drawable.settings_white);
             navigationView.getMenu().findItem(R.id.nav_about).setIcon(R.drawable.information_white);
             navigationView.getMenu().findItem(R.id.nav_shutdown).setIcon(R.drawable.ic_clock);
+            navigationView.getMenu().findItem(R.id.nav_online).setIcon(R.drawable.ic_internet);
         }
 
 

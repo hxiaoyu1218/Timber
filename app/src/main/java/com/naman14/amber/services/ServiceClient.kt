@@ -1,9 +1,13 @@
 package com.naman14.amber.services
 
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.naman14.amber.lastfmapi.RestServiceFactory
+import com.squareup.okhttp.RequestBody
+import org.json.JSONObject
 import retrofit.Callback
-import retrofit.http.GET
-import retrofit.http.Query
+import retrofit.http.*
 
 /**
  *   Created by huangxiaoyu
@@ -28,12 +32,23 @@ interface ServiceApi {
 
     @GET("/list_upload")
     fun createNewPlayList(@Query("user_id") uid: String, @Query("list_name") name: String, callback: Callback<String>)
+
+    @Headers("Content-Type: application/json")
+    @POST("/list_action")
+    fun listAction(@Body body: JsonObject, callback: Callback<String>)
 }
 
 
 object ServiceClient {
     const val SERVICE_URL = "http://10.206.16.144:5000"
     private val service = RestServiceFactory.create(SERVICE_URL, ServiceApi::class.java)
+    private val gson =  GsonBuilder().serializeNulls().create()
+    private val jsonParser = JsonParser()
+
+    fun getJsonObject(map: Map<String, Any>): JsonObject {
+        val j = gson.toJson(map)
+        return jsonParser.parse(j).asJsonObject
+    }
 
     fun getSongList(callBack: Callback<String>) {
         service.getMusicList(callBack)
@@ -57,6 +72,10 @@ object ServiceClient {
 
     fun getListContent(id: String, callback: Callback<String>) {
         service.getListContent(id, callback)
+    }
+
+    fun listAction(body: JsonObject, callback: Callback<String>) {
+        service.listAction(body, callback)
     }
 
 }
