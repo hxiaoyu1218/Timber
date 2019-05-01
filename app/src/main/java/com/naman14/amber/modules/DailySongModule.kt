@@ -1,6 +1,7 @@
 package com.naman14.amber.modules
 
 import android.content.Context
+import android.graphics.Color
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
@@ -20,12 +21,15 @@ import com.naman14.amber.services.DailySongModel
 class DailySongModule(val f: OnlineMainFragment, val data: DailySongModel) {
 
     val view = DailySongView(f.context)
-            .setCallBackFragment(f)
-            .init()
-            .bindData(data)
+        .setCallBackFragment(f)
+        .init(f.isDark)
+        .bindData(data)
 
-    class DailySongView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0)
-        : RelativeLayout(context, attrs, defStyleAttr) {
+    class DailySongView @JvmOverloads constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0
+    ) : RelativeLayout(context, attrs, defStyleAttr) {
 
         lateinit var title: TextView
         lateinit var recyclerView: RecyclerView
@@ -38,8 +42,10 @@ class DailySongModule(val f: OnlineMainFragment, val data: DailySongModel) {
 
         private fun initView() {
             View.inflate(context, R.layout.daily_hot_song_vh, this)
-            layoutParams = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT)
+            layoutParams = RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
             recyclerView = findViewById(R.id.online_song_list)
             title = findViewById(R.id.text)
             recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
@@ -50,16 +56,19 @@ class DailySongModule(val f: OnlineMainFragment, val data: DailySongModel) {
             return this
         }
 
-        fun init(): DailySongView {
+        fun init(isDark: Boolean): DailySongView {
             adapter = OnlineSongListAdapter(fragment.context)
+            adapter.isMainPage = true
             recyclerView.adapter = adapter
+            title.setTextColor(if (isDark) Color.WHITE else Color.BLACK)
             return this
         }
 
-        fun bindData(cell: DailySongModel) :DailySongView{
+        fun bindData(cell: DailySongModel): DailySongView {
             if (cell.songList.isNullOrEmpty()) {
                 return this
             }
+            title.text = cell.title
             adapter.bindData(cell.songList)
             return this
         }

@@ -59,7 +59,7 @@ object PlaylistLoader {
                 data?.let {
                     onlineList.clear()
                     for (item: PlayList in it.playLists!!.iterator()) {
-                        val list = Playlist(item.listId, item.listName, item.listCount, true, item.listShareCount, item.listPic)
+                        val list = Playlist(item.listId, item.listName, item.listCount, true, item.listShareCount, item.listPic, item.isOrigin == 1)
                         onlineList.add(list)
                     }
                 }
@@ -102,7 +102,7 @@ object PlaylistLoader {
                     data?.let {
                         onlineList.clear()
                         for (item: PlayList in it.playLists!!.iterator()) {
-                            val list = Playlist(item.listId, item.listName, item.listCount, true, item.listShareCount, item.listPic)
+                            val list = Playlist(item.listId, item.listName, item.listCount, true, item.listShareCount, item.listPic, item.isOrigin == 1)
                             mPlaylistList?.add(list)
                             onlineList.add(list)
                         }

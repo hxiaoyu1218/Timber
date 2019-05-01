@@ -53,6 +53,7 @@ class LatestSongModule(val f: OnlineMainFragment, val data: LatestSongModel) {
 
         fun init(): LatestSongView {
             adapter = OnlineSongListAdapter(fragment.context)
+            adapter.isMainPage = true
             recyclerView.adapter = adapter
             return this
         }
@@ -61,6 +62,7 @@ class LatestSongModule(val f: OnlineMainFragment, val data: LatestSongModel) {
             if (cell.songList.isNullOrEmpty()) {
                 return this
             }
+            title.text = cell.title
             adapter.bindData(cell.songList)
             return this
         }

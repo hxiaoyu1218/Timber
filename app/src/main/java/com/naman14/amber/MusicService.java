@@ -95,11 +95,15 @@ import java.util.TreeSet;
 import de.Maxr1998.trackselectorlib.ModNotInstalledException;
 import de.Maxr1998.trackselectorlib.NotificationHelper;
 import de.Maxr1998.trackselectorlib.TrackItem;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
 @SuppressLint("NewApi")
 public class MusicService extends Service {
+
     public static final String PLAYSTATE_CHANGED = "com.naman14.timber.playstatechanged";
     public static final String POSITION_CHANGED = "com.naman14.timber.positionchanged";
     public static final String META_CHANGED = "com.naman14.timber.metachanged";
@@ -255,7 +259,6 @@ public class MusicService extends Service {
         public void onReceive(final Context context, final Intent intent) {
             final String command = intent.getStringExtra(CMDNAME);
 
-
             handleCommandIntent(intent);
 
         }
@@ -264,7 +267,9 @@ public class MusicService extends Service {
 
     @Override
     public IBinder onBind(final Intent intent) {
-        if (D) Log.d(TAG, "Service bound, intent = " + intent);
+        if (D) {
+            Log.d(TAG, "Service bound, intent = " + intent);
+        }
         cancelShutdown();
         mServiceInUse = true;
         return mBinder;
@@ -272,7 +277,9 @@ public class MusicService extends Service {
 
     @Override
     public boolean onUnbind(final Intent intent) {
-        if (D) Log.d(TAG, "Service unbound");
+        if (D) {
+            Log.d(TAG, "Service unbound");
+        }
         mServiceInUse = false;
         saveQueue(true);
 
@@ -297,7 +304,9 @@ public class MusicService extends Service {
 
     @Override
     public void onCreate() {
-        if (D) Log.d(TAG, "Creating service");
+        if (D) {
+            Log.d(TAG, "Creating service");
+        }
         super.onCreate();
 
         mNotificationManager = NotificationManagerCompat.from(this);
@@ -308,24 +317,22 @@ public class MusicService extends Service {
         mSongPlayCount = SongPlayCount.getInstance(this);
         mRecentStore = RecentStore.getInstance(this);
 
-
         mHandlerThread = new HandlerThread("MusicPlayerHandler",
                 android.os.Process.THREAD_PRIORITY_BACKGROUND);
         mHandlerThread.start();
 
-
         mPlayerHandler = new MusicPlayerHandler(this, mHandlerThread.getLooper());
-
 
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         mMediaButtonReceiverComponent = new ComponentName(getPackageName(),
                 MediaButtonIntentReceiver.class.getName());
         mAudioManager.registerMediaButtonEventReceiver(mMediaButtonReceiverComponent);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setUpMediaSession();
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             setUpRemoteControlClient();
+        }
 
         mPreferences = getSharedPreferences("Service", 0);
         mCardId = getCardId();
@@ -363,13 +370,11 @@ public class MusicService extends Service {
         mWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
         mWakeLock.setReferenceCounted(false);
 
-
         final Intent shutdownIntent = new Intent(this, MusicService.class);
         shutdownIntent.setAction(SHUTDOWN);
 
         mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         mShutdownIntent = PendingIntent.getService(this, 0, shutdownIntent, 0);
-
 
         final Intent autoShutdown = new Intent(this, MusicService.class);
         autoShutdown.setAction(AUTOSHUTDOWN);
@@ -454,7 +459,9 @@ public class MusicService extends Service {
 
     @Override
     public void onDestroy() {
-        if (D) Log.d(TAG, "Destroying service");
+        if (D) {
+            Log.d(TAG, "Destroying service");
+        }
         super.onDestroy();
         //Try to push LastFMCache
         if (LastfmUserSession.getSession(this).isLogedin()) {
@@ -467,21 +474,23 @@ public class MusicService extends Service {
         audioEffectsIntent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, getPackageName());
         sendBroadcast(audioEffectsIntent);
 
-
         mAlarmManager.cancel(mShutdownIntent);
 
         mPlayerHandler.removeCallbacksAndMessages(null);
 
-        if (AmberUtils.isJellyBeanMR2())
+        if (AmberUtils.isJellyBeanMR2()) {
             mHandlerThread.quitSafely();
-        else mHandlerThread.quit();
+        } else {
+            mHandlerThread.quit();
+        }
 
         mPlayer.release();
         mPlayer = null;
 
         mAudioManager.abandonAudioFocus(mAudioFocusListener);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mSession.release();
+        }
 
         getContentResolver().unregisterContentObserver(mMediaStoreObserver);
 
@@ -498,7 +507,9 @@ public class MusicService extends Service {
 
     @Override
     public int onStartCommand(final Intent intent, final int flags, final int startId) {
-        if (D) Log.d(TAG, "Got new intent " + intent + ", startId = " + startId);
+        if (D) {
+            Log.d(TAG, "Got new intent " + intent + ", startId = " + startId);
+        }
         mServiceStartId = startId;
 
         if (intent != null) {
@@ -530,8 +541,9 @@ public class MusicService extends Service {
         if (LastfmUserSession.getSession(this).isLogedin()) {
             Log.d("Scrobble", "to LastFM");
             String trackname = getTrackName();
-            if (trackname != null)
+            if (trackname != null) {
                 LastFmClient.getInstance(this).Scrobble(new ScrobbleQuery(getArtistName(), trackname, System.currentTimeMillis() / 1000));
+            }
         }
     }
 
@@ -563,11 +575,14 @@ public class MusicService extends Service {
             return;
         }
 
-        if (D) Log.d(TAG, "Nothing is playing anymore, releasing notification");
+        if (D) {
+            Log.d(TAG, "Nothing is playing anymore, releasing notification");
+        }
         cancelNotification();
         mAudioManager.abandonAudioFocus(mAudioFocusListener);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mSession.setActive(false);
+        }
 
         if (!mServiceInUse) {
             saveQueue(true);
@@ -582,11 +597,14 @@ public class MusicService extends Service {
             return;
         }
 
-        if (D) Log.d(TAG, "Nothing is playing anymore, releasing notification");
+        if (D) {
+            Log.d(TAG, "Nothing is playing anymore, releasing notification");
+        }
         cancelNotification();
         mAudioManager.abandonAudioFocus(mAudioFocusListener);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mSession.setActive(false);
+        }
 
         if (!mServiceInUse) {
             saveQueue(true);
@@ -598,7 +616,9 @@ public class MusicService extends Service {
         final String action = intent.getAction();
         final String command = SERVICECMD.equals(action) ? intent.getStringExtra(CMDNAME) : null;
 
-        if (D) Log.d(TAG, "handleCommandIntent: action = " + action + ", command = " + command);
+        if (D) {
+            Log.d(TAG, "handleCommandIntent: action = " + action + ", command = " + command);
+        }
 
         if (NotificationHelper.checkIntent(intent)) {
             goToPosition(mPlayPos + NotificationHelper.getPosition(intent));
@@ -667,10 +687,11 @@ public class MusicService extends Service {
         int notificationId = hashCode();
         if (mNotifyMode != newNotifyMode) {
             if (mNotifyMode == NOTIFY_MODE_FOREGROUND) {
-                if (AmberUtils.isLollipop())
+                if (AmberUtils.isLollipop()) {
                     stopForeground(newNotifyMode == NOTIFY_MODE_NONE);
-                else
+                } else {
                     stopForeground(newNotifyMode == NOTIFY_MODE_NONE || newNotifyMode == NOTIFY_MODE_BACKGROUND);
+                }
             } else if (newNotifyMode == NOTIFY_MODE_NONE) {
                 mNotificationManager.cancel(notificationId);
                 mNotificationPostTime = 0;
@@ -697,7 +718,9 @@ public class MusicService extends Service {
         if (AmberUtils.isMarshmallow()) {
             if (Nammu.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
                 return getmCardId();
-            } else return 0;
+            } else {
+                return 0;
+            }
         } else {
             return getmCardId();
         }
@@ -753,14 +776,18 @@ public class MusicService extends Service {
     }
 
     private void scheduleDelayedShutdown() {
-        if (D) Log.v(TAG, "Scheduling shutdown in " + IDLE_DELAY + " ms");
+        if (D) {
+            Log.v(TAG, "Scheduling shutdown in " + IDLE_DELAY + " ms");
+        }
         mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 SystemClock.elapsedRealtime() + IDLE_DELAY, mShutdownIntent);
         mShutdownScheduled = true;
     }
 
     private void cancelShutdown() {
-        if (D) Log.d(TAG, "Cancelling delayed shutdown, scheduled = " + mShutdownScheduled);
+        if (D) {
+            Log.d(TAG, "Cancelling delayed shutdown, scheduled = " + mShutdownScheduled);
+        }
         if (mShutdownScheduled) {
             mAlarmManager.cancel(mShutdownIntent);
             mShutdownScheduled = false;
@@ -768,7 +795,9 @@ public class MusicService extends Service {
     }
 
     private void stop(final boolean goToIdle) {
-        if (D) Log.d(TAG, "Stopping playback, goToIdle = " + goToIdle);
+        if (D) {
+            Log.d(TAG, "Stopping playback, goToIdle = " + goToIdle);
+        }
         long duration = this.duration();
         long position = this.position();
         if (duration > 30000 && (position >= duration / 2) || position > 240000) {
@@ -783,9 +812,11 @@ public class MusicService extends Service {
         if (goToIdle) {
             setIsSupposedToBePlaying(false, false);
         } else {
-            if (AmberUtils.isLollipop())
+            if (AmberUtils.isLollipop()) {
                 stopForeground(false);
-            else stopForeground(true);
+            } else {
+                stopForeground(true);
+            }
         }
     }
 
@@ -1005,12 +1036,10 @@ public class MusicService extends Service {
         } else if (mShuffleMode == SHUFFLE_NORMAL) {
             final int numTracks = mPlaylist.size();
 
-
             final int[] trackNumPlays = new int[numTracks];
             for (int i = 0; i < numTracks; i++) {
                 trackNumPlays[i] = 0;
             }
-
 
             final int numHistory = mHistory.size();
             for (int i = 0; i < numHistory; i++) {
@@ -1035,12 +1064,10 @@ public class MusicService extends Service {
                 }
             }
 
-
             if (minNumPlays > 0 && numTracksWithMinNumPlays == numTracks
                     && mRepeatMode != REPEAT_ALL && !force) {
                 return -1;
             }
-
 
             int skip = mShuffler.nextInt(numTracksWithMinNumPlays);
             for (int i = 0; i < trackNumPlays.length; i++) {
@@ -1053,8 +1080,9 @@ public class MusicService extends Service {
                 }
             }
 
-            if (D)
+            if (D) {
                 Log.e(TAG, "Getting the next position resulted did not get a result when it should have");
+            }
             return -1;
         } else if (mShuffleMode == SHUFFLE_AUTO) {
             doAutoShuffleUpdate();
@@ -1079,7 +1107,9 @@ public class MusicService extends Service {
 
     private void setNextTrack(int position) {
         mNextPlayPos = position;
-        if (D) Log.d(TAG, "setNextTrack: next play position = " + mNextPlayPos);
+        if (D) {
+            Log.d(TAG, "setNextTrack: next play position = " + mNextPlayPos);
+        }
         if (mNextPlayPos >= 0 && mPlaylist != null && mNextPlayPos < mPlaylist.size()) {
             final long id = mPlaylist.get(mNextPlayPos).mId;
             mPlayer.setNextDataSource(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + id);
@@ -1164,13 +1194,16 @@ public class MusicService extends Service {
     }
 
     private void notifyChange(final String what) {
-        if (D) Log.d(TAG, "notifyChange: what = " + what);
+        if (D) {
+            Log.d(TAG, "notifyChange: what = " + what);
+        }
 
         // Update the lockscreen controls
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             updateMediaSession(what);
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             updateRemoteControlClient(what);
+        }
 
         if (what.equals(POSITION_CHANGED)) {
             return;
@@ -1508,7 +1541,9 @@ public class MusicService extends Service {
     }
 
     public boolean openFile(final String path) {
-        if (D) Log.d(TAG, "openFile: path = " + path);
+        if (D) {
+            Log.d(TAG, "openFile: path = " + path);
+        }
         synchronized (this) {
             if (path == null) {
                 return false;
@@ -1535,7 +1570,9 @@ public class MusicService extends Service {
                 } else if (path.startsWith("content://downloads/")) {
 
                     String mpUri = getValueForDownloadedFile(this, uri, "mediaprovider_uri");
-                    if (D) Log.i(TAG, "Downloaded file's MP uri : " + mpUri);
+                    if (D) {
+                        Log.i(TAG, "Downloaded file's MP uri : " + mpUri);
+                    }
                     if (!TextUtils.isEmpty(mpUri)) {
                         if (openFile(mpUri)) {
                             notifyChange(META_CHANGED);
@@ -1973,7 +2010,6 @@ public class MusicService extends Service {
         if (mIsSupposedToBePlaying != value) {
             mIsSupposedToBePlaying = value;
 
-
             if (!mIsSupposedToBePlaying) {
                 scheduleDelayedShutdown();
                 mLastPlayedTime = System.currentTimeMillis();
@@ -2035,7 +2071,9 @@ public class MusicService extends Service {
         int status = mAudioManager.requestAudioFocus(mAudioFocusListener,
                 AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 
-        if (D) Log.d(TAG, "Starting playback: audio focus request status = " + status);
+        if (D) {
+            Log.d(TAG, "Starting playback: audio focus request status = " + status);
+        }
 
         if (status != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             return;
@@ -2048,8 +2086,9 @@ public class MusicService extends Service {
 
         mAudioManager.registerMediaButtonEventReceiver(new ComponentName(getPackageName(),
                 MediaButtonIntentReceiver.class.getName()));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mSession.setActive(true);
+        }
 
         if (createNewNextTrack) {
             setNextTrack();
@@ -2079,7 +2118,9 @@ public class MusicService extends Service {
     }
 
     public void pause() {
-        if (D) Log.d(TAG, "Pausing playback");
+        if (D) {
+            Log.d(TAG, "Pausing playback");
+        }
         synchronized (this) {
             mPlayerHandler.removeMessages(FADEUP);
             if (mIsSupposedToBePlaying) {
@@ -2097,10 +2138,14 @@ public class MusicService extends Service {
     }
 
     public void gotoNext(final boolean force) {
-        if (D) Log.d(TAG, "Going to next track");
+        if (D) {
+            Log.d(TAG, "Going to next track");
+        }
         synchronized (this) {
             if (mPlaylist.size() <= 0) {
-                if (D) Log.d(TAG, "No play queue");
+                if (D) {
+                    Log.d(TAG, "No play queue");
+                }
                 scheduleDelayedShutdown();
                 return;
             }
@@ -2125,7 +2170,9 @@ public class MusicService extends Service {
     public void goToPosition(int pos) {
         synchronized (this) {
             if (mPlaylist.size() <= 0) {
-                if (D) Log.d(TAG, "No play queue");
+                if (D) {
+                    Log.d(TAG, "No play queue");
+                }
                 scheduleDelayedShutdown();
                 return;
             }
@@ -2166,7 +2213,9 @@ public class MusicService extends Service {
                     (position() < REWIND_INSTEAD_PREVIOUS_THRESHOLD || forcePrevious);
 
             if (goPrevious) {
-                if (D) Log.d(TAG, "Going to previous track");
+                if (D) {
+                    Log.d(TAG, "Going to previous track");
+                }
                 int pos = getPreviousPlayPosition(true);
 
                 if (pos < 0) {
@@ -2179,7 +2228,9 @@ public class MusicService extends Service {
                 play(false);
                 notifyChange(META_CHANGED);
             } else {
-                if (D) Log.d(TAG, "Going to beginning of track");
+                if (D) {
+                    Log.d(TAG, "Going to beginning of track");
+                }
                 seek(0);
                 play(false);
             }
@@ -2302,6 +2353,7 @@ public class MusicService extends Service {
     }
 
     private static final class MusicPlayerHandler extends Handler {
+
         private final WeakReference<MusicService> mService;
         private float mCurrentVolume = 1.0f;
 
@@ -2344,7 +2396,6 @@ public class MusicService extends Service {
                             final TrackErrorInfo info = (TrackErrorInfo) msg.obj;
                             service.sendErrorMessage(info.mTrackName);
 
-
                             service.removeTrack(info.mId);
                         } else {
                             service.openCurrentAndNext();
@@ -2374,7 +2425,9 @@ public class MusicService extends Service {
                         service.mWakeLock.release();
                         break;
                     case FOCUSCHANGE:
-                        if (D) Log.d(TAG, "Received audio focus change event " + msg.arg1);
+                        if (D) {
+                            Log.d(TAG, "Received audio focus change event " + msg.arg1);
+                        }
                         switch (msg.arg1) {
                             case AudioManager.AUDIOFOCUS_LOSS:
                             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
@@ -2450,6 +2503,7 @@ public class MusicService extends Service {
     }
 
     private static final class TrackErrorInfo {
+
         public long mId;
         public String mTrackName;
 
@@ -2663,6 +2717,7 @@ public class MusicService extends Service {
         }
 
         public void playOnline(final String id) {
+            sendMusicEvent(id);
             mOnlinePlayer.release();
             mOnlinePlayer = new IjkMediaPlayer();
             mOnlinePlayer.setOnPreparedListener(new IjkMediaPlayer.OnPreparedListener() {
@@ -2693,6 +2748,18 @@ public class MusicService extends Service {
 
         }
 
+        private void sendMusicEvent(String id) {
+            ServiceClient.INSTANCE.musicEvent(AmberApp.getInstance().id, id, new Callback<String>() {
+                @Override
+                public void success(String s, Response response) {
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                }
+            });
+        }
+
 
     }
 
@@ -2700,7 +2767,9 @@ public class MusicService extends Service {
         int status = mAudioManager.requestAudioFocus(mAudioFocusListener,
                 AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 
-        if (D) Log.d(TAG, "Starting playback: audio focus request status = " + status);
+        if (D) {
+            Log.d(TAG, "Starting playback: audio focus request status = " + status);
+        }
 
         if (status != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             return;
@@ -2713,8 +2782,9 @@ public class MusicService extends Service {
 
         mAudioManager.registerMediaButtonEventReceiver(new ComponentName(getPackageName(),
                 MediaButtonIntentReceiver.class.getName()));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mSession.setActive(true);
+        }
         onlineList.clear();
         onlineList.add(model);
         onlinePos = 0;
@@ -3141,7 +3211,6 @@ public class MusicService extends Service {
 
         @Override
         public void onChange(boolean selfChange) {
-
 
             mHandler.removeCallbacks(this);
             mHandler.postDelayed(this, REFRESH_DELAY);

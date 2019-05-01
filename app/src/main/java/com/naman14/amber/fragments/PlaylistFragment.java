@@ -16,7 +16,6 @@ package com.naman14.amber.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
@@ -41,7 +40,6 @@ import com.naman14.amber.R;
 import com.naman14.amber.adapters.PlaylistAdapter;
 import com.naman14.amber.dataloaders.Callback;
 import com.naman14.amber.dataloaders.PlaylistLoader;
-import com.naman14.amber.dialogs.CreatePlaylistDialog;
 import com.naman14.amber.dialogs.CreatePlaylistDialogOnline;
 import com.naman14.amber.models.Playlist;
 import com.naman14.amber.subfragments.PlaylistPagerFragment;
@@ -181,6 +179,7 @@ public class PlaylistFragment extends Fragment {
 
 
     public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
+
         private int space;
 
         public SpacesItemDecoration(int space) {
@@ -223,9 +222,12 @@ public class PlaylistFragment extends Fragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.action_shuffle).setVisible(false);
         if (showAuto) {
             menu.findItem(R.id.action_view_auto_playlists).setTitle("Hide auto playlists");
-        } else menu.findItem(R.id.action_view_auto_playlists).setTitle("Show auto playlists");
+        } else {
+            menu.findItem(R.id.action_view_auto_playlists).setTitle("Show auto playlists");
+        }
     }
 
     @Override
@@ -233,25 +235,6 @@ public class PlaylistFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_new_playlist:
                 CreatePlaylistDialogOnline.Companion.newInstance().show(getChildFragmentManager(), "CREATE_PLAYLIST");
-                return true;
-            case R.id.menu_show_as_list:
-                mPreferences.setPlaylistView(Constants.PLAYLIST_VIEW_LIST);
-                isGrid = false;
-                isDefault = false;
-                initRecyclerView();
-                updateLayoutManager(1);
-                return true;
-            case R.id.menu_show_as_grid:
-                mPreferences.setPlaylistView(Constants.PLAYLIST_VIEW_GRID);
-                isGrid = true;
-                isDefault = false;
-                initRecyclerView();
-                updateLayoutManager(2);
-                return true;
-            case R.id.menu_show_as_default:
-                mPreferences.setPlaylistView(Constants.PLAYLIST_VIEW_DEFAULT);
-                isDefault = true;
-                initPager();
                 return true;
             case R.id.action_view_auto_playlists:
                 if (showAuto) {
@@ -332,7 +315,7 @@ public class PlaylistFragment extends Fragment {
 
         if (requestCode == Constants.ACTION_DELETE_PLAYLIST) {
             if (resultCode == Activity.RESULT_OK) {
-                reloadPlaylists();
+                updateListForce();
             }
 
         }

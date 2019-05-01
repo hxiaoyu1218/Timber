@@ -35,6 +35,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.appthemeengine.Config;
 import com.afollestad.appthemeengine.customizers.ATEActivityThemeCustomizer;
@@ -66,6 +67,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -142,7 +144,7 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
                                     }
                                 });
                             }
-                        });
+                        }, playlist.isOrigin);
                         adapter.bindData(data.getSongList());
                         setRecyclerViewAapter();
                     }
@@ -218,11 +220,40 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
 
             dragSortRecycler.setOnItemMovedListener(new DragSortRecycler.OnItemMovedListener() {
                 @Override
-                public void onItemMoved(int from, int to) {
+                public void onItemMoved(final int from, final int to) {
                     Log.d("playlist", "onItemMoved " + from + " to " + to);
                     if (isOnline) {
-                        //server     upload to server and callback to refresh adapter data
-                        SongModel songModel = adapter.getMData().get(from);
+                        final SongModel songModel = adapter.getMData().get(from);
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put("action_type", 4);
+                        map.put("list_id", playlist.onlineId);
+                        map.put("from", from);
+                        map.put("to", to);
+                        map.put("song_id", songModel.getId());
+                        ServiceClient.INSTANCE.listAction(ServiceClient.INSTANCE.getJsonObject(map), new Callback<String>() {
+                            @Override
+                            public void success(String s, Response response) {
+                                try {
+                                    JSONObject o = new JSONObject(s);
+                                    if (o.optString("result").equals("success")) {
+                                        Toast.makeText(PlaylistDetailActivity.this, "Move successful", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        adapter.removeSong(to);
+                                        adapter.addSongAt(songModel, from);
+                                        adapter.notifyDataSetChanged();
+                                    }
+                                } catch (Exception ignore) {
+
+                                }
+                            }
+
+                            @Override
+                            public void failure(RetrofitError error) {
+                                adapter.removeSong(to);
+                                adapter.addSongAt(songModel, from);
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
                         adapter.removeSong(from);
                         adapter.addSongAt(songModel, to);
                         adapter.notifyDataSetChanged();
@@ -236,11 +267,11 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
                     }
                 }
             });
-
-            recyclerView.addItemDecoration(dragSortRecycler);
-            recyclerView.addOnItemTouchListener(dragSortRecycler);
-            recyclerView.addOnScrollListener(dragSortRecycler.getScrollListener());
-
+            if (playlist.isOrigin) {
+                recyclerView.addItemDecoration(dragSortRecycler);
+                recyclerView.addOnItemTouchListener(dragSortRecycler);
+                recyclerView.addOnScrollListener(dragSortRecycler.getScrollListener());
+            }
         } else {
             Log.d("PlaylistDetail", "mo action specified");
         }
@@ -388,6 +419,9 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
             menu.findItem(R.id.action_delete_playlist).setVisible(false);
             menu.findItem(R.id.action_clear_auto_playlist).setTitle("Clear " + playlistname.getText().toString());
         }
+        if (isOnline) {
+            menu.findItem(R.id.action_shuffle).setVisible(false);
+        }
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -419,10 +453,34 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        PlaylistLoader.INSTANCE.deletePlaylists(PlaylistDetailActivity.this, playlistID);
+                        if (isOnline) {
+                            HashMap<String, Object> map = new HashMap<>();
+                            map.put("action_type", 5);
+                            map.put("list_id", playlist.onlineId);
+                            ServiceClient.INSTANCE.listAction(ServiceClient.INSTANCE.getJsonObject(map), new Callback<String>() {
+                                @Override
+                                public void success(String s, Response response) {
+                                    try {
+                                        JSONObject o = new JSONObject(s);
+                                        if (o.optString("result").equals("success")) {
+                                            Toast.makeText(PlaylistDetailActivity.this, "Move successful", Toast.LENGTH_SHORT).show();
+                                        }
+                                    } catch (Exception ignore) {
+
+                                    }
+                                }
+
+                                @Override
+                                public void failure(RetrofitError error) {
+                                }
+                            });
+                        } else {
+                            PlaylistLoader.INSTANCE.deletePlaylists(PlaylistDetailActivity.this, playlistID);
+                        }
                         Intent returnIntent = new Intent();
                         setResult(Activity.RESULT_OK, returnIntent);
                         finish();
+
                     }
                 })
                 .onNegative(new MaterialDialog.SingleButtonCallback() {

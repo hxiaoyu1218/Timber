@@ -18,11 +18,12 @@ public class Playlist {
 
     public final long id;
     public String onlineId;
-    public final String name;
+    public String name;
     public int songCount;
     public boolean isOnline = false;
     public String listPic;
     public int shareCount;
+    public boolean isOrigin = true;
 
     public Playlist() {
         this.id = -1;
@@ -38,7 +39,7 @@ public class Playlist {
         this.isOnline = false;
     }
 
-    public Playlist(String _id, String _name, int _songCount, boolean _isOnline, int _shareCount, String _listPic) {
+    public Playlist(String _id, String _name, int _songCount, boolean _isOnline, int _shareCount, String _listPic, boolean _isOrigin) {
         this.id = 0;
         this.onlineId = _id;
         this.name = _name;
@@ -46,5 +47,6 @@ public class Playlist {
         this.isOnline = _isOnline;
         this.shareCount = _shareCount;
         this.listPic = _listPic;
+        this.isOrigin = _isOrigin;
     }
 }

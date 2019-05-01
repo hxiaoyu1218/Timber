@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.naman14.amber.R;
+import com.naman14.amber.adapters.OnlineSongListAdapter;
 import com.naman14.amber.adapters.SearchAdapter;
 import com.naman14.amber.dataloaders.AlbumLoader;
 import com.naman14.amber.dataloaders.ArtistLoader;
@@ -57,6 +58,8 @@ public class SearchActivity extends BaseActivity implements SearchView.OnQueryTe
 
     private SearchAdapter adapter;
     private RecyclerView recyclerView;
+
+    private OnlineSongListAdapter onlineSongListAdapter;
 
     private List<Object> searchResults = Collections.emptyList();
 

@@ -10,7 +10,9 @@ import com.afollestad.appthemeengine.Config
 import com.naman14.amber.R
 import com.naman14.amber.fragments.OnlineMainFragment
 import com.naman14.amber.services.PlayList
+import com.naman14.amber.services.ServiceClient
 import com.naman14.amber.utils.Helpers
+import com.naman14.amber.utils.NavigationUtils
 import com.naman14.amber.utils.UIUtils
 import com.nostra13.universalimageloader.core.DisplayImageOptions
 import com.nostra13.universalimageloader.core.ImageLoader
@@ -19,12 +21,19 @@ import com.nostra13.universalimageloader.core.ImageLoader
  *   Created by huangxiaoyu
  *   Time 2019/4/23
  **/
-class PlayListAdapter(val f: OnlineMainFragment) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class PlayListsAdapter(val f: OnlineMainFragment) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var data = ArrayList<PlayList>(6)
     private val ateKey = Helpers.getATEKey(f.context)
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
-        return PlayListViewHolder(this, LayoutInflater.from(parent!!.context).inflate(R.layout.play_list_item_vh, null))
+        return PlayListViewHolder(
+            this,
+            LayoutInflater.from(parent!!.context).inflate(
+                R.layout.play_list_item_vh,
+                null
+            )
+        )
     }
 
     override fun getItemCount() = data.count()
@@ -39,26 +48,36 @@ class PlayListAdapter(val f: OnlineMainFragment) : RecyclerView.Adapter<Recycler
         notifyDataSetChanged()
     }
 
-    class PlayListViewHolder(val adapter: PlayListAdapter, view: View) : RecyclerView.ViewHolder(view) {
+    class PlayListViewHolder(val adapter: PlayListsAdapter, view: View) :
+        RecyclerView.ViewHolder(view) {
 
         var cover: ImageView = view.findViewById(R.id.play_list_cover)
         var name: TextView = view.findViewById(R.id.play_list_name)
-
+        var data: PlayList? = null
 
         init {
             val w = UIUtils.getScreenWidth(view.context)
             val rw = (w - 4 * UIUtils.dip2Px(view.context, 16)) / 3
             UIUtils.setLayoutParams(cover, rw.toInt(), rw.toInt())
+            itemView.setOnClickListener {
+                NavigationUtils.navigateOnlinePlayList(
+                    itemView.context,
+                    data
+                )
+            }
         }
 
 
         fun bind(data: PlayList) {
+            this.data = data
             name.text = data.listName
             name.setTextColor(Config.textColorPrimary(adapter.f.context, adapter.ateKey))
-            ImageLoader.getInstance().displayImage(data.listPic,
-                    cover, DisplayImageOptions.Builder().cacheInMemory(true)
+            ImageLoader.getInstance().displayImage(
+                ServiceClient.SERVICE_URL + "/album_pic?song_id=" + data.listPic,
+                cover, DisplayImageOptions.Builder().cacheInMemory(true)
                     .showImageOnLoading(R.drawable.holder)
-                    .resetViewBeforeLoading(true).build())
+                    .resetViewBeforeLoading(true).build()
+            )
         }
     }
 }

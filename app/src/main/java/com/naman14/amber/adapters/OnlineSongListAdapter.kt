@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Color
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
@@ -14,13 +13,9 @@ import android.widget.TextView
 import com.afollestad.appthemeengine.Config
 import com.naman14.amber.MusicPlayer
 import com.naman14.amber.R
-import com.naman14.amber.R.string.playlists
-import com.naman14.amber.R.string.songs
 import com.naman14.amber.activities.BaseActivity
-import com.naman14.amber.dialogs.AddPlaylistDialog
 import com.naman14.amber.dialogs.AddPlaylistDialogOnline
 import com.naman14.amber.helpers.SongModel
-import com.naman14.amber.models.Song
 import com.naman14.amber.services.ServiceClient
 import com.naman14.amber.utils.AmberUtils
 import com.naman14.amber.utils.Helpers
@@ -33,17 +28,19 @@ import com.nostra13.universalimageloader.core.ImageLoader
  *   Created by huangxiaoyu
  *   Time 2019/4/20
  **/
-class OnlineSongListAdapter(val activity: Context) :
+open class OnlineSongListAdapter(val activity: Context) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     interface SongPlayListCallBack {
         fun OnSongRemoved(song: SongModel, position: Int)
     }
 
-    val mData = ArrayList<SongModel>()
+    open val mData = ArrayList<SongModel>()
     val ateKey = Helpers.getATEKey(activity)
     var currentlyPlayingPosition = 0
     var isList = false
+    var isOrigin = true
+    var isMainPage = false
     var callBack: SongPlayListCallBack? = null
 
     init {
@@ -67,12 +64,13 @@ class OnlineSongListAdapter(val activity: Context) :
         (holder as OnlineSongViewHolder).bind(mData[position], position)
     }
 
-    fun initPlayList(cb: OnlineSongListAdapter.SongPlayListCallBack) {
+    fun initPlayList(cb: OnlineSongListAdapter.SongPlayListCallBack, origin: Boolean) {
         callBack = cb
         isList = true
+        isOrigin = origin
     }
 
-    fun bindData(songList: List<SongModel>) {
+    open fun bindData(songList: List<SongModel>) {
         mData.clear()
         mData.addAll(songList)
         notifyDataSetChanged()
@@ -84,7 +82,7 @@ class OnlineSongListAdapter(val activity: Context) :
     }
 
     fun addSongAt(song: SongModel, pos: Int) {
-
+        mData.add(pos, song)
     }
 
     class OnlineSongViewHolder(val adapter: OnlineSongListAdapter, view: View) :
@@ -103,11 +101,13 @@ class OnlineSongListAdapter(val activity: Context) :
                 data?.let {
                     NavigationUtils.navigateToNowplayingOnline(adapter.activity)
                     MusicPlayer.playOnlineWithList(adapter.mData, adapterPosition)
-                    adapter.notifyItemChanged(adapter.currentlyPlayingPosition)
-                    adapter.currentlyPlayingPosition = adapterPosition
-                    title.setTextColor(Config.accentColor(view.context, adapter.ateKey))
-                    visualizer.setColor(Config.accentColor(view.context, adapter.ateKey))
-                    visualizer.visibility = View.VISIBLE
+                    if (!adapter.isMainPage) {
+                        adapter.notifyItemChanged(adapter.currentlyPlayingPosition)
+                        adapter.currentlyPlayingPosition = adapterPosition
+                        title.setTextColor(Config.accentColor(view.context, adapter.ateKey))
+                        visualizer.setColor(Config.accentColor(view.context, adapter.ateKey))
+                        visualizer.visibility = View.VISIBLE
+                    }
                 }
             }
             popupMenu.setOnClickListener {
@@ -118,7 +118,7 @@ class OnlineSongListAdapter(val activity: Context) :
                     when (it.itemId) {
                         R.id.popup_song_remove_playlist -> {
                             //server
-                            adapter.callBack?.OnSongRemoved(data!!,adapterPosition)
+                            adapter.callBack?.OnSongRemoved(data!!, adapterPosition)
                         }
                         R.id.popup_song_play -> {
 
@@ -141,7 +141,7 @@ class OnlineSongListAdapter(val activity: Context) :
                 }
                 menu.inflate(R.menu.menu_popup_song_online)
                 menu.show()
-                if (adapter.isList)
+                if (adapter.isList && adapter.isOrigin)
                     menu.menu.findItem(R.id.popup_song_remove_playlist).isVisible = true
             }
         }
@@ -153,23 +153,28 @@ class OnlineSongListAdapter(val activity: Context) :
             albumArt.setImageResource(R.drawable.holder)
             title.setTextColor(Config.textColorPrimary(itemView.context, adapter.ateKey))
 
-            if (MusicPlayer.getCurrentOnlineId() == data.id) {
-                title.setTextColor(Config.accentColor(itemView.context, adapter.ateKey))
-                if (MusicPlayer.isOnlinePlaying()) {
-                    visualizer.setColor(Config.accentColor(itemView.context, adapter.ateKey))
-                    visualizer.visibility = View.VISIBLE
+            if (!adapter.isMainPage) {
+                if (MusicPlayer.getCurrentOnlineId() == data.id) {
+                    title.setTextColor(Config.accentColor(itemView.context, adapter.ateKey))
+                    if (MusicPlayer.isOnlinePlaying()) {
+                        visualizer.setColor(Config.accentColor(itemView.context, adapter.ateKey))
+                        visualizer.visibility = View.VISIBLE
+                    } else {
+                        visualizer.visibility = View.GONE
+                    }
                 } else {
                     visualizer.visibility = View.GONE
+                    if (adapter.isList) {
+                        title.setTextColor(Color.WHITE)
+                    } else {
+                        title.setTextColor(
+                            Config.textColorPrimary(
+                                itemView.context,
+                                adapter.ateKey
+                            )
+                        )
+                    }
                 }
-            } else {
-                visualizer.visibility = View.GONE
-                if (adapter.isList) {
-                    title.setTextColor(Color.WHITE)
-                } else {
-                    title.setTextColor(Config.textColorPrimary(itemView.context, adapter.ateKey))
-                }
-
-
             }
 
             ImageLoader.getInstance().displayImage(

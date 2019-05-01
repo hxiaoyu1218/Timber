@@ -71,8 +71,9 @@ public class AmberApp extends MultiDexApplication {
 
             @Override
             protected InputStream getStreamFromNetwork(String imageUri, Object extra) throws IOException {
-                if (prefs.loadArtistAndAlbumImages())
+                if (prefs.loadArtistAndAlbumImages()) {
                     return super.getStreamFromNetwork(imageUri, extra);
+                }
                 throw new IOException();
             }
         }).build();
@@ -85,8 +86,9 @@ public class AmberApp extends MultiDexApplication {
         if (!getCurrentProcessName().contains(":")) {
             registDeviceToServer();
             PlaylistLoader.INSTANCE.loadPlayList(this);
+        } else {
+            id = DeviceIdGenerator.getDeviceUUID(this);
         }
-
 
         if (BuildConfig.DEBUG) {
             ATE.config(this, "light_theme")
@@ -100,7 +102,6 @@ public class AmberApp extends MultiDexApplication {
                     .coloredStatusBar(true)
                     .commit();
 
-
             ATE.config(this, "dark_theme")
                     .activityTheme(R.style.AppThemeDark)
                     .primaryColorRes(R.color.colorPrimaryDarkDefault)
@@ -108,7 +109,6 @@ public class AmberApp extends MultiDexApplication {
                     .coloredNavigationBar(false)
                     .usingMaterialDialogs(true)
                     .commit();
-
 
             ATE.config(this, "light_theme_notoolbar")
                     .activityTheme(R.style.AppThemeLight)
@@ -119,7 +119,6 @@ public class AmberApp extends MultiDexApplication {
                     .coloredNavigationBar(false)
                     .usingMaterialDialogs(true)
                     .commit();
-
 
             ATE.config(this, "dark_theme_notoolbar")
                     .activityTheme(R.style.AppThemeDark)

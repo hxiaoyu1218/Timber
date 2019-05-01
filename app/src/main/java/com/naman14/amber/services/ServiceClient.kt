@@ -4,8 +4,6 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.naman14.amber.lastfmapi.RestServiceFactory
-import com.squareup.okhttp.RequestBody
-import org.json.JSONObject
 import retrofit.Callback
 import retrofit.http.*
 
@@ -22,7 +20,7 @@ interface ServiceApi {
     fun getListContent(@Query("list_id") uid: String, callback: Callback<String>)
 
     @GET("/main_page")
-    fun getMainPage(callback: Callback<String>)
+    fun getMainPage(@Query("user_id") id: String, callback: Callback<String>)
 
     @GET("/user_regist")
     fun registDevice(@Query("user_id") id: String, callback: Callback<String>)
@@ -36,13 +34,22 @@ interface ServiceApi {
     @Headers("Content-Type: application/json")
     @POST("/list_action")
     fun listAction(@Body body: JsonObject, callback: Callback<String>)
+
+    @GET("/music_event")
+    fun musicEvent(@Query("user_id") uid: String, @Query("song_id") songId: String, callback: Callback<String>)
+
+    @GET("/search")
+    fun search(
+        @Query("query") query: String, @Query("offset") offset: String, @Query("count") count: String,
+        callback: Callback<String>
+    )
 }
 
 
 object ServiceClient {
     const val SERVICE_URL = "http://10.206.16.144:5000"
     private val service = RestServiceFactory.create(SERVICE_URL, ServiceApi::class.java)
-    private val gson =  GsonBuilder().serializeNulls().create()
+    private val gson = GsonBuilder().serializeNulls().create()
     private val jsonParser = JsonParser()
 
     fun getJsonObject(map: Map<String, Any>): JsonObject {
@@ -54,8 +61,8 @@ object ServiceClient {
         service.getMusicList(callBack)
     }
 
-    fun getMainPage(callBack: Callback<String>) {
-        service.getMainPage(callBack)
+    fun getMainPage(id: String, callBack: Callback<String>) {
+        service.getMainPage(id, callBack)
     }
 
     fun registDevice(id: String, callBack: Callback<String>) {
@@ -78,4 +85,11 @@ object ServiceClient {
         service.listAction(body, callback)
     }
 
+    fun musicEvent(uid: String, songId: String, callback: Callback<String>) {
+        service.musicEvent(uid, songId, callback)
+    }
+
+    fun search(query: String, offset: String, count: String, callback: Callback<String>) {
+        service.search(query, offset, count, callback)
+    }
 }

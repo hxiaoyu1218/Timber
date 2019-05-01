@@ -69,6 +69,8 @@ public class Constants {
     public static final String ACTIVITY_TRANSITION = "activity_transition";
     public static final String IS_ONLINE_PLAYING = "is_online";
     public static final String PLAY_LIST_POS = "play_list_position";
+    public static final String PLAY_LIST_NAME = "play_list_name";
+    public static final String PLAY_LIST_ID = "play_list_id";
 
     public static final int CAST_SERVER_PORT = 8080;
 

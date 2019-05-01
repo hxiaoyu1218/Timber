@@ -88,6 +88,14 @@
             android:theme="@style/PlayerThemeFullScreen" />
 
         <activity
+            android:name="com.naman14.amber.activities.PlaylistOnlineActivity"
+            android:theme="@style/AppThemeLight" />
+
+        <activity
+            android:name="com.naman14.amber.activities.SearchOnlineActivity"
+            android:theme="@style/AppThemeLight" />
+
+        <activity
             android:name="com.naman14.amber.activities.SearchActivity"
             android:theme="@style/AppThemeNormalLight" />
 

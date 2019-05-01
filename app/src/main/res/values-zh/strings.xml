@@ -66,7 +66,7 @@
     <string name="search">搜索</string>
     <string name="action_shuffle_all">全部随机</string>
     <string name="action_equalizer">均衡器</string>
-    <string name="search_library">在库中搜索</string>
+    <string name="search_library">搜索</string>
 
     <string name="select_theme">选择主题</string>
     <string name="choose_theme_throughout">为整个应用选择一个主题</string>
@@ -139,6 +139,7 @@
     <string name="add_to_queue">添加到队列</string>
     <string name="play_next">下一首播放</string>
     <string name="new_playlist">新的播放列表</string>
+    <string name="save_playlist">收藏歌单</string>
 
 
     <string name="nothing_found">没有结果</string>

@@ -35,11 +35,15 @@ import com.naman14.amber.activities.ArtistDetailActivity;
 import com.naman14.amber.activities.MainActivity;
 import com.naman14.amber.activities.NowPlayingActivity;
 import com.naman14.amber.activities.PlaylistDetailActivity;
+import com.naman14.amber.activities.PlaylistOnlineActivity;
 import com.naman14.amber.activities.SearchActivity;
+import com.naman14.amber.activities.SearchOnlineActivity;
 import com.naman14.amber.activities.SettingsActivity;
 import com.naman14.amber.fragments.AlbumDetailFragment;
 import com.naman14.amber.fragments.ArtistDetailFragment;
+import com.naman14.amber.models.Playlist;
 import com.naman14.amber.nowplaying.AmberPlayerFragment;
+import com.naman14.amber.services.PlayList;
 
 import java.util.ArrayList;
 
@@ -129,6 +133,18 @@ public class NavigationUtils {
         final Intent intent = new Intent(context, MainActivity.class);
         intent.setAction(Constants.NAVIGATE_NOWPLAYING);
         return intent;
+    }
+
+    public static void navigateOnlinePlayList(Context context, PlayList playlist) {
+        Intent intent = new Intent(context, PlaylistOnlineActivity.class);
+        intent.putExtra(Constants.PLAY_LIST_NAME, playlist.getListName());
+        intent.putExtra(Constants.PLAY_LIST_ID, playlist.getListId());
+        context.startActivity(intent);
+    }
+
+    public static void navigateOnlineSearch(Context context) {
+        Intent intent = new Intent(context, SearchOnlineActivity.class);
+        context.startActivity(intent);
     }
 
     public static void navigateToSettings(Activity context) {
