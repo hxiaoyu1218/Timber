@@ -407,6 +407,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                 public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                     if (b) {
                         if (isOnlinePlayer) {
+                            MusicPlayer.seekOnline((long)i);
                         } else {
                             MusicPlayer.seek((long) i);
                         }

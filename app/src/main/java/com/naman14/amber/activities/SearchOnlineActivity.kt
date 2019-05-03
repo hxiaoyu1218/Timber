@@ -101,8 +101,8 @@ class SearchOnlineActivity : BaseActivity(), SearchView.OnQueryTextListener, Vie
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        val item = menu.findItem(R.id.action_search)
-        item.isVisible = false
+//        val item = menu.findItem(R.id.action_search)
+//        item.isVisible = false
         return true
     }
 

@@ -84,6 +84,10 @@
             android:theme="@style/AppThemeNormalLight" />
 
         <activity
+            android:name="com.naman14.amber.activities.LoginActivity"
+            android:theme="@style/AppThemeNormalLight" />
+
+        <activity
             android:name="com.naman14.amber.activities.PlaylistDetailActivity"
             android:theme="@style/PlayerThemeFullScreen" />
 

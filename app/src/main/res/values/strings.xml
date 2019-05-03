@@ -176,4 +176,8 @@
     <string name="shutdown_quarter">Shutdown in 15 minutes</string>
     <string name="shutdown_half_hour">Shutdown in 30 minutes</string>
     <string name="shutdown_hour">Shutdown in 1 hour</string>
+    <string name="guest">Guest</string>
+    <string name="register">Register and Login</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
 </resources>

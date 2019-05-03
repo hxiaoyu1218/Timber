@@ -157,4 +157,8 @@
     <string name="shutdown_quarter">15分钟后</string>
     <string name="shutdown_half_hour">30分钟后</string>
     <string name="shutdown_hour">60分钟后</string>
+    <string name="guest">游客</string>
+    <string name="register">注册并登录</string>
+    <string name="login">登录</string>
+    <string name="logout">注销</string>
 </resources>

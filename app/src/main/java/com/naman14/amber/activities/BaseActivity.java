@@ -41,6 +41,7 @@ import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.Session;
 import com.google.android.gms.cast.framework.SessionManager;
 import com.google.android.gms.cast.framework.SessionManagerListener;
+import com.naman14.amber.AmberApp;
 import com.naman14.amber.ITimberService;
 import com.naman14.amber.MusicPlayer;
 import com.naman14.amber.MusicService;
@@ -50,9 +51,9 @@ import com.naman14.amber.cast.WebServer;
 import com.naman14.amber.listeners.MusicStateListener;
 import com.naman14.amber.slidinguppanel.SlidingUpPanelLayout;
 import com.naman14.amber.subfragments.QuickControlsFragment;
+import com.naman14.amber.utils.AmberUtils;
 import com.naman14.amber.utils.Helpers;
 import com.naman14.amber.utils.NavigationUtils;
-import com.naman14.amber.utils.AmberUtils;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -62,8 +63,7 @@ import static com.naman14.amber.MusicPlayer.mService;
 
 
 /**
- *   Created by huangxiaoyu
- *   Time 2019/4/7
+ * Created by huangxiaoyu Time 2019/4/7
  **/
 
 
@@ -82,6 +82,7 @@ public class BaseActivity extends ATEActivity implements ServiceConnection, Musi
     public boolean playServicesAvailable = false;
 
     private class SessionManagerListenerImpl extends SimpleSessionManagerListener {
+
         @Override
         public void onSessionStarting(Session session) {
             super.onSessionStarting(session);
@@ -94,11 +95,13 @@ public class BaseActivity extends ATEActivity implements ServiceConnection, Musi
             mCastSession = mSessionManager.getCurrentCastSession();
             showCastMiniController();
         }
+
         @Override
         public void onSessionResumed(Session session, boolean wasSuspended) {
             invalidateOptionsMenu();
             mCastSession = mSessionManager.getCurrentCastSession();
         }
+
         @Override
         public void onSessionEnded(Session session, int error) {
             mCastSession = null;
@@ -136,8 +139,9 @@ public class BaseActivity extends ATEActivity implements ServiceConnection, Musi
 //
 //        }
 
-        if (playServicesAvailable)
+        if (playServicesAvailable) {
             initCast();
+        }
     }
 
     @Override
@@ -172,9 +176,10 @@ public class BaseActivity extends ATEActivity implements ServiceConnection, Musi
             mSessionManager.addSessionManagerListener(mSessionManagerListener);
         }
         //For Android 8.0+: service may get destroyed if in background too long
-        if(mService == null){
+        if (mService == null) {
             mToken = MusicPlayer.bindToService(this, this);
         }
+        MusicPlayer.updateUID(AmberApp.getInstance().id);
         onMetaChanged();
         super.onResume();
     }

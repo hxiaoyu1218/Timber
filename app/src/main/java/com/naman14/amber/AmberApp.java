@@ -18,6 +18,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.preference.PreferenceManager;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
@@ -25,7 +26,8 @@ import com.afollestad.appthemeengine.ATE;
 import com.afollestad.appthemeengine.Config;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
-import com.naman14.amber.dataloaders.PlaylistLoader;
+import com.danikula.videocache.HttpProxyCacheServer;
+import com.danikula.videocache.HttpProxyCacheServer.Builder;
 import com.naman14.amber.permissions.Nammu;
 import com.naman14.amber.services.ServiceClient;
 import com.naman14.amber.utils.DeviceIdGenerator;
@@ -50,6 +52,9 @@ public class AmberApp extends MultiDexApplication {
     private String TAG = "huangxiaoyu.application";
     private static AmberApp mInstance;
     public String id;
+    public String did;
+    public HttpProxyCacheServer proxy = new Builder(this).maxCacheFilesCount(30).build();
+    public int loginMode = 0; // 0 not login  1 login 2 guest
 
     public static synchronized AmberApp getInstance() {
         return mInstance;
@@ -85,10 +90,11 @@ public class AmberApp extends MultiDexApplication {
         Nammu.init(this);
         if (!getCurrentProcessName().contains(":")) {
             registDeviceToServer();
-            PlaylistLoader.INSTANCE.loadPlayList(this);
         } else {
             id = DeviceIdGenerator.getDeviceUUID(this);
         }
+
+        loginMode = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("login", false) ? 1 : 0;
 
         if (BuildConfig.DEBUG) {
             ATE.config(this, "light_theme")
@@ -179,9 +185,15 @@ public class AmberApp extends MultiDexApplication {
     }
 
     private void registDeviceToServer() {
-        id = DeviceIdGenerator.getDeviceUUID(this);
+        did = DeviceIdGenerator.getDeviceUUID(this);
         Log.d(TAG, "registDeviceToServer: " + id);
-        SharedPreferences sharedPreferences = getSharedPreferences("regist_app", MODE_PRIVATE);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String uid = sharedPreferences.getString("user_id", "");
+        if (!uid.isEmpty()) {
+            id = uid;
+        } else {
+            id = did;
+        }
         final SharedPreferences.Editor editor = sharedPreferences.edit();
         if (!sharedPreferences.getBoolean("has_regist", false)) {
             ServiceClient.INSTANCE.registDevice(id, new Callback<String>() {

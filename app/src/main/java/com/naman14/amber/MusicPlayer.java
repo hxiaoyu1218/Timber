@@ -134,6 +134,16 @@ public class MusicPlayer {
         }
     }
 
+    public static void updateUID(String id) {
+        try {
+            if (mService != null) {
+                mService.updateUID(id);
+            }
+        } catch (final RemoteException ignored) {
+        }
+    }
+
+
     public static void cycleRepeat() {
         try {
             if (mService != null) {
@@ -943,6 +953,7 @@ public class MusicPlayer {
     }
 
     public static final class ServiceBinder implements ServiceConnection {
+
         private final ServiceConnection mCallback;
         private final Context mContext;
 
@@ -971,6 +982,7 @@ public class MusicPlayer {
     }
 
     public static final class ServiceToken {
+
         public ContextWrapper mWrappedContext;
 
         public ServiceToken(final ContextWrapper context) {

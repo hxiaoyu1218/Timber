@@ -22,7 +22,7 @@ interface ServiceApi {
     @GET("/main_page")
     fun getMainPage(@Query("user_id") id: String, callback: Callback<String>)
 
-    @GET("/user_regist")
+    @GET("/device_regist")
     fun registDevice(@Query("user_id") id: String, callback: Callback<String>)
 
     @GET("/user_play_list")
@@ -43,6 +43,14 @@ interface ServiceApi {
         @Query("query") query: String, @Query("offset") offset: String, @Query("count") count: String,
         callback: Callback<String>
     )
+
+    @Headers("Content-Type: application/json")
+    @POST("/user_login")
+    fun userLogin(@Body body: JsonObject, callback: Callback<String>)
+
+    @Headers("Content-Type: application/json")
+    @POST("/user_regist")
+    fun userRegister(@Body body: JsonObject, callback: Callback<String>)
 }
 
 
@@ -91,5 +99,13 @@ object ServiceClient {
 
     fun search(query: String, offset: String, count: String, callback: Callback<String>) {
         service.search(query, offset, count, callback)
+    }
+
+    fun userLogin(body: JsonObject, callback: Callback<String>) {
+        service.userLogin(body, callback)
+    }
+
+    fun userRegister(body: JsonObject, callback: Callback<String>) {
+        service.userRegister(body, callback)
     }
 }

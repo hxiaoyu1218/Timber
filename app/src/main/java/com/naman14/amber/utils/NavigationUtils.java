@@ -20,18 +20,14 @@ import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaPlayer;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Toast;
 
 import com.naman14.amber.MusicPlayer;
-import com.naman14.amber.R;
 import com.naman14.amber.activities.AlbumDetailActivity;
 import com.naman14.amber.activities.ArtistDetailActivity;
+import com.naman14.amber.activities.LoginActivity;
 import com.naman14.amber.activities.MainActivity;
 import com.naman14.amber.activities.NowPlayingActivity;
 import com.naman14.amber.activities.PlaylistDetailActivity;
@@ -39,15 +35,17 @@ import com.naman14.amber.activities.PlaylistOnlineActivity;
 import com.naman14.amber.activities.SearchActivity;
 import com.naman14.amber.activities.SearchOnlineActivity;
 import com.naman14.amber.activities.SettingsActivity;
-import com.naman14.amber.fragments.AlbumDetailFragment;
-import com.naman14.amber.fragments.ArtistDetailFragment;
-import com.naman14.amber.models.Playlist;
 import com.naman14.amber.nowplaying.AmberPlayerFragment;
 import com.naman14.amber.services.PlayList;
 
 import java.util.ArrayList;
 
 public class NavigationUtils {
+
+    public static void navigateToLogin(Context context) {
+        context.startActivity(new Intent(context, LoginActivity.class));
+    }
+
 
     @TargetApi(21)
     public static void navigateToAlbum(Activity context, long albumID, Pair<View, String> transitionViews) {
@@ -180,7 +178,7 @@ public class NavigationUtils {
     }
 
     @TargetApi(21)
-    public static void navigateToPlaylistDetailOnline(Activity context, String action,int pos, int foregroundcolor, ArrayList<Pair> transitionViews) {
+    public static void navigateToPlaylistDetailOnline(Activity context, String action, int pos, int foregroundcolor, ArrayList<Pair> transitionViews) {
         final Intent intent = new Intent(context, PlaylistDetailActivity.class);
         intent.setAction(action);
         intent.putExtra(Constants.PLAY_LIST_POS, pos);

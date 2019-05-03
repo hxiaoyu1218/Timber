@@ -66,8 +66,10 @@ import android.support.v7.graphics.Palette;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.danikula.videocache.CacheListener;
 import com.naman14.amber.helpers.MediaButtonIntentReceiver;
 import com.naman14.amber.helpers.MusicPlaybackTrack;
+import com.naman14.amber.helpers.SongModel;
 import com.naman14.amber.lastfmapi.LastFmClient;
 import com.naman14.amber.lastfmapi.models.LastfmUserSession;
 import com.naman14.amber.lastfmapi.models.ScrobbleQuery;
@@ -76,13 +78,13 @@ import com.naman14.amber.provider.MusicPlaybackState;
 import com.naman14.amber.provider.RecentStore;
 import com.naman14.amber.provider.SongPlayCount;
 import com.naman14.amber.services.ServiceClient;
-import com.naman14.amber.helpers.SongModel;
-import com.naman14.amber.utils.NavigationUtils;
-import com.naman14.amber.utils.PreferencesUtility;
 import com.naman14.amber.utils.AmberUtils;
 import com.naman14.amber.utils.AmberUtils.IdType;
+import com.naman14.amber.utils.NavigationUtils;
+import com.naman14.amber.utils.PreferencesUtility;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -99,6 +101,8 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
+import tv.danmaku.ijk.media.player.IMediaPlayer.OnBufferingUpdateListener;
+import tv.danmaku.ijk.media.player.IMediaPlayer.OnPreparedListener;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
 @SuppressLint("NewApi")
@@ -2523,6 +2527,7 @@ public class MusicService extends Service {
         private MediaPlayer mNextMediaPlayer;
 
         private IjkMediaPlayer mOnlinePlayer = new IjkMediaPlayer();
+        private IjkMediaPlayer mOnlinePlayerNext = new IjkMediaPlayer();
 
         private Handler mHandler;
 
@@ -2718,6 +2723,9 @@ public class MusicService extends Service {
 
         public void playOnline(final String id) {
             sendMusicEvent(id);
+            mOnlinePlayerNext.release();
+            mOnlinePlayerNext = new IjkMediaPlayer();
+
             mOnlinePlayer.release();
             mOnlinePlayer = new IjkMediaPlayer();
             mOnlinePlayer.setOnPreparedListener(new IjkMediaPlayer.OnPreparedListener() {
@@ -2738,9 +2746,40 @@ public class MusicService extends Service {
                 }
             });
             try {
-                mOnlinePlayer.setDataSource(ServiceClient.SERVICE_URL + "/music?song_id=" + id);
+                String proxyUrl = AmberApp.getInstance().proxy.getProxyUrl(ServiceClient.SERVICE_URL + "/music?song_id=" + id);
+                mOnlinePlayer.setDataSource(proxyUrl);
                 mOnlinePlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mOnlinePlayer.prepareAsync();
+
+                String nextId = mService.get().onlineList.get(mService.get().getNextOnlinePos()).getId();
+                if (!nextId.equals(id)) {
+                    if (AmberApp.getInstance().proxy.isCached(ServiceClient.SERVICE_URL + "/music?song_id=" + nextId)) {
+                        return;
+                    }
+                    String proxyUrlNext = AmberApp.getInstance().proxy.getProxyUrl(ServiceClient.SERVICE_URL + "/music?song_id=" + nextId);
+                    mOnlinePlayerNext.setDataSource(proxyUrlNext);
+                    mOnlinePlayerNext.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
+                        @Override
+                        public void onBufferingUpdate(IMediaPlayer iMediaPlayer, int i) {
+                            Log.d(TAG, "onBufferingUpdate: next  " + i);
+                        }
+                    });
+                    AmberApp.getInstance().proxy.registerCacheListener(new CacheListener() {
+                        @Override
+                        public void onCacheAvailable(File cacheFile, String url, int percentsAvailable) {
+                            Log.d(TAG, "onCacheAvailable: next  percent " + percentsAvailable);
+                        }
+                    }, ServiceClient.SERVICE_URL + "/music?song_id=" + nextId);
+                    mOnlinePlayerNext.setOnPreparedListener(new OnPreparedListener() {
+                        @Override
+                        public void onPrepared(IMediaPlayer iMediaPlayer) {
+                            Log.d(TAG, "onPrepared: next  ");
+                            mOnlinePlayerNext.pause();
+                        }
+                    });
+                    mOnlinePlayerNext.prepareAsync();
+                }
+
             } catch (Exception e) {
                 Log.d("huang", e.getMessage());
             }
@@ -2828,6 +2867,11 @@ public class MusicService extends Service {
     }
 
     public void playOnlineNext() {
+        onlinePos = getNextOnlinePos();
+        mPlayer.playOnline(onlineList.get(onlinePos).getId());
+    }
+
+    public int getNextOnlinePos() {
         int pos = onlinePos;
         if (onlineRepeatState == 0) {
             if (onlineShuffleState == 0) {
@@ -2840,8 +2884,7 @@ public class MusicService extends Service {
                 pos = new Random().nextInt(onlineList.size() - 1);
             }
         }
-        onlinePos = pos;
-        mPlayer.playOnline(onlineList.get(onlinePos).getId());
+        return pos;
     }
 
     public void playOnlinePrevious() {
@@ -3196,6 +3239,11 @@ public class MusicService extends Service {
         @Override
         public List<SongModel> getCurrentSongList() throws RemoteException {
             return mService.get().onlineList;
+        }
+
+        @Override
+        public void updateUID(String id) throws RemoteException {
+            AmberApp.getInstance().id = id;
         }
     }
 

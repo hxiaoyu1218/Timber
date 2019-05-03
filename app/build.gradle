@@ -71,6 +71,7 @@ configurations.all {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+
     implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
     implementation "com.android.support:design:$rootProject.supportLibraryVersion"
     implementation "com.android.support:cardview-v7:$rootProject.supportLibraryVersion"
@@ -110,5 +111,4 @@ dependencies {
     implementation 'tv.danmaku.ijk.media:ijkplayer-arm64:0.8.8'
     implementation 'tv.danmaku.ijk.media:ijkplayer-x86:0.8.8'
     implementation 'tv.danmaku.ijk.media:ijkplayer-x86_64:0.8.8'
-
 }

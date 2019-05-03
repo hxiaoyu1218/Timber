@@ -10,7 +10,6 @@ import com.afollestad.appthemeengine.Config
 import com.naman14.amber.MusicPlayer
 import com.naman14.amber.R
 import com.naman14.amber.fragments.OnlineMainFragment
-import com.naman14.amber.helpers.MainCellModel
 import com.naman14.amber.helpers.SongModel
 import com.naman14.amber.services.ServiceClient
 import com.naman14.amber.services.SongListModel
@@ -24,14 +23,21 @@ import com.nostra13.universalimageloader.core.ImageLoader
  *   Created by huangxiaoyu
  *   Time 2019/4/22
  **/
-class OnlineMainPageAdapter(val f: OnlineMainFragment) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class OnlineMainPageAdapter(val f: OnlineMainFragment) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     val mData = ArrayList<SongModel>()
     val ateKey = Helpers.getATEKey(f.context)
     var currentlyPlayingPosition = 0
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
-        return OnlineSongViewHolder(this, LayoutInflater.from(parent!!.context).inflate(R.layout.online_song_vh, null))
+        return OnlineSongViewHolder(
+            this,
+            LayoutInflater.from(parent!!.context).inflate(
+                R.layout.online_song_vh,
+                null
+            )
+        )
     }
 
     override fun getItemCount() = mData.size
@@ -47,12 +53,8 @@ class OnlineMainPageAdapter(val f: OnlineMainFragment) : RecyclerView.Adapter<Re
         notifyDataSetChanged()
     }
 
-    class OnlineHeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var title = view.findViewById<View>(R.id.text) as TextView
-        fun bind(data:MainCellModel){}
-    }
-
-    class OnlineSongViewHolder(val adapter: OnlineMainPageAdapter, view: View) : RecyclerView.ViewHolder(view) {
+    class OnlineSongViewHolder(val adapter: OnlineMainPageAdapter, view: View) :
+        RecyclerView.ViewHolder(view) {
 
         var title = view.findViewById<View>(R.id.song_title) as TextView
         var artist = view.findViewById<View>(R.id.song_artist) as TextView
@@ -98,10 +100,12 @@ class OnlineMainPageAdapter(val f: OnlineMainFragment) : RecyclerView.Adapter<Re
 
             }
 
-            ImageLoader.getInstance().displayImage(ServiceClient.SERVICE_URL + "/album_pic?song_id=" + data.id,
-                    albumArt, DisplayImageOptions.Builder().cacheInMemory(true)
+            ImageLoader.getInstance().displayImage(
+                ServiceClient.SERVICE_URL + "/album_pic?song_id=" + data.id,
+                albumArt, DisplayImageOptions.Builder().cacheInMemory(true)
                     .showImageOnLoading(R.drawable.holder)
-                    .resetViewBeforeLoading(true).build())
+                    .resetViewBeforeLoading(true).build()
+            )
 
         }
     }

@@ -15,5 +15,5 @@ data class PlayList(
     @SerializedName("list_pic") var listPic: String?,
     @SerializedName("list_count") var listCount: Int,
     @SerializedName("origin") var isOrigin: Int,
-    @SerializedName("list_share_count") var listShareCount: Int
+    @SerializedName("share_count") var listShareCount: Int
 )

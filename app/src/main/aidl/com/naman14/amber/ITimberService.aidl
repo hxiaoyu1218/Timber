@@ -71,5 +71,7 @@ interface ITimberService
     List<SongModel> getCurrentSongList();
     SongModel getCurrentSongOnline();
     boolean isOnlineMode();
+
+    void updateUID(String id);
 }
 
