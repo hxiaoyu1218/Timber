@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.afollestad.appthemeengine.Config;
+import com.naman14.amber.R;
 import com.naman14.amber.utils.Helpers;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
@@ -19,13 +20,12 @@ public class BaseRecyclerView extends RecyclerView {
 
         @Override
         public void onChanged() {
-            Adapter<?> adapter =  getAdapter();
-            if(adapter != null && emptyView != null) {
-                if(adapter.getItemCount() == 0) {
+            Adapter<?> adapter = getAdapter();
+            if (adapter != null && emptyView != null) {
+                if (adapter.getItemCount() == 0) {
                     emptyView.setVisibility(View.VISIBLE);
                     BaseRecyclerView.this.setVisibility(View.GONE);
-                }
-                else {
+                } else {
                     emptyView.setVisibility(View.GONE);
                     BaseRecyclerView.this.setVisibility(View.VISIBLE);
                 }
@@ -50,7 +50,7 @@ public class BaseRecyclerView extends RecyclerView {
     public void setAdapter(Adapter adapter) {
         super.setAdapter(adapter);
 
-        if(adapter != null) {
+        if (adapter != null) {
             adapter.registerAdapterDataObserver(emptyObserver);
         }
 
@@ -58,14 +58,23 @@ public class BaseRecyclerView extends RecyclerView {
     }
 
     public void setEmptyView(Context context, View emptyView, String text) {
+        if (emptyView instanceof TextView) {
+            handleTextView(context, (TextView) emptyView, text);
+        } else {
+            handleTextView(context, (TextView) emptyView.findViewById(R.id.list_empty), text);
+        }
         this.emptyView = emptyView;
-        ((TextView) emptyView).setText(text);
+
+    }
+
+    private void handleTextView(Context context, TextView emptyView, String text) {
+        emptyView.setText(text);
 
         MaterialDrawableBuilder builder = MaterialDrawableBuilder.with(context)
                 .setIcon(MaterialDrawableBuilder.IconValue.MUSIC_NOTE)
                 .setColor(Config.textColorPrimary(context, Helpers.getATEKey(context)))
                 .setSizeDp(30);
 
-        ((TextView) emptyView).setCompoundDrawables(null, builder.build(), null, null);
+        emptyView.setCompoundDrawables(null, builder.build(), null, null);
     }
 }

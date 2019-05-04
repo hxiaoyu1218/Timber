@@ -37,7 +37,25 @@ class MainPageModel {
                 val module = PlayListModel()
                 module.extract(list[i] as JSONObject)
                 modules.add(module)
+            } else if (type == 3) {
+                val module = ArtistListModel()
+                module.extract(list[i] as JSONObject)
+                modules.add(module)
             }
+        }
+    }
+}
+
+class ArtistListModel : MainPageAbsModule() {
+
+    var artistList: ArrayList<SongModel> = ArrayList()
+
+    override fun extract(jsonObject: JSONObject) {
+        super.extract(jsonObject)
+        val list = jsonObject.optJSONArray("artists")
+        for (i in 0..(list.length() - 1)) {
+            val song = Gson().fromJson(list[i].toString(), SongModel::class.java)
+            artistList.add(song)
         }
     }
 }

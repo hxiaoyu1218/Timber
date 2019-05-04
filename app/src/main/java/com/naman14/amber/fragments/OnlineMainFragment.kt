@@ -7,14 +7,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import com.afollestad.appthemeengine.Config
 import com.naman14.amber.AmberApp
 import com.naman14.amber.R
 import com.naman14.amber.activities.MainActivity
 import com.naman14.amber.coordinatescroll.CoordinateScrollLinearLayout
+import com.naman14.amber.modules.ArtistModule
 import com.naman14.amber.modules.DailySongModule
 import com.naman14.amber.modules.LatestSongModule
 import com.naman14.amber.modules.PlayListModule
 import com.naman14.amber.services.*
+import com.naman14.amber.utils.ATEUtils
+import com.naman14.amber.utils.Helpers
 import com.naman14.amber.utils.NavigationUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -30,6 +34,10 @@ import retrofit.client.Response
  *   Time 2019/4/20
  **/
 class OnlineMainFragment : Fragment() {
+
+    init {
+        val a = 3
+    }
 
     private lateinit var scrollView: CoordinateScrollLinearLayout
 
@@ -69,6 +77,11 @@ class OnlineMainFragment : Fragment() {
             navigationIc.setImageResource(R.drawable.ic_menu_dark)
             settingIc.setImageResource(R.drawable.ic_setting_dark)
         }
+        return rootView
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         GlobalScope.launch(Dispatchers.Main) {
             withContext(Dispatchers.IO) {
                 ServiceClient.getMainPage(AmberApp.getInstance().id, object : Callback<String> {
@@ -94,6 +107,12 @@ class OnlineMainFragment : Fragment() {
                                         item as PlayListModel
                                     )
                                     scrollView.addView(model.view)
+                                } else if (item.type == 3) {
+                                    val model = ArtistModule(
+                                        this@OnlineMainFragment,
+                                        item as ArtistListModel
+                                    )
+                                    scrollView.addView(model.view)
                                 }
                             }
                         }
@@ -105,8 +124,11 @@ class OnlineMainFragment : Fragment() {
                 })
             }
         }
-
-        return rootView
     }
 
+    override fun onResume() {
+        super.onResume()
+        val ateKey = Helpers.getATEKey(activity)
+        ATEUtils.setStatusBarColor(activity, ateKey, Config.primaryColor(activity, ateKey))
+    }
 }

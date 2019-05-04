@@ -19,12 +19,16 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
+    <style name="ArtistTheme" parent="AppThemeLight">
+        <item name="android:windowContentTransitions">true</item>
+    </style>
+
     <style name="AppThemeSplash" parent="AppThemeLight">
         <item name="android:windowBackground">@drawable/splash_bg</item>
     </style>
 
     <style name="AppThemeMain" parent="AppThemeLight">
-
+        <item name="android:windowContentTransitions">true</item>
     </style>
 
 

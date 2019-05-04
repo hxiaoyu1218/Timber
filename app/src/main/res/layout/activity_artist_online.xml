@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:id="@+id/test"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="12dp"
+            android:orientation="vertical">
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_gravity="top"
+                android:layout_marginTop="@dimen/appBarTopMargin"
+                android:background="@android:color/transparent"
+                android:theme="@style/Theme.AppCompat"/>
+
+
+            <com.naman14.amber.widgets.CircleImageView
+                android:id="@+id/artist_avatar"
+                tools:src="@color/colorAccent"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_gravity="center_horizontal"
+                android:transitionName="artist_avatar"/>
+
+            <TextView
+                android:id="@+id/artist_name"
+                tools:text="TextViewTextViewTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="6dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_gravity="center_horizontal"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="2"
+                android:textSize="18sp"
+                android:transitionName="artist_name"
+                />
+
+            <TextView
+                android:id="@+id/artist_count"
+                tools:text="TextViewTextViewTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_gravity="center_horizontal"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="2"
+                android:textSize="14sp"
+                android:transitionName="artist_name"
+                />
+
+
+        </LinearLayout>
+
+        <com.naman14.amber.coordinatescroll.CoordinateScrollLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent">
+
+            <com.naman14.amber.widgets.BaseRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/recyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fadeScrollbars="true"/>
+
+        </com.naman14.amber.coordinatescroll.CoordinateScrollLinearLayout>
+    </LinearLayout>
+</FrameLayout>

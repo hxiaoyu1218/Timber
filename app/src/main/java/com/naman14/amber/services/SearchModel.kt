@@ -9,4 +9,12 @@ import com.naman14.amber.helpers.SongModel
  *
  */
 
-data class SearchRes(@SerializedName("offset") var offset: Int, @SerializedName("songs") var songs: ArrayList<SongModel>)
+data class SearchRes(
+    @SerializedName("artists") var artists: ArrayList<SongModel>,
+    @SerializedName("song") var songRes: SongSearchRes
+)
+
+data class SongSearchRes(
+    @SerializedName("offset") var offset: Int,
+    @SerializedName("songs") var songs: ArrayList<SongModel>
+)

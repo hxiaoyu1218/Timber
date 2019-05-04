@@ -41,6 +41,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import io.fabric.sdk.android.Fabric;
 import retrofit.Callback;
@@ -53,18 +56,40 @@ public class AmberApp extends MultiDexApplication {
     private static AmberApp mInstance;
     public String id;
     public String did;
-    public HttpProxyCacheServer proxy = new Builder(this).maxCacheFilesCount(30).build();
+    public HttpProxyCacheServer proxy;
     public int loginMode = 0; // 0 not login  1 login 2 guest
 
     public static synchronized AmberApp getInstance() {
         return mInstance;
     }
 
+    private void closeAndroidPDialog(){
+        try {
+            Class aClass = Class.forName("android.content.pm.PackageParser$Package");
+            Constructor declaredConstructor = aClass.getDeclaredConstructor(String.class);
+            declaredConstructor.setAccessible(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            Class cls = Class.forName("android.app.ActivityThread");
+            Method declaredMethod = cls.getDeclaredMethod("currentActivityThread");
+            declaredMethod.setAccessible(true);
+            Object activityThread = declaredMethod.invoke(null);
+            Field mHiddenApiWarningShown = cls.getDeclaredField("mHiddenApiWarningShown");
+            mHiddenApiWarningShown.setAccessible(true);
+            mHiddenApiWarningShown.setBoolean(activityThread, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+        proxy = new Builder(this).maxCacheFilesCount(30).build();
         mInstance = this;
-
+        closeAndroidPDialog();
         //disable crashlytics for debug builds
         Crashlytics crashlyticsKit = new Crashlytics.Builder()
                 .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())

@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.naman14.amber.MusicPlayer;
 import com.naman14.amber.activities.AlbumDetailActivity;
 import com.naman14.amber.activities.ArtistDetailActivity;
+import com.naman14.amber.activities.ArtistOnlineActivity;
 import com.naman14.amber.activities.LoginActivity;
 import com.naman14.amber.activities.MainActivity;
 import com.naman14.amber.activities.NowPlayingActivity;
@@ -44,6 +45,14 @@ public class NavigationUtils {
 
     public static void navigateToLogin(Context context) {
         context.startActivity(new Intent(context, LoginActivity.class));
+    }
+
+    public static void navigateToArtistOnline(Activity context, String id, String name, ArrayList<Pair> transitionViews) {
+        Intent intent = new Intent(context, ArtistOnlineActivity.class);
+        intent.putExtra(Constants.ARTIST_ID, id);
+        intent.putExtra(Constants.ARTIST_NAME, name);
+        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(context, transitionViews.get(0));
+        context.startActivity(intent, options.toBundle());
     }
 
 

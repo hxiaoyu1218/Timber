@@ -218,7 +218,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
     private final PermissionCallback permissionReadstorageCallback = new PermissionCallback() {
         @Override
         public void permissionGranted() {
-            loadEverything();
+            loadEverything(false);
         }
 
         @Override
@@ -227,6 +227,11 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
         }
     };
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean("recreate", true);
+        super.onSaveInstanceState(outState);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -240,6 +245,11 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
         isDarkTheme = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("dark_theme", false);
 
         super.onCreate(savedInstanceState);
+        boolean recreate = false;
+        if (savedInstanceState != null) {
+            recreate = savedInstanceState.getBoolean("recreate");
+        }
+
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         setContentView(R.layout.activity_main);
@@ -275,9 +285,9 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
         }, 700);
 
         if (AmberUtils.isMarshmallow()) {
-            checkPermissionAndThenLoad();
+            checkPermissionAndThenLoad(recreate);
         } else {
-            loadEverything();
+            loadEverything(recreate);
         }
 
         addBackstackListener();
@@ -320,21 +330,23 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
 
     }
 
-    private void loadEverything() {
-        Runnable navigation = navigationMap.get(action);
-        if (navigation != null) {
-            navigation.run();
-        } else {
-            navigateLibrary.run();
+    private void loadEverything(boolean recreate) {
+        if (!recreate) {
+            Runnable navigation = navigationMap.get(action);
+            if (navigation != null) {
+                navigation.run();
+            } else {
+                navigateOnline.run();
+            }
+            PlaylistLoader.INSTANCE.loadPlayList(this);
         }
-        PlaylistLoader.INSTANCE.loadPlayList(this);
         new initQuickControls().execute("");
     }
 
-    private void checkPermissionAndThenLoad() {
+    private void checkPermissionAndThenLoad(boolean recreate) {
         //check for permission
         if (Nammu.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE) && Nammu.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            loadEverything();
+            loadEverything(recreate);
         } else {
             if (Nammu.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
                 Snackbar.make(panelLayout, "Timber will need to read external storage to display songs on your device.",

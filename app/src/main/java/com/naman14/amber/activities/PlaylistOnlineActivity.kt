@@ -140,5 +140,7 @@ class PlaylistOnlineActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         adapter.notifyDataSetChanged()
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.statusBarColor = Color.TRANSPARENT
     }
 }

@@ -100,7 +100,9 @@ open class OnlineSongListAdapter(val activity: Context) :
             itemView.setOnClickListener {
                 data?.let {
                     NavigationUtils.navigateToNowplayingOnline(adapter.activity)
-                    MusicPlayer.playOnlineWithList(adapter.mData, adapterPosition)
+                    if (it.id != MusicPlayer.getCurrentOnlineId()) {
+                        MusicPlayer.playOnlineWithList(adapter.mData, adapterPosition)
+                    }
                     if (!adapter.isMainPage) {
                         adapter.notifyItemChanged(adapter.currentlyPlayingPosition)
                         adapter.currentlyPlayingPosition = adapterPosition

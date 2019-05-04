@@ -110,6 +110,7 @@ class LoginActivity : BaseActivity(), ATEActivityThemeCustomizer {
                         s.putBoolean("login", true)
                         s.putString("user_id", uid)
                         s.apply()
+                        AmberApp.getInstance().loginMode = 1
                         startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                         finish()
                     } else {

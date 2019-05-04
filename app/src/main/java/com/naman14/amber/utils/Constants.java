@@ -34,6 +34,7 @@ public class Constants {
 
     public static final String ALBUM_ID = "album_id";
     public static final String ARTIST_ID = "artist_id";
+    public static final String ARTIST_NAME = "artist_name";
     public static final String PLAYLIST_ID = "playlist_id";
 
     public static final String FRAGMENT_ID = "fragment_id";

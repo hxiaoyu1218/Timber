@@ -46,7 +46,8 @@ public class ViewGroupUtility {
     private static boolean isChildrenDrawingOrderEnabled(ViewGroup viewGroup) {
         try {
             Class<? extends ViewGroup> clazz = viewGroup.getClass();
-            Method method = clazz.getMethod("isChildrenDrawingOrderEnabled");
+            Method method = ViewGroup.class.getDeclaredMethod("isChildrenDrawingOrderEnabled");
+            method.setAccessible(true);
             return (boolean) method.invoke(viewGroup);
         } catch (Throwable e) {
             e.printStackTrace();

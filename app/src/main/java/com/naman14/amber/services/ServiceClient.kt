@@ -3,6 +3,7 @@ package com.naman14.amber.services
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.naman14.amber.AmberApp
 import com.naman14.amber.lastfmapi.RestServiceFactory
 import retrofit.Callback
 import retrofit.http.*
@@ -40,7 +41,10 @@ interface ServiceApi {
 
     @GET("/search")
     fun search(
-        @Query("query") query: String, @Query("offset") offset: String, @Query("count") count: String,
+        @Query("user_id") uid: String,
+        @Query("query") query: String, @Query("offset") offset: String, @Query("count") count: String, @Query(
+            "artist"
+        ) artist: String,
         callback: Callback<String>
     )
 
@@ -51,6 +55,9 @@ interface ServiceApi {
     @Headers("Content-Type: application/json")
     @POST("/user_regist")
     fun userRegister(@Body body: JsonObject, callback: Callback<String>)
+
+    @GET("/artist_content")
+    fun getArtistContent(@Query("artist_id") id: String, callback: Callback<String>)
 }
 
 
@@ -97,8 +104,14 @@ object ServiceClient {
         service.musicEvent(uid, songId, callback)
     }
 
-    fun search(query: String, offset: String, count: String, callback: Callback<String>) {
-        service.search(query, offset, count, callback)
+    fun search(
+        query: String,
+        offset: String,
+        count: String,
+        artist: String,
+        callback: Callback<String>
+    ) {
+        service.search(AmberApp.getInstance().id, query, offset, count, artist, callback)
     }
 
     fun userLogin(body: JsonObject, callback: Callback<String>) {
@@ -107,5 +120,9 @@ object ServiceClient {
 
     fun userRegister(body: JsonObject, callback: Callback<String>) {
         service.userRegister(body, callback)
+    }
+
+    fun getArtitContent(id: String, callback: Callback<String>) {
+        service.getArtistContent(id, callback)
     }
 }

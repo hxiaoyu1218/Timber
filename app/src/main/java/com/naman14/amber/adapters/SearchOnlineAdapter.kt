@@ -52,16 +52,17 @@ class SearchOnlineAdapter(context: Activity) : OnlineSongListAdapter(context) {
                 query,
                 offset.toString(),
                 count.toString(),
+                "0",
                 object : Callback<String> {
                     override fun success(t: String?, response: Response?) {
                         val res = Gson().fromJson(t, SearchRes::class.java)
-                        if (res.offset == offset) {
+                        if (res.songRes.offset == offset) {
                             mData.remove(load)
                             notifyDataSetChanged()
                             return
                         } else {
-                            offset = res.offset
-                            addData(res.songs)
+                            offset = res.songRes.offset
+                            addData(res.songRes.songs)
                         }
                     }
 

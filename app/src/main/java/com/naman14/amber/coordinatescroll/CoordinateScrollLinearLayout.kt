@@ -238,8 +238,9 @@ class CoordinateScrollLinearLayout @JvmOverloads constructor(context: Context, a
     }
 
     override fun onNestedScrollAccepted(child: View, target: View, nestedScrollAxes: Int, type: Int) {
-        mParentHelper.onNestedScrollAccepted(child, target, nestedScrollAxes, type)
-        startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL, type)
+        if(startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL, type)){
+            mParentHelper.onNestedScrollAccepted(child, target, nestedScrollAxes, type)
+        }
     }
 
     override fun onStopNestedScroll(child: View) {

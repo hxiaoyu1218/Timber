@@ -213,7 +213,7 @@ public final class PreferencesUtility {
     }
 
     public boolean showAutoPlaylist() {
-        return mPreferences.getBoolean(TOGGLE_SHOW_AUTO_PLAYLIST, true);
+        return mPreferences.getBoolean(TOGGLE_SHOW_AUTO_PLAYLIST, false);
     }
 
     public void setToggleShowAutoPlaylist(final boolean b) {
