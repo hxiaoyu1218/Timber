@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.StyleRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.view.Menu;
 
 import com.afollestad.appthemeengine.Config;
 import com.afollestad.appthemeengine.customizers.ATEActivityThemeCustomizer;
@@ -75,5 +76,18 @@ public class NowPlayingActivity extends BaseActivity implements ATEActivityTheme
             PreferencesUtility.getInstance(this).setNowPlayingThemeChanged(false);
             recreate();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_search).setVisible(false);
+        menu.findItem(R.id.action_shuffle).setVisible(false);
+        return super.onPrepareOptionsMenu(menu);
+
     }
 }

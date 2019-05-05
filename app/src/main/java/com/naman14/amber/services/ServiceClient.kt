@@ -58,6 +58,13 @@ interface ServiceApi {
 
     @GET("/artist_content")
     fun getArtistContent(@Query("artist_id") id: String, callback: Callback<String>)
+
+
+}
+
+interface ServiceResApi {
+    @GET("/lrc")
+    fun getMusicLRC(@Query("song_id") id: String, callback: Callback<String>)
 }
 
 
@@ -65,6 +72,7 @@ object ServiceClient {
     const val RES_SERVICE_URL = "http://10.206.16.144:3000"
     const val SERVICE_URL = "http://10.206.16.144:5000"
     private val service = RestServiceFactory.create(SERVICE_URL, ServiceApi::class.java)
+    private val resService = RestServiceFactory.create(RES_SERVICE_URL, ServiceResApi::class.java)
     private val gson = GsonBuilder().serializeNulls().create()
     private val jsonParser = JsonParser()
 
@@ -125,5 +133,9 @@ object ServiceClient {
 
     fun getArtitContent(id: String, callback: Callback<String>) {
         service.getArtistContent(id, callback)
+    }
+
+    fun getMusicLRC(id: String, callback: Callback<String>) {
+        resService.getMusicLRC(id, callback)
     }
 }

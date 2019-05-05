@@ -30,6 +30,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -37,6 +38,11 @@ import android.widget.Toast;
 
 import com.afollestad.appthemeengine.ATE;
 import com.afollestad.appthemeengine.Config;
+import com.hw.lrcviewlib.DefaultLrcRowsParser;
+import com.hw.lrcviewlib.ILrcViewSeekListener;
+import com.hw.lrcviewlib.LrcDataBuilder;
+import com.hw.lrcviewlib.LrcRow;
+import com.hw.lrcviewlib.LrcView;
 import com.naman14.amber.MusicPlayer;
 import com.naman14.amber.MusicService;
 import com.naman14.amber.R;
@@ -45,11 +51,13 @@ import com.naman14.amber.adapters.BaseQueueAdapter;
 import com.naman14.amber.helpers.SongModel;
 import com.naman14.amber.listeners.MusicStateListener;
 import com.naman14.amber.services.ServiceClient;
+import com.naman14.amber.utils.AmberUtils;
 import com.naman14.amber.utils.Helpers;
+import com.naman14.amber.utils.LyricManager;
 import com.naman14.amber.utils.NavigationUtils;
 import com.naman14.amber.utils.PreferencesUtility;
 import com.naman14.amber.utils.SlideTrackSwitcher;
-import com.naman14.amber.utils.AmberUtils;
+import com.naman14.amber.utils.UIUtils;
 import com.naman14.amber.widgets.PlayPauseDrawable;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -59,13 +67,21 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 import net.steamcrafted.materialiconlib.MaterialIconView;
 
+import java.util.List;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+
 public class BaseNowplayingFragment extends Fragment implements MusicStateListener {
 
     private MaterialIconView previous, next;
     private PlayPauseDrawable playPauseDrawable = new PlayPauseDrawable();
     private ImageView playPauseFloating;
 
-
+    private LrcView lrcView;
+    private ImageView lrcBtn;
+    private View lrcBg;
     private String ateKey;
     private int overflowcounter = 0;
     private TextView songtitle, songalbum, songartist, songduration, elapsedtime;
@@ -88,8 +104,10 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             long position = isOnlinePlayer ? MusicPlayer.positionOnline() : MusicPlayer.position();
             if (mProgress != null) {
                 mProgress.setProgress((int) position);
-                if (elapsedtime != null && getActivity() != null)
+                if (elapsedtime != null && getActivity() != null) {
                     elapsedtime.setText(AmberUtils.makeShortTimeString(getActivity(), position / 1000));
+                    lrcView.smoothScrollToTime(position);
+                }
             }
             overflowcounter--;
             int delay = 250; //not sure why this delay was so high before
@@ -142,8 +160,12 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.now_playing, menu);
+        if (!isOnlinePlayer) {
+            inflater.inflate(R.menu.now_playing, menu);
+        }
+
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -174,8 +196,9 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
     public void onResume() {
         super.onResume();
         fragmentPaused = false;
-        if (mProgress != null)
+        if (mProgress != null) {
             mProgress.postDelayed(mUpdateProgress, 10);
+        }
 
     }
 
@@ -187,9 +210,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         next = (MaterialIconView) view.findViewById(R.id.next);
         previous = (MaterialIconView) view.findViewById(R.id.previous);
 
-
         playPauseFloating = (ImageView) view.findViewById(R.id.playpausefloating);
-
 
         songtitle = (TextView) view.findViewById(R.id.song_title);
         songalbum = (TextView) view.findViewById(R.id.song_album);
@@ -197,11 +218,36 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         songduration = (TextView) view.findViewById(R.id.song_duration);
         elapsedtime = (TextView) view.findViewById(R.id.song_elapsed_time);
 
-
         mProgress = (SeekBar) view.findViewById(R.id.song_progress);
-
+        lrcBg = view.findViewById(R.id.lrc_bg);
+        lrcBtn = view.findViewById(R.id.lrc_btn);
+        lrcBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (lrcView.getVisibility() == View.GONE && lrcView.hasData()) {
+                    lrcView.setVisibility(View.VISIBLE);
+                    lrcBg.setVisibility(View.VISIBLE);
+                    lrcBtn.setImageResource(R.drawable.ic_lyric_blue);
+                } else {
+                    lrcView.setVisibility(View.GONE);
+                    lrcBg.setVisibility(View.GONE);
+                    lrcBtn.setImageResource(R.drawable.ic_lyric);
+                }
+            }
+        });
+        lrcView = view.findViewById(R.id.au_lrcView);
+        lrcView.setLrcViewSeekListener(new ILrcViewSeekListener() {
+            @Override
+            public void onSeek(LrcRow currentLrcRow, long CurrentSelectedRowTime) {
+                //在这里执行播放器控制器控制播放器跳转到指定时间
+                if (isOnlinePlayer) {
+                    MusicPlayer.seekOnline(CurrentSelectedRowTime);
+                } else {
+                    MusicPlayer.seek(CurrentSelectedRowTime);
+                }
+            }
+        });
         songtitle.setSelected(true);
-
 
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         if (toolbar != null) {
@@ -211,13 +257,14 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             ab.setTitle("");
         }
 
-
         if (playPauseFloating != null) {
             playPauseDrawable.setColorFilter(AmberUtils.getBlackWhiteColor(accentColor), PorterDuff.Mode.MULTIPLY);
             playPauseFloating.setImageDrawable(playPauseDrawable);
-            if (MusicPlayer.isOnlinePlaying() || MusicPlayer.isPlaying())
+            if (MusicPlayer.isOnlinePlaying() || MusicPlayer.isPlaying()) {
                 playPauseDrawable.transformToPause(false);
-            else playPauseDrawable.transformToPlay(false);
+            } else {
+                playPauseDrawable.transformToPlay(false);
+            }
         }
 
         setSongDetails();
@@ -233,6 +280,51 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             ATE.apply(this, "light_theme");
         }
         updateUITheme();
+        String cache = LyricManager.INSTANCE.getLrcCache().get(MusicPlayer.getCurrentOnlineId());
+        if (cache == null) {
+            ServiceClient.INSTANCE.getMusicLRC(MusicPlayer.getCurrentOnlineId(), new Callback<String>() {
+                @Override
+                public void success(String s, Response response) {
+                    if (s == null || s.isEmpty()) {
+                        lrcBtn.setClickable(false);
+                        return;
+                    }
+                    LyricManager.INSTANCE.getLrcCache().put(MusicPlayer.getCurrentOnlineId(), s);
+                    setLyricData(s);
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+
+                }
+            });
+        } else {
+            setLyricData(cache);
+        }
+    }
+
+    private void setLyricData(String s) {
+        List<LrcRow> lrcRows = new LrcDataBuilder().Build(s.replaceAll("\\\\n", "\n"), new DefaultLrcRowsParser());
+        //ro  List<LrcRow> lrcRows = new LrcDataBuilder().Build(file);
+        //mLrcView.setTextSizeAutomaticMode(true);//是否自动适配文字大小
+
+        //init the lrcView
+        lrcView.getLrcSetting()
+                .setTimeTextSize(40)//时间字体大小
+                .setSelectLineColor(Color.parseColor("#ffffff"))//选中线颜色
+                .setSelectLineTextSize(25)//选中线大小
+                .setHeightRowColor(Color.parseColor("#aaffffff"))//高亮字体颜色
+                .setNormalRowTextSize((int) UIUtils.sp2px(getContext(), 17))//正常行字体大小
+                .setHeightLightRowTextSize((int) UIUtils.sp2px(getContext(), 17f))//高亮行字体大小
+                .setTrySelectRowTextSize((int) UIUtils.sp2px(getContext(), 17f))//尝试选中行字体大小
+                .setTimeTextColor(Color.parseColor("#ffffff"))//时间字体颜色
+                .setTrySelectRowColor(Color.parseColor("#55ffffff"));//尝试选中字体颜色
+
+        lrcView.commitLrcSettings();
+        lrcView.setLrcData(lrcRows);
+        lrcView.setVisibility(View.VISIBLE);
+        lrcBg.setVisibility(View.VISIBLE);
+        lrcBtn.setImageResource(R.drawable.ic_lyric_blue);
     }
 
     private void updateUITheme() {
@@ -294,9 +386,9 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             });
         }
 
-
-        if (playPauseFloating != null)
+        if (playPauseFloating != null) {
             playPauseFloating.setOnClickListener(mFLoatingButtonListener);
+        }
 
         updateShuffleState();
         updateRepeatState();
@@ -377,7 +469,6 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                 }
             }
 
-
             repeat.setImageDrawable(builder.build());
             repeat.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -401,13 +492,13 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
     }
 
     private void setSeekBarListener() {
-        if (mProgress != null)
+        if (mProgress != null) {
             mProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                     if (b) {
                         if (isOnlinePlayer) {
-                            MusicPlayer.seekOnline((long)i);
+                            MusicPlayer.seekOnline((long) i);
                         } else {
                             MusicPlayer.seek((long) i);
                         }
@@ -422,13 +513,15 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                 public void onStopTrackingTouch(SeekBar seekBar) {
                 }
             });
+        }
     }
 
     public void updateSongDetails() {
         //do not reload image if it was a play/pause change
         if (!duetoplaypause) {
             if (albumart != null) {
-                ImageLoader.getInstance().displayImage(isOnlinePlayer ? ServiceClient.RES_SERVICE_URL + "/album_pic?song_id=" + MusicPlayer.getCurrentSongModel().getId() : AmberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), albumart,
+                ImageLoader.getInstance().displayImage(isOnlinePlayer ? ServiceClient.RES_SERVICE_URL + "/album_pic?song_id=" +
+                                MusicPlayer.getCurrentSongModel().getId() : AmberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), albumart,
                         new DisplayImageOptions.Builder().cacheInMemory(true)
                                 .showImageOnFail(R.drawable.holder)
                                 .build(), new SimpleImageLoadingListener() {
@@ -469,8 +562,9 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                             }
                         });
                     }
-                    if (songalbum != null)
+                    if (songalbum != null) {
                         songalbum.setText(song.getAlbumId());
+                    }
                 }
             } else {
                 setSongUI();
@@ -480,12 +574,13 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         }
         duetoplaypause = false;
 
-
-        if (playPauseFloating != null)
+        if (playPauseFloating != null) {
             updatePlayPauseFloatingButton();
+        }
 
-        if (songduration != null && getActivity() != null)
+        if (songduration != null && getActivity() != null) {
             songduration.setText(AmberUtils.makeShortTimeString(getActivity(), (isOnlinePlayer ? MusicPlayer.getCurrentSongModel().getDuration() : (int) MusicPlayer.duration() / 1000)));
+        }
 
         if (mProgress != null) {
             mProgress.setMax(isOnlinePlayer ? MusicPlayer.getCurrentSongModel().getDuration() * 1000 : (int) MusicPlayer.duration());
@@ -517,8 +612,9 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                 }
             });
         }
-        if (songalbum != null)
+        if (songalbum != null) {
             songalbum.setText(MusicPlayer.getAlbumName());
+        }
     }
 
     public void updatePlayPauseFloatingButton() {

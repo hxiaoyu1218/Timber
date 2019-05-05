@@ -92,6 +92,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.0'
     implementation 'com.afollestad.material-dialogs:core:0.9.0.2'
     implementation 'com.afollestad.material-dialogs:commons:0.9.0.2'
+    implementation 'com.github.bifan-wei:LrcView:V1.3'
     implementation('com.github.naman14:app-theme-engine:0.5.2@aar') {
         transitive = true
     }

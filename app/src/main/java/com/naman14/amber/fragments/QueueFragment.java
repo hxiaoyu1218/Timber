@@ -105,6 +105,7 @@ public class QueueFragment extends Fragment implements MusicStateListener {
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         menu.findItem(R.id.action_shuffle).setVisible(false);
+        menu.findItem(R.id.action_search).setVisible(false);
     }
 
     public void onMetaChanged() {
