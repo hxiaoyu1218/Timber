@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
 import android.os.AsyncTask
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.support.annotation.StyleRes
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
@@ -84,13 +83,13 @@ class ArtistOnlineActivity : BaseActivity(), ATEActivityThemeCustomizer, ATETool
         artist_name.setTextColor(Color.WHITE)
         artist_count.setTextColor(Color.WHITE)
 //        ImageLoader.getInstance().displayImage(
-//            ServiceClient.SERVICE_URL + "/artist_pic?artist_id=" + id,
+//            ServiceClient.RES_SERVICE_URL + "/artist_pic?artist_id=" + id,
 //            artist_avatar, DisplayImageOptions.Builder().cacheInMemory(true)
 //                .showImageOnLoading(R.drawable.holder)
 //                .resetViewBeforeLoading(true).build()
 //        )
         ImageLoader.getInstance()
-            .displayImage(ServiceClient.SERVICE_URL + "/artist_pic?artist_id=" + id, artist_avatar,
+            .displayImage(ServiceClient.RES_SERVICE_URL + "/artist_pic?artist_id=" + id, artist_avatar,
                           DisplayImageOptions.Builder().cacheInMemory(true)
                               .showImageOnFail(R.drawable.holder)
                               .build(), object : SimpleImageLoadingListener() {

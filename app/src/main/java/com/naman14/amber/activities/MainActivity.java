@@ -339,8 +339,9 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
                 navigateOnline.run();
             }
             PlaylistLoader.INSTANCE.loadPlayList(this);
+            new initQuickControls().execute("");
         }
-        new initQuickControls().execute("");
+
     }
 
     private void checkPermissionAndThenLoad(boolean recreate) {
@@ -556,7 +557,7 @@ public class MainActivity extends BaseActivity implements ATEActivityThemeCustom
             return;
         }
         ImageLoader.getInstance().displayImage(online ?
-                        ServiceClient.SERVICE_URL + "/album_pic?song_id=" + song.getId() :
+                        ServiceClient.RES_SERVICE_URL + "/album_pic?song_id=" + song.getId() :
                         AmberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), albumart,
                 new DisplayImageOptions.Builder().cacheInMemory(true)
                         .showImageOnFail(R.drawable.holder)

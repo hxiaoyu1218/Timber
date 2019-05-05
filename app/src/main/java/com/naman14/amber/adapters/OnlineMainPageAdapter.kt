@@ -101,7 +101,7 @@ class OnlineMainPageAdapter(val f: OnlineMainFragment) :
             }
 
             ImageLoader.getInstance().displayImage(
-                ServiceClient.SERVICE_URL + "/album_pic?song_id=" + data.id,
+                ServiceClient.RES_SERVICE_URL + "/album_pic?song_id=" + data.id,
                 albumArt, DisplayImageOptions.Builder().cacheInMemory(true)
                     .showImageOnLoading(R.drawable.holder)
                     .resetViewBeforeLoading(true).build()

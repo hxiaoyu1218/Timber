@@ -51,8 +51,7 @@ public class SlideTrackSwitcher implements View.OnTouchListener {
                         }
                     }
                     result = true;
-                }
-                else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                } else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
                     if (diffY > 0) {
                         onSwipeBottom();
                     } else {
@@ -74,6 +73,10 @@ public class SlideTrackSwitcher implements View.OnTouchListener {
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
+            if (MusicPlayer.isOnlineMode()) {
+                MusicPlayer.playOrPauseOnline();
+                return true;
+            }
             MusicPlayer.playOrPause();
             return true;
         }
@@ -86,10 +89,18 @@ public class SlideTrackSwitcher implements View.OnTouchListener {
     }
 
     public void onSwipeRight() {
+        if (MusicPlayer.isOnlineMode()) {
+            MusicPlayer.playOnlinePrevious();
+            return;
+        }
         MusicPlayer.previous(mView.getContext(), true);
     }
 
     public void onSwipeLeft() {
+        if (MusicPlayer.isOnlineMode()) {
+            MusicPlayer.playOnlineNext();
+            return;
+        }
         MusicPlayer.next();
     }
 

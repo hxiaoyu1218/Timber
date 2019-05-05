@@ -216,7 +216,7 @@ public class PlaylistPagerFragment extends Fragment {
                                 if (playlist.listPic == null || playlist.listPic.isEmpty()) {
                                     return "";
                                 }
-                                return ServiceClient.SERVICE_URL + "/album_pic?song_id=" + playlist.listPic;
+                                return ServiceClient.RES_SERVICE_URL + "/album_pic?song_id=" + playlist.listPic;
                             }
                             List<Song> playlistsongs = PlaylistSongLoader.getSongsInPlaylist(getActivity(), playlist.id);
                             songCountInt = playlistsongs.size();
@@ -237,7 +237,7 @@ public class PlaylistPagerFragment extends Fragment {
                         if (playlist.listPic == null || playlist.listPic.isEmpty()) {
                             return "";
                         }
-                        return ServiceClient.SERVICE_URL + "/album_pic?song_id=" + playlist.listPic;
+                        return ServiceClient.RES_SERVICE_URL + "/album_pic?song_id=" + playlist.listPic;
                     }
                     List<Song> playlistsongs = PlaylistSongLoader.getSongsInPlaylist(getActivity(), playlist.id);
                     songCountInt = playlistsongs.size();

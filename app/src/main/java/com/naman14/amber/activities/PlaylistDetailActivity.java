@@ -207,7 +207,7 @@ public class PlaylistDetailActivity extends BaseActivity implements ATEActivityT
         String name = getIntent().getExtras().getString(Constants.PLAYLIST_NAME);
         playlistname.setText(isOnline ? playlist.name : name);
         foreground.setBackgroundColor(getIntent().getExtras().getInt(Constants.PLAYLIST_FOREGROUND_COLOR));
-        loadBitmap(isOnline ? ServiceClient.SERVICE_URL + "/album_pic?song_id=" + playlist.listPic : AmberUtils.getAlbumArtUri(getIntent().getExtras().getLong(Constants.ALBUM_ID)).toString());
+        loadBitmap(isOnline ? ServiceClient.RES_SERVICE_URL + "/album_pic?song_id=" + playlist.listPic : AmberUtils.getAlbumArtUri(getIntent().getExtras().getLong(Constants.ALBUM_ID)).toString());
     }
 
     private void setUpSongs() {

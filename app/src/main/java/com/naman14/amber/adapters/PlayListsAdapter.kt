@@ -73,7 +73,7 @@ class PlayListsAdapter(val f: OnlineMainFragment) :
             name.text = data.listName
             name.setTextColor(Config.textColorPrimary(adapter.f.context, adapter.ateKey))
             ImageLoader.getInstance().displayImage(
-                ServiceClient.SERVICE_URL + "/album_pic?song_id=" + data.listPic,
+                ServiceClient.RES_SERVICE_URL + "/album_pic?song_id=" + data.listPic,
                 cover, DisplayImageOptions.Builder().cacheInMemory(true)
                     .showImageOnLoading(R.drawable.holder)
                     .resetViewBeforeLoading(true).build()

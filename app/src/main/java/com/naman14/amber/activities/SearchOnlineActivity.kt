@@ -76,6 +76,13 @@ class SearchOnlineActivity : BaseActivity(), SearchView.OnQueryTextListener, Vie
         adapter = ArtistOnlineAdapter(this)
         rv.adapter = adapter
 
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("dark_theme", false)) {
+            search_artist_text.setTextColor(Color.WHITE)
+            search_song_text.setTextColor(Color.WHITE)
+        } else {
+            search_artist_text.setTextColor(Color.BLACK)
+            search_song_text.setTextColor(Color.BLACK)
+        }
         search_artist_text.visibility = View.GONE
         search_song_text.visibility = View.GONE
 

@@ -305,7 +305,7 @@ public class QuickControlsFragment extends Fragment implements MusicStateListene
         mTitleExpanded.setText(song.getName());
         mArtistExpanded.setText(song.getArtistName());
         if (!duetoplaypause) {
-            ImageLoader.getInstance().displayImage(ServiceClient.SERVICE_URL + "/album_pic?song_id=" + song.getId(), mAlbumArt,
+            ImageLoader.getInstance().displayImage(ServiceClient.RES_SERVICE_URL + "/album_pic?song_id=" + song.getId(), mAlbumArt,
                     new DisplayImageOptions.Builder().cacheInMemory(true)
                             .showImageOnFail(R.drawable.holder)
                             .resetViewBeforeLoading(true)

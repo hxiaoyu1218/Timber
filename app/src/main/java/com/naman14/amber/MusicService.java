@@ -2722,6 +2722,12 @@ public class MusicService extends Service {
         }
 
         public void playOnline(final String id) {
+
+            if (mCurrentMediaPlayer != null) {
+                mService.get().stop();
+                mService.get().notifyChange(META_CHANGED);
+                mService.get().stopForeground(true);
+            }
             sendMusicEvent(id);
             mOnlinePlayerNext.release();
             mOnlinePlayerNext = new IjkMediaPlayer();
@@ -2746,17 +2752,17 @@ public class MusicService extends Service {
                 }
             });
             try {
-                String proxyUrl = AmberApp.getInstance().proxy.getProxyUrl(ServiceClient.SERVICE_URL + "/music?song_id=" + id);
+                String proxyUrl = AmberApp.getInstance().proxy.getProxyUrl(ServiceClient.RES_SERVICE_URL + "/music?song_id=" + id);
                 mOnlinePlayer.setDataSource(proxyUrl);
                 mOnlinePlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mOnlinePlayer.prepareAsync();
 
                 String nextId = mService.get().onlineList.get(mService.get().getNextOnlinePos()).getId();
                 if (!nextId.equals(id)) {
-                    if (AmberApp.getInstance().proxy.isCached(ServiceClient.SERVICE_URL + "/music?song_id=" + nextId)) {
+                    if (AmberApp.getInstance().proxy.isCached(ServiceClient.RES_SERVICE_URL + "/music?song_id=" + nextId)) {
                         return;
                     }
-                    String proxyUrlNext = AmberApp.getInstance().proxy.getProxyUrl(ServiceClient.SERVICE_URL + "/music?song_id=" + nextId);
+                    String proxyUrlNext = AmberApp.getInstance().proxy.getProxyUrl(ServiceClient.RES_SERVICE_URL + "/music?song_id=" + nextId);
                     mOnlinePlayerNext.setDataSource(proxyUrlNext);
                     mOnlinePlayerNext.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
                         @Override
@@ -2769,7 +2775,7 @@ public class MusicService extends Service {
                         public void onCacheAvailable(File cacheFile, String url, int percentsAvailable) {
                             Log.d(TAG, "onCacheAvailable: next  percent " + percentsAvailable);
                         }
-                    }, ServiceClient.SERVICE_URL + "/music?song_id=" + nextId);
+                    }, ServiceClient.RES_SERVICE_URL + "/music?song_id=" + nextId);
                     mOnlinePlayerNext.setOnPreparedListener(new OnPreparedListener() {
                         @Override
                         public void onPrepared(IMediaPlayer iMediaPlayer) {

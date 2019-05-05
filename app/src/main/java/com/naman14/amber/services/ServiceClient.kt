@@ -62,6 +62,7 @@ interface ServiceApi {
 
 
 object ServiceClient {
+    const val RES_SERVICE_URL = "http://10.206.16.144:3000"
     const val SERVICE_URL = "http://10.206.16.144:5000"
     private val service = RestServiceFactory.create(SERVICE_URL, ServiceApi::class.java)
     private val gson = GsonBuilder().serializeNulls().create()

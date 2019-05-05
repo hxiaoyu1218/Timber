@@ -428,7 +428,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
         //do not reload image if it was a play/pause change
         if (!duetoplaypause) {
             if (albumart != null) {
-                ImageLoader.getInstance().displayImage(isOnlinePlayer ? ServiceClient.SERVICE_URL + "/album_pic?song_id=" + MusicPlayer.getCurrentSongModel().getId() : AmberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), albumart,
+                ImageLoader.getInstance().displayImage(isOnlinePlayer ? ServiceClient.RES_SERVICE_URL + "/album_pic?song_id=" + MusicPlayer.getCurrentSongModel().getId() : AmberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), albumart,
                         new DisplayImageOptions.Builder().cacheInMemory(true)
                                 .showImageOnFail(R.drawable.holder)
                                 .build(), new SimpleImageLoadingListener() {

@@ -11,7 +11,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.afollestad.appthemeengine.Config
 import com.naman14.amber.R
-import com.naman14.amber.R.id.foreground
 import com.naman14.amber.helpers.SongModel
 import com.naman14.amber.services.ServiceClient
 import com.naman14.amber.utils.Helpers
@@ -82,7 +81,7 @@ class ArtistOnlineAdapter(val context: Context) :
             name.text = data.artistName
             name.setTextColor(Config.textColorPrimary(adapter.context, adapter.ateKey))
             ImageLoader.getInstance().displayImage(
-                ServiceClient.SERVICE_URL + "/artist_pic?artist_id=" + data.artistId,
+                ServiceClient.RES_SERVICE_URL + "/artist_pic?artist_id=" + data.artistId,
                 avatar, DisplayImageOptions.Builder().cacheInMemory(true)
                     .showImageOnLoading(R.drawable.holder)
                     .resetViewBeforeLoading(true).build()
